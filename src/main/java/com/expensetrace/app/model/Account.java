@@ -39,4 +39,6 @@ public class Account {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<PaymentMode> paymentModes;
+
+    private boolean isDefault;
 }

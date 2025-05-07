@@ -5,8 +5,6 @@ import lombok.Data;
 
 @Data
 public class PaymentModeResponseDto {
-
     private String name;
-
     private PaymentModeType type;
 }

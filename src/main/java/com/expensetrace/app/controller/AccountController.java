@@ -3,8 +3,8 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.AccountRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Account;
 import com.expensetrace.app.response.ApiResponse;
+import com.expensetrace.app.responseDto.AccountResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,63 +22,86 @@ import static org.springframework.http.HttpStatus.*;
 public class AccountController {
     private final IAccountService accountService;
 
+    @GetMapping("/default-payment-mode")
+    public ResponseEntity<ApiResponse> getDefaultPaymentMode() {
+        Long userId = 1L; // Replace with real user auth context
+        try {
+            AccountResponseDto defaultAccount = accountService.getDefaultPaymentModeByUserId(userId);
+            return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/{id}/default-payment-mode")
+    public ResponseEntity<ApiResponse> updateDefaultPaymentMode(@PathVariable Long id) {
+        Long userId = 1L; // Replace with real user auth context
+        try {
+            AccountResponseDto updated = accountService.updateDefaultPaymentMode(id, userId);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+
+
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllAccounts() {
         try {
-            List<Account> account = accountService.getAllAccounts();
-            return  ResponseEntity.ok(new ApiResponse("Found!", account));
+            List<AccountResponseDto> accountsResponseDto = accountService.getAllAccounts();
+            return ResponseEntity.ok(new ApiResponse("Found!", accountsResponseDto));
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error: " + e.getMessage(), null));
         }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> addAccount(@RequestBody AccountRequestDto name) {
-
+    public ResponseEntity<ApiResponse> addAccount(@RequestBody AccountRequestDto requestDto) {
+        Long userId = 1L; // 🔐 Replace with actual authenticated user ID
         try {
-            Account theAccount = accountService.addAccount(name);
-            return  ResponseEntity.ok(new ApiResponse("Success", theAccount));
+            AccountResponseDto response = accountService.addAccount(requestDto, userId);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @GetMapping("/account/{id}/account")
-    public ResponseEntity<ApiResponse> getAccountById(@PathVariable Long id){
+    @GetMapping("/account/{id}")
+    public ResponseEntity<ApiResponse> getAccountById(@PathVariable Long id) {
         try {
-            Account theAccount = accountService.getAccountById(id);
-            return  ResponseEntity.ok(new ApiResponse("Found", theAccount));
+            AccountResponseDto response = accountService.getAccountById(id);
+            return ResponseEntity.ok(new ApiResponse("Found", response));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @GetMapping("/account/{name}/account")
-    public ResponseEntity<ApiResponse> getAccountByName(@PathVariable String name){
+    @GetMapping("/account/name/{name}")
+    public ResponseEntity<ApiResponse> getAccountByName(@PathVariable String name) {
         try {
-            Account theAccount = accountService.getAccountByName(name);
-            return  ResponseEntity.ok(new ApiResponse("Found", theAccount));
+            AccountResponseDto response = accountService.getAccountByName(name);
+            return ResponseEntity.ok(new ApiResponse("Found", response));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-
-    @DeleteMapping("/account/{id}/delete")
-    public ResponseEntity<ApiResponse> deleteAccount(@PathVariable Long id){
+    @DeleteMapping("/account/{id}")
+    public ResponseEntity<ApiResponse> deleteAccount(@PathVariable Long id) {
         try {
             accountService.deleteAccountById(id);
-            return  ResponseEntity.ok(new ApiResponse("Found", null));
+            return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @PutMapping("/account/{id}/update")
-    public ResponseEntity<ApiResponse> updateAccount(@PathVariable Long id, @RequestBody AccountRequestDto account) {
+    @PutMapping("/account/{id}")
+    public ResponseEntity<ApiResponse> updateAccount(@PathVariable Long id, @RequestBody AccountRequestDto accountDto) {
         try {
-            Account updatedAccount = accountService.updateAccount(account, id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", updatedAccount));
+            AccountResponseDto updated = accountService.updateAccount(accountDto, id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

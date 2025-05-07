@@ -8,18 +8,13 @@ import java.time.LocalDate;
 
 @Data
 public class AccountResponseDto {
-
     private String name;
-
     private AccountType type;
-
     private BigDecimal currentBalance;
-
-    // Credit card specific fields
     private BigDecimal availableCredit;
     private BigDecimal creditLimit;
     private LocalDate billingStart;
     private LocalDate dueDate;
-
     private PaymentModeResponseDto paymentModesDto;
+    private boolean isDefault;
 }
