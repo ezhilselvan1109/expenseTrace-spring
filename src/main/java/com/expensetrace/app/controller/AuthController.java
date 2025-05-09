@@ -5,6 +5,7 @@ import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.requestDto.LoginRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,12 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/auth")
-@Tag(name = "auth", description = "Manage your auth")
+@Tag(name = "Auth", description = "Authentication operations including login and logout")
 public class AuthController {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    @Operation(
+            summary = "User login",
+            description = "Authenticates the user with email and password, and sets a JWT in an HTTP-only cookie upon successful login."
+    )
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequestDto,
                                              HttpServletResponse response) {
@@ -46,6 +51,10 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse("Login successful", null));
     }
 
+    @Operation(
+            summary = "User logout",
+            description = "Logs out the current user by clearing the JWT cookie."
+    )
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", "");
@@ -57,5 +66,4 @@ public class AuthController {
 
         return ResponseEntity.ok(new ApiResponse("Logout successful", null));
     }
-
 }

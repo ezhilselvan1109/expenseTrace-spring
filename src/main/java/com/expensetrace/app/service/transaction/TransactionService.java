@@ -1,4 +1,4 @@
-package com.expensetrace.app.service;
+package com.expensetrace.app.service.transaction;
 
 import com.expensetrace.app.requestDto.TransactionRequestDTO;
 import com.expensetrace.app.model.*;

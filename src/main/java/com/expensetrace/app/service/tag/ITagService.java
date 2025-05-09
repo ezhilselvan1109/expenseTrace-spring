@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface ITagService {
     TagResponseDto getTagById(Long id);
-    TagResponseDto getTagByName(String name);
-    List<TagResponseDto> getAllTags();
     List<TagResponseDto> getAllTagsByUser(Long userId);
     TagResponseDto addTag(TagRequestDto tagRequestDto,Long userId);
     TagResponseDto updateTag(TagRequestDto tagRequestDto, Long id);

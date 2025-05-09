@@ -5,7 +5,6 @@ import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.Category;
 import com.expensetrace.app.repository.CategoryRepository;
-import com.expensetrace.app.repository.UserCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
-    private CategoryRepository categoryRepo;
-    private UserCategoryRepository userCategoryRepo;
     private final ModelMapper modelMapper;
     @Override
     public Category getCategoryById(Long id) {
@@ -44,6 +41,11 @@ public class CategoryService implements ICategoryService {
                 .orElseThrow(() -> new AlreadyExistsException(category.getName()+" already exists"));
     }
 
+
+    public void addDefaultCategory(){
+
+    }
+
     @Override
     public Category updateCategory(CategoryRequestDto categoryDto, Long id) {
         Category category = modelMapper.map(categoryDto, Category.class);
@@ -61,6 +63,8 @@ public class CategoryService implements ICategoryService {
                     throw new ResourceNotFoundException("Category not found!");
                 });
     }
+
+
 
 
 

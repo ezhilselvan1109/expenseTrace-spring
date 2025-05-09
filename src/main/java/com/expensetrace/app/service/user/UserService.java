@@ -46,7 +46,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponseDto addUser(UserRequestDto userRequestDto) {
-        if (userRepository.existsByName(userRequestDto.getName())) {
+        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
             throw new AlreadyExistsException(userRequestDto.getName() + " already exists");
         }
 

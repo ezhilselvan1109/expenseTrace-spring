@@ -30,13 +30,16 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/swagger-ui.html",
                                 "/api/v1/users/add",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // <-- Add this
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
 }

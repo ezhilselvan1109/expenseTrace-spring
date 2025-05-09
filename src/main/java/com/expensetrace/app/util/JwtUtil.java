@@ -12,9 +12,9 @@ import java.security.Key;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "u8NJ7fTcluycDJE+gNznvgrc+xfj+v1bctBLTtdhx+0="; // Should be at least 256 bits (32 bytes) for HS256
+    private final String SECRET_KEY = "u8NJ7fTcluycDJE+gNznvgrc+xfj+v1bctBLTtdhx+0=";
 
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private final long EXPIRATION = 1000 * 60 * 60;
 
     private Key getSigningKey() {
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);

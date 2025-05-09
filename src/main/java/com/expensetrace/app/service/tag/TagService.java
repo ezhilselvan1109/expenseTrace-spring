@@ -32,23 +32,6 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public TagResponseDto getTagByName(String name) {
-        Tag tag = tagRepository.findByName(name);
-        if (tag == null) {
-            throw new ResourceNotFoundException("Tag not found with name: " + name);
-        }
-        return modelMapper.map(tag, TagResponseDto.class);
-    }
-
-    @Override
-    public List<TagResponseDto> getAllTags() {
-        return tagRepository.findAll()
-                .stream()
-                .map(tag -> modelMapper.map(tag, TagResponseDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<TagResponseDto> getAllTagsByUser(Long userId) {
         return tagRepository.findByUserId(userId)
                 .stream()
@@ -58,7 +41,7 @@ public class TagService implements ITagService {
 
     @Override
     public TagResponseDto addTag(TagRequestDto tagRequestDto,Long userId) {
-        if (tagRepository.existsByName(tagRequestDto.getName())) {
+        if (tagRepository.existsByNameAndUserId(tagRequestDto.getName(),userId)) {
             throw new AlreadyExistsException(tagRequestDto.getName() + " already exists");
         }
 

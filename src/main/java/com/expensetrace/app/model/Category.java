@@ -12,12 +12,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "categories")
+@Table(name = "Category")
 public class Category {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
+
+    @ManyToOne
+    private User user;
 
     private String name;
 
@@ -27,4 +29,6 @@ public class Category {
     private String color;
 
     private String icon;
+
+    private boolean isDefault;
 }

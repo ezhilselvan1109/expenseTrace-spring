@@ -13,27 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/users")
-@Tag(name = "User", description = "Manage your User")
+@Tag(name = "User", description = "Endpoints for managing users")
 public class UserController {
     private final IUserService userService;
 
-    @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAllUsers() {
-        try {
-            List<UserResponseDto> userRequestDto = userService.getAllUsers();
-            return  ResponseEntity.ok(new ApiResponse("Found!", userRequestDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
-        }
-    }
-
+    @Operation(
+            summary = "Create a new user",
+            description = "Adds a new user to the system. Throws an error if the user already exists."
+    )
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         try {
@@ -44,8 +37,11 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "Get user by ID", description = "Returns a user by their ID")
-    @GetMapping("/user/id/{id}")
+    @Operation(
+            summary = "Retrieve a user by ID",
+            description = "Fetches a user from the database using the provided user ID."
+    )
+    @GetMapping("/user/{id}")
     public ResponseEntity<ApiResponse> getUserById(@PathVariable Long id){
         try {
             UserResponseDto theUser = userService.getUserById(id);
@@ -55,27 +51,24 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/name/{name}")
-    public ResponseEntity<ApiResponse> getUserByName(@PathVariable String name){
-        try {
-            UserResponseDto theUser = userService.getUserByName(name);
-            return  ResponseEntity.ok(new ApiResponse("Found", theUser));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
-
+    @Operation(
+            summary = "Delete a user by ID",
+            description = "Removes a user from the system based on the provided user ID."
+    )
     @DeleteMapping("/user/{id}/delete")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id){
         try {
             userService.deleteUserById(id);
-            return  ResponseEntity.ok(new ApiResponse("Found", null));
+            return  ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
+    @Operation(
+            summary = "Update an existing user",
+            description = "Updates user information for the specified ID with the provided details."
+    )
     @PutMapping("/user/{id}/update")
     public ResponseEntity<ApiResponse> updateUser(@PathVariable Long id, @RequestBody UserRequestDto userRequestDto) {
         try {
