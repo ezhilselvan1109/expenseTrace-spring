@@ -10,6 +10,7 @@ public class SuccessResponse {
     private int statusCode;
     private Object data;
     private String message;
+    private Object meta;
 }
 
 /*

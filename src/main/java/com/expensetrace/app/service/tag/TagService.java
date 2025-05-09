@@ -1,16 +1,23 @@
 package com.expensetrace.app.service.tag;
 
+import com.expensetrace.app.model.Tag;
+import com.expensetrace.app.model.Tag;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.requestDto.TagRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.repository.TagRepository;
+import com.expensetrace.app.responseDto.PaymentModeResponseDto;
+import com.expensetrace.app.responseDto.TagResponseDto;
+import com.expensetrace.app.responseDto.TagResponseDto;
+import com.expensetrace.app.responseDto.TagResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,35 +25,61 @@ public class TagService implements ITagService {
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
     @Override
-    public Tag getTagById(Long id) {
-        return tagRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Tag not found!"));
+    public TagResponseDto getTagById(Long id) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
+        return modelMapper.map(tag, TagResponseDto.class);
     }
 
     @Override
-    public Tag getTagByName(String name) {
-        return tagRepository.findByName(name);
+    public TagResponseDto getTagByName(String name) {
+        Tag tag = tagRepository.findByName(name);
+        if (tag == null) {
+            throw new ResourceNotFoundException("Tag not found with name: " + name);
+        }
+        return modelMapper.map(tag, TagResponseDto.class);
     }
 
     @Override
-    public List<Tag> getAllTags() {
-        return tagRepository.findAll();
+    public List<TagResponseDto> getAllTags() {
+        return tagRepository.findAll()
+                .stream()
+                .map(tag -> modelMapper.map(tag, TagResponseDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Tag addTag(TagRequestDto tagRequestDto) {
+    public List<TagResponseDto> getAllTagsByUser(Long userId) {
+        return tagRepository.findByUserId(userId)
+                .stream()
+                .map(tag -> modelMapper.map(tag, TagResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TagResponseDto addTag(TagRequestDto tagRequestDto,Long userId) {
+        if (tagRepository.existsByName(tagRequestDto.getName())) {
+            throw new AlreadyExistsException(tagRequestDto.getName() + " already exists");
+        }
+
         Tag tag = modelMapper.map(tagRequestDto, Tag.class);
-        return  Optional.of(tag)
-                .map(tagRepository :: save)
-                .orElseThrow(() -> new AlreadyExistsException(tag.getName()+" already exists"));
+        User user=new User();
+        user.setId(userId);
+        tag.setUser(user);
+
+        Tag savedTag = tagRepository.save(tag);
+        return modelMapper.map(savedTag, TagResponseDto.class);
     }
 
     @Override
-    public Tag updateTag(TagRequestDto tagRequestDto, Long id) {
-        return Optional.ofNullable(getTagById(id)).map(oldTag -> {
-            oldTag.setName(tagRequestDto.getName());
-            return tagRepository.save(oldTag);
-        }) .orElseThrow(()-> new ResourceNotFoundException("Tag not found!"));
+    public TagResponseDto updateTag(TagRequestDto tagRequestDto, Long id) {
+        Tag existingTag = tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
+
+        existingTag.setName(tagRequestDto.getName());
+
+        Tag updatedTag = tagRepository.save(existingTag);
+        return modelMapper.map(updatedTag, TagResponseDto.class);
     }
 
 
