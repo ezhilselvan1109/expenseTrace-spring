@@ -3,9 +3,11 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Category;
 import com.expensetrace.app.response.ApiResponse;
+import com.expensetrace.app.responseDto.CategoryResponseDto;
 import com.expensetrace.app.service.category.ICategoryService;
+import com.expensetrace.app.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,66 +20,61 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/categories")
-@Tag(name = "Category", description = "Manage your Category")
+@Tag(name = "Category", description = "Operations related to user-defined categories")
 public class CategoryController {
+
     private final ICategoryService categoryService;
 
-    @GetMapping("/all")
+    @GetMapping
+    @Operation(summary = "Get all categories", description = "Retrieves all categories for the authenticated user")
     public ResponseEntity<ApiResponse> getAllCategories() {
         try {
-            List<Category> categories = categoryService.getAllCategories();
-            return  ResponseEntity.ok(new ApiResponse("Found!", categories));
+            List<CategoryResponseDto> categories = categoryService.getAllCategories();
+            return ResponseEntity.ok(new ApiResponse("Categories retrieved successfully", categories));
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
         }
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequestDto name) {
+    @PostMapping
+    @Operation(summary = "Add a category", description = "Creates a new category for the authenticated user")
+    public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
         try {
-            Category theCategory = categoryService.addCategory(name);
-            return  ResponseEntity.ok(new ApiResponse("Success", theCategory));
+            CategoryResponseDto createdCategory = categoryService.addCategory(categoryRequestDto);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Category created successfully", createdCategory));
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @GetMapping("/category/{id}/category")
-    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id){
+    @GetMapping("/{id}")
+    @Operation(summary = "Get category by ID", description = "Fetches a specific category owned by the user")
+    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id) {
         try {
-            Category theCategory = categoryService.getCategoryById(id);
-            return  ResponseEntity.ok(new ApiResponse("Found", theCategory));
+            CategoryResponseDto category = categoryService.getCategoryById(id);
+            return ResponseEntity.ok(new ApiResponse("Category retrieved successfully", category));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @GetMapping("/category/{name}/category")
-    public ResponseEntity<ApiResponse> getCategoryByName(@PathVariable String name){
-        try {
-            Category theCategory = categoryService.getCategoryByName(name);
-            return  ResponseEntity.ok(new ApiResponse("Found", theCategory));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
-
-    @DeleteMapping("/category/{id}/delete")
-    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete category by ID", description = "Deletes a category owned by the user")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id) {
         try {
             categoryService.deleteCategoryById(id);
-            return  ResponseEntity.ok(new ApiResponse("Found", null));
+            return ResponseEntity.ok(new ApiResponse("Category deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @PutMapping("/category/{id}/update")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto category) {
+    @PutMapping("/{id}")
+    @Operation(summary = "Update category", description = "Updates an existing category owned by the user")
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto categoryRequestDto) {
         try {
-            Category updatedCategory = categoryService.updateCategory(category, id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", updatedCategory));
+            CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryRequestDto, id);
+            return ResponseEntity.ok(new ApiResponse("Category updated successfully", updatedCategory));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

@@ -1,71 +1,80 @@
 package com.expensetrace.app.service.category;
 
+import com.expensetrace.app.model.Category;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.requestDto.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Category;
 import com.expensetrace.app.repository.CategoryRepository;
+import com.expensetrace.app.responseDto.CategoryResponseDto;
+import com.expensetrace.app.responseDto.TagResponseDto;
+import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
+    private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
     @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Category not found!"));
+    public CategoryResponseDto getCategoryById(Long id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        Category category = categoryRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        return modelMapper.map(category, CategoryResponseDto.class);
+    }
+
+
+    @Override
+    public List<CategoryResponseDto> getAllCategories() {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        return categoryRepository.findByUserId(userId).stream()
+                .map(category -> modelMapper.map(category, CategoryResponseDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.findByName(name);
-    }
+    public CategoryResponseDto addCategory(CategoryRequestDto categoryRequestDto) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        if (categoryRepository.existsByNameAndUserId(categoryRequestDto.getName(),userId)) {
+            throw new AlreadyExistsException(categoryRequestDto.getName() + " already exists");
+        }
 
+        Category category = modelMapper.map(categoryRequestDto, Category.class);
+        User user=new User();
+        user.setId(userId);
+        category.setUser(user);
+
+        Category savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryResponseDto.class);
+    }
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public CategoryResponseDto updateCategory(CategoryRequestDto categoryRequestDto, Long id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        Category existing = categoryRepository.findByIdAndUserId(id,userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+
+        existing.setName(categoryRequestDto.getName());
+        existing.setType(categoryRequestDto.getType());
+        existing.setIcon(categoryRequestDto.getIcon());
+        existing.setColor(categoryRequestDto.getColor());
+
+        Category updated = categoryRepository.save(existing);
+        return modelMapper.map(updated, CategoryResponseDto.class);
     }
-
-    @Override
-    public Category addCategory(CategoryRequestDto categoryDto) {
-        Category category = modelMapper.map(categoryDto, Category.class);
-        return  Optional.of(category)
-                .map(categoryRepository :: save)
-                .orElseThrow(() -> new AlreadyExistsException(category.getName()+" already exists"));
-    }
-
-
-    public void addDefaultCategory(){
-
-    }
-
-    @Override
-    public Category updateCategory(CategoryRequestDto categoryDto, Long id) {
-        Category category = modelMapper.map(categoryDto, Category.class);
-        return Optional.ofNullable(getCategoryById(id)).map(oldCategory -> {
-            oldCategory.setName(category.getName());
-            return categoryRepository.save(oldCategory);
-        }) .orElseThrow(()-> new ResourceNotFoundException("Category not found!"));
-    }
-
 
     @Override
     public void deleteCategoryById(Long id) {
-        categoryRepository.findById(id)
+        Long userId = securityUtil.getAuthenticatedUserId();
+        categoryRepository.findByIdAndUserId(id,userId)
                 .ifPresentOrElse(categoryRepository::delete, () -> {
                     throw new ResourceNotFoundException("Category not found!");
                 });
     }
-
-
-
-
-
 }

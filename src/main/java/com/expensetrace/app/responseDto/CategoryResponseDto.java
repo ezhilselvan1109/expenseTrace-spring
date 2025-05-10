@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class CategoryResponseDto {
+    private Long id;
     private String name;
     private CategoryType type; // Enum: EXPENSE, INCOME
     private String color;
