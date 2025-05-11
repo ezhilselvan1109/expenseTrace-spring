@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class AccountResponseDto {
+    private Long id;
     private String name;
     private AccountType type;
     private BigDecimal currentBalance;

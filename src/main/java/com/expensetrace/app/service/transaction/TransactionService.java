@@ -1,41 +1,55 @@
 package com.expensetrace.app.service.transaction;
 
-import com.expensetrace.app.requestDto.TransactionRequestDTO;
+import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.*;
+import com.expensetrace.app.requestDto.TransactionRequestDTO;
+import com.expensetrace.app.responseDto.TransactionResponseDTO;
+import com.expensetrace.app.util.SecurityUtil;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class TransactionService {
+@RequiredArgsConstructor
+public class TransactionService implements  ITransactionService{
 
-    private TransactionRepository transactionRepo;
-    private UserRepository userRepo;
-    private CategoryRepository categoryRepo;
-    private AccountRepository accountRepo;
-    private TagRepository tagRepo;
-    private AttachmentRepository attachmentRepo;
+    private final TransactionRepository transactionRepo;
+    private final CategoryRepository categoryRepo;
+    private final AccountRepository accountRepo;
+    private final TagRepository tagRepo;
+    private final SecurityUtil securityUtil;
+    private final ModelMapper modelMapper;
 
-    public Transaction createTransaction(TransactionRequestDTO dto) throws IOException {
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO dto) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        User user=new User();
+        user.setId(userId);
         Transaction txn = new Transaction();
+        txn.setUser(user);
         txn.setType(dto.getType());
         txn.setDate(dto.getDate());
         txn.setTime(dto.getTime());
         txn.setAmount(dto.getAmount());
         txn.setDescription(dto.getDescription());
 
-        User user = userRepo.findById(dto.getUserId()).orElseThrow();
-        txn.setUser(user);
+        // Set category
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepo.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            txn.setCategory(category);
+        }
 
-        Category category = categoryRepo.findById(dto.getCategoryId()).orElseThrow();
-        txn.setCategory(category);
-
-        Account account = accountRepo.findById(dto.getAccountId()).orElseThrow();
-        txn.setAccount(account);
+        // Set account
+        if (dto.getAccountId() != null) {
+            Account account = accountRepo.findById(dto.getAccountId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+            txn.setAccount(account);
+        }
 
         // Set tags
         if (dto.getTagIds() != null && !dto.getTagIds().isEmpty()) {
@@ -44,42 +58,62 @@ public class TransactionService {
         }
 
         Transaction savedTxn = transactionRepo.save(txn);
+        return modelMapper.map(savedTxn, TransactionResponseDTO.class);
+    }
 
-        // Handle attachment
-        if (dto.getAttachment() != null && !dto.getAttachment().isEmpty()) {
-            MultipartFile file = dto.getAttachment();
+    public List<TransactionResponseDTO> getAllTransactionsByUser() {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        return transactionRepo.findByUserId(userId).stream()
+                .map(txn -> modelMapper.map(txn, TransactionResponseDTO.class))
+                .collect(Collectors.toList());
+    }
 
-            Attachment attachment = new Attachment();
-            attachment.setTransaction(savedTxn);
-            attachment.setFileName(file.getOriginalFilename());
-            attachment.setContentType(file.getContentType());
-            attachment.setData(file.getBytes());
+    public TransactionResponseDTO getTransactionById(Long id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        Transaction txn = transactionRepo.findById(id)
+                .filter(t -> t.getUser().getId().equals(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+        return modelMapper.map(txn, TransactionResponseDTO.class);
+    }
 
-            attachmentRepo.save(attachment);
+    public void deleteTransactionById(Long id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        Transaction txn = transactionRepo.findById(id)
+                .filter(t -> t.getUser().getId().equals(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+        transactionRepo.delete(txn);
+    }
+
+    public TransactionResponseDTO updateTransaction(Long id, TransactionRequestDTO dto) {
+        Long userId = securityUtil.getAuthenticatedUserId();
+        Transaction txn = transactionRepo.findById(id)
+                .filter(t -> t.getUser().getId().equals(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+
+        txn.setType(dto.getType());
+        txn.setDate(dto.getDate());
+        txn.setTime(dto.getTime());
+        txn.setAmount(dto.getAmount());
+        txn.setDescription(dto.getDescription());
+
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepo.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            txn.setCategory(category);
         }
 
-        return savedTxn;
+        if (dto.getAccountId() != null) {
+            Account account = accountRepo.findById(dto.getAccountId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+            txn.setAccount(account);
+        }
+
+        if (dto.getTagIds() != null) {
+            List<Tag> tags = tagRepo.findAllById(dto.getTagIds());
+            txn.setTags(new HashSet<>(tags));
+        }
+
+        Transaction updated = transactionRepo.save(txn);
+        return modelMapper.map(updated, TransactionResponseDTO.class);
     }
-
-    public List<Transaction> getAllTransactionsByUser(Long userId) {
-        return transactionRepo.findByUserId(userId);
-    }
-
-    public Transaction getTransactionById(Long id) {
-        return transactionRepo.findById(id).orElseThrow();
-    }
-
-    public void uploadAttachment(Long transactionId, MultipartFile file) throws IOException {
-        Transaction txn = transactionRepo.findById(transactionId).orElseThrow();
-
-        Attachment attachment = new Attachment();
-        attachment.setTransaction(txn);
-        attachment.setFileName(file.getOriginalFilename());
-        attachment.setContentType(file.getContentType());
-        attachment.setData(file.getBytes());
-
-        attachmentRepo.save(attachment);
-    }
-
 }
-

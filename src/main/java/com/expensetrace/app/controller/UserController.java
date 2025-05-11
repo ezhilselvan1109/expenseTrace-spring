@@ -1,8 +1,9 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.requestDto.UserRequestDto;
+
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
+import com.expensetrace.app.requestDto.UserRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.UserResponseDto;
 import com.expensetrace.app.service.user.IUserService;
@@ -12,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 import static org.springframework.http.HttpStatus.*;
 

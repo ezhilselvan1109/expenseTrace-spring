@@ -11,8 +11,6 @@ import java.util.List;
 
 @Data
 public class TransactionRequestDTO {
-    private Long id;
-    private Long userId;
     private TransactionType type;
     private LocalDate date;
     private LocalTime time;
@@ -21,6 +19,5 @@ public class TransactionRequestDTO {
     private Long accountId;
     private String description;
     private List<Long> tagIds;
-    private MultipartFile attachment; // for upload
 }
 
