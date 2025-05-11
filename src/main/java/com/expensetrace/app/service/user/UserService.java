@@ -26,28 +26,10 @@ public class UserService implements IUserService {
         return modelMapper.map(user, UserResponseDto.class);
     }
 
-
-    @Override
-    public UserResponseDto getUserByName(String name) {
-        User user = userRepository.findByName(name);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with name: " + name);
-        }
-        return modelMapper.map(user, UserResponseDto.class);
-    }
-
-    @Override
-    public List<UserResponseDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> modelMapper.map(user, UserResponseDto.class))
-                .collect(Collectors.toList());
-    }
-
     @Override
     public UserResponseDto addUser(UserRequestDto userRequestDto) {
         if (userRepository.existsByEmail(userRequestDto.getEmail())) {
-            throw new AlreadyExistsException(userRequestDto.getName() + " already exists");
+            throw new AlreadyExistsException(userRequestDto.getEmail() + " already exists");
         }
 
         User user = modelMapper.map(userRequestDto, User.class);
@@ -61,7 +43,8 @@ public class UserService implements IUserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
 
-        existingUser.setName(userRequestDto.getName());
+        existingUser.setFirstName(userRequestDto.getFirstName());
+        existingUser.setLastName(userRequestDto.getLastName());
         existingUser.setEmail(userRequestDto.getEmail());
         existingUser.setPassword(userRequestDto.getPassword());
 
