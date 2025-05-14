@@ -41,13 +41,14 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(user.getEmail());
 
-        Cookie cookie = new Cookie("jwt", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true); // use only over HTTPS
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);
+        String cookie = "jwt=" + token +
+                "; Path=/" +
+                "; HttpOnly" +
+                "; Secure" +
+                "; SameSite=None" +
+                "; Max-Age=" + (24 * 60 * 60);
 
-        response.addCookie(cookie);
+        response.setHeader("Set-Cookie", cookie);
         return ResponseEntity.ok(new ApiResponse("Login successful", null));
     }
 
