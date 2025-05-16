@@ -87,6 +87,7 @@ public class AccountService implements IAccountService {
     @Override
     public AccountResponseDto addAccount(AccountRequestDto accountRequestDto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
+
         if (accountRepository.existsByName(accountRequestDto.getName())) {
             throw new AlreadyExistsException(accountRequestDto.getName() + " already exists");
         }
@@ -97,13 +98,18 @@ public class AccountService implements IAccountService {
         user.setId(userId);
         account.setUser(user);
 
-        if (account.getType() == AccountType.BANK) {
-            PaymentMode paymentMode = new PaymentMode();
-            paymentMode.setName(accountRequestDto.getPaymentModesDto().getName());
-            paymentMode.setType(accountRequestDto.getPaymentModesDto().getType());
-            paymentMode.setAccount(account);
+        if (account.getType() == AccountType.BANK && accountRequestDto.getPaymentModesDto() != null) {
+            List<PaymentMode> paymentModes = accountRequestDto.getPaymentModesDto().stream()
+                    .map(pmDto -> {
+                        PaymentMode pm = new PaymentMode();
+                        pm.setName(pmDto.getName());
+                        pm.setType(pmDto.getType());
+                        pm.setAccount(account);
+                        return pm;
+                    })
+                    .toList();
 
-            account.setPaymentModes(List.of(paymentMode));
+            account.setPaymentModes(paymentModes);
         }
 
         Account savedAccount = accountRepository.save(account);

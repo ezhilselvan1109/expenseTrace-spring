@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class AccountRequestDto {
@@ -15,5 +16,5 @@ public class AccountRequestDto {
     private BigDecimal creditLimit;
     private LocalDate billingStart;
     private LocalDate dueDate;
-    private PaymentModeRequestDto paymentModesDto;
+    private List<PaymentModeRequestDto> paymentModesDto;
 }
