@@ -1,5 +1,6 @@
 package com.expensetrace.app.controller;
 
+import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.requestDto.AccountRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
@@ -10,10 +11,12 @@ import com.expensetrace.app.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -24,14 +27,12 @@ import static org.springframework.http.HttpStatus.*;
 public class AccountController {
 
     private final IAccountService accountService;
-    private final SecurityUtil securityUtil;
 
     @GetMapping("/default-payment-mode")
     @Operation(summary = "Get default payment mode", description = "Retrieve the default payment mode for the authenticated user")
     public ResponseEntity<ApiResponse> getDefaultPaymentMode() {
-        Long userId = securityUtil.getAuthenticatedUserId();
         try {
-            AccountResponseDto defaultAccount = accountService.getDefaultPaymentModeByUserId(userId);
+            AccountResponseDto defaultAccount = accountService.getDefaultPaymentModeByUserId();
             return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -41,9 +42,8 @@ public class AccountController {
     @PutMapping("/{id}/default-payment-mode")
     @Operation(summary = "Set default payment mode", description = "Update default payment mode for the authenticated user")
     public ResponseEntity<ApiResponse> updateDefaultPaymentMode(@PathVariable Long id) {
-        Long userId = securityUtil.getAuthenticatedUserId();
         try {
-            AccountResponseDto updated = accountService.updateDefaultPaymentMode(id, userId);
+            AccountResponseDto updated = accountService.updateDefaultPaymentMode(id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -51,22 +51,23 @@ public class AccountController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Get all accounts", description = "Retrieve all available accounts")
+    @Operation(summary = "Get all accounts", description = "Retrieve all available accounts grouped by account type")
     public ResponseEntity<ApiResponse> getAllAccounts() {
         try {
-            List<AccountResponseDto> accountsResponseDto = accountService.getAllAccounts();
-            return ResponseEntity.ok(new ApiResponse("Found!", accountsResponseDto));
+            Map<AccountType, List<AccountResponseDto>> groupedAccounts = accountService.getAllAccountsByUserGroupedByType();
+            return ResponseEntity.ok(new ApiResponse("Found!", groupedAccounts));
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Error: " + e.getMessage(), null));
         }
     }
+
 
     @PostMapping("/add")
     @Operation(summary = "Add a new account", description = "Create a new account for the authenticated user")
     public ResponseEntity<ApiResponse> addAccount(@RequestBody AccountRequestDto requestDto) {
-        Long userId = securityUtil.getAuthenticatedUserId();
         try {
-            AccountResponseDto response = accountService.addAccount(requestDto, userId);
+            AccountResponseDto response = accountService.addAccount(requestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));

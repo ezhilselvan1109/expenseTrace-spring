@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,38 +28,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-            "/",
-            "/index.html",
-            "/swagger-ui.html",
-            "/swagger-ui",
-            "/swagger-ui/",
-            "/swagger-ui/index.html",
-            "/v3/api-docs",
-            "/v3/api-docs/",
-            "/v3/api-docs/",
-            "/v3/api-docs/swagger-config",
-            "/swagger-resources",
-            "/swagger-resources/",
-            "/swagger-resources/configuration/ui",
-            "/swagger-resources/configuration/security",
-            "/webjars/",
-            "/webjars/**",
-            "/api-docs/",
-            "/api/v1/auth/login",
-            "/api/v1/users/add",
-            "/h2-console",
-            "/h2-console/"
+            "/", "/index.html", "/swagger-ui.html", "/swagger-ui/**",
+            "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add",
+            "/h2-console/**"
     );
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-
-        // Log the request for debugging (optional)
-        System.out.println("Incoming Request: " + path);
-
-        // Check if path starts with or matches an excluded path
-        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
+        return EXCLUDED_PATHS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 
     @Override
@@ -69,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String jwt = null;
 
-        // Extract JWT from cookie named "jwt"
+        // Extract JWT from cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("jwt".equals(cookie.getName())) {
@@ -85,8 +66,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 User user = userRepository.findByEmail(email);
 
                 if (user != null && jwtUtil.validateToken(jwt, email)) {
+                    // Set authentication with dummy role if needed
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(user.getEmail(), null, Collections.emptyList());
+                            new UsernamePasswordAuthenticationToken(
+                                    user.getEmail(), null, Collections.singleton(() -> "ROLE_USER"));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
@@ -98,6 +81,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

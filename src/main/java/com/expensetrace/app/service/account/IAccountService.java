@@ -1,18 +1,19 @@
 package com.expensetrace.app.service.account;
 
+import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.requestDto.AccountRequestDto;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAccountService {
     AccountResponseDto getAccountById(Long id);
     AccountResponseDto getAccountByName(String name);
-    List<AccountResponseDto> getAllAccounts();
-    AccountResponseDto addAccount(AccountRequestDto accountRequest, Long userId);
+    AccountResponseDto addAccount(AccountRequestDto accountRequest);
     AccountResponseDto updateAccount(AccountRequestDto accountRequest, Long id);
-    AccountResponseDto getDefaultPaymentModeByUserId(Long userId);
-    AccountResponseDto updateDefaultPaymentMode(Long accountId, Long userId);
-
+    AccountResponseDto getDefaultPaymentModeByUserId();
+    AccountResponseDto updateDefaultPaymentMode(Long accountId);
+    Map<AccountType, List<AccountResponseDto>> getAllAccountsByUserGroupedByType();
     void deleteAccountById(Long id);
 }

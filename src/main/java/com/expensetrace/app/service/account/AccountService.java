@@ -9,11 +9,13 @@ import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.repository.AccountRepository;
 import com.expensetrace.app.responseDto.AccountResponseDto;
+import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 public class AccountService implements IAccountService {
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
-
+    private final SecurityUtil securityUtil;
     @Override
     public AccountResponseDto getAccountById(Long id) {
         Account account = accountRepository.findById(id)
@@ -30,14 +32,16 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountResponseDto getDefaultPaymentModeByUserId(Long userId) {
+    public AccountResponseDto getDefaultPaymentModeByUserId() {
+        Long userId = securityUtil.getAuthenticatedUserId();
         Account defaultAccount = accountRepository.findByUserIdAndIsDefaultTrue(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("No default account found for user"));
         return modelMapper.map(defaultAccount, AccountResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto updateDefaultPaymentMode(Long accountId, Long userId) {
+    public AccountResponseDto updateDefaultPaymentMode(Long accountId) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         Account accountToSetDefault = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
 
@@ -45,7 +49,6 @@ public class AccountService implements IAccountService {
             throw new ResourceNotFoundException("Account does not belong to the user");
         }
 
-        // Unset current default
         List<Account> userAccounts = accountRepository.findByUserId(userId);
         userAccounts.forEach(a -> {
             if (a.isDefault()) {
@@ -71,31 +74,33 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public List<AccountResponseDto> getAllAccounts() {
-        return accountRepository.findAll().stream()
+    public Map<AccountType, List<AccountResponseDto>> getAllAccountsByUserGroupedByType() {
+        Long userId = securityUtil.getAuthenticatedUserId();
+
+        return accountRepository.findByUserId(userId)
+                .stream()
                 .map(account -> modelMapper.map(account, AccountResponseDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(AccountResponseDto::getType));
     }
 
     @Override
-    public AccountResponseDto addAccount(AccountRequestDto accountRequestDto, Long userId) {
+    public AccountResponseDto addAccount(AccountRequestDto accountRequestDto) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         if (accountRepository.existsByName(accountRequestDto.getName())) {
             throw new AlreadyExistsException(accountRequestDto.getName() + " already exists");
         }
 
         Account account = modelMapper.map(accountRequestDto, Account.class);
 
-        // Set User reference
         User user = new User();
-        user.setId(userId); // Only setting ID is enough for association
+        user.setId(userId);
         account.setUser(user);
 
-        // Handle PaymentMode creation and association
         if (account.getType() == AccountType.BANK) {
             PaymentMode paymentMode = new PaymentMode();
             paymentMode.setName(accountRequestDto.getPaymentModesDto().getName());
             paymentMode.setType(accountRequestDto.getPaymentModesDto().getType());
-            paymentMode.setAccount(account); // bi-directional relationship
+            paymentMode.setAccount(account);
 
             account.setPaymentModes(List.of(paymentMode));
         }

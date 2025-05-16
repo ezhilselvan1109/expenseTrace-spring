@@ -28,24 +28,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/",                         // root path
-                                "/index.html",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/swagger-ui/index.html",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**",              // Swagger static assets
-                                "/api-docs/**",
-                                "/api/v1/users/add",
-                                "/api/v1/auth/login",
-                                "/h2-console/**"             // H2 database console
+                                "/", "/index.html",
+                                "/swagger-ui.html", "/swagger-ui/**", "/swagger-ui/index.html",
+                                "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/api-docs/**",
+                                "/api/v1/users/add", "/api/v1/auth/login", "/h2-console/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()  // All other requests need JWT auth
+                        .anyRequest().authenticated()
                 )
-                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Disable frame options for H2
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -56,7 +48,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://expensetrace-nextjs.vercel.app")
+                        .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
