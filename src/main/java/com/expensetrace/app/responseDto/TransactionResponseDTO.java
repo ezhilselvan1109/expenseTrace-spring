@@ -2,7 +2,6 @@ package com.expensetrace.app.responseDto;
 
 import com.expensetrace.app.enums.TransactionType;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

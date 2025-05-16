@@ -3,7 +3,6 @@ package com.expensetrace.app.service.user;
 import com.expensetrace.app.requestDto.UserRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.exception.UsernameNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.responseDto.UserResponseDto;
@@ -11,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

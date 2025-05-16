@@ -1,7 +1,6 @@
 package com.expensetrace.app.service.tag;
 
 import com.expensetrace.app.requestDto.TagRequestDto;
-import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.responseDto.TagResponseDto;
 
 import java.util.List;

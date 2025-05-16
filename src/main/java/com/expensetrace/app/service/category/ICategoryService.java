@@ -1,7 +1,6 @@
 package com.expensetrace.app.service.category;
 
 import com.expensetrace.app.requestDto.CategoryRequestDto;
-import com.expensetrace.app.model.Category;
 import com.expensetrace.app.responseDto.CategoryResponseDto;
 
 import java.util.List;

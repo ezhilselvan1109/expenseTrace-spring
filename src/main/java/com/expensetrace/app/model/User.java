@@ -1,6 +1,5 @@
 package com.expensetrace.app.model;
 
-import com.expensetrace.app.enums.CategoryType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;

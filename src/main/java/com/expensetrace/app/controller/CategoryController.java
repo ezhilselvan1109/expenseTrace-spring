@@ -6,7 +6,6 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.CategoryResponseDto;
 import com.expensetrace.app.service.category.ICategoryService;
-import com.expensetrace.app.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
