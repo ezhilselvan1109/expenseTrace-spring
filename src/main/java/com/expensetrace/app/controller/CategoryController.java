@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -49,7 +50,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get category by ID", description = "Fetches a specific category owned by the user")
-    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable UUID id) {
         try {
             CategoryResponseDto category = categoryService.getCategoryById(id);
             return ResponseEntity.ok(new ApiResponse("Category retrieved successfully", category));
@@ -60,7 +61,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category by ID", description = "Deletes a category owned by the user")
-    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable UUID id) {
         try {
             categoryService.deleteCategoryById(id);
             return ResponseEntity.ok(new ApiResponse("Category deleted successfully", null));
@@ -71,7 +72,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update category", description = "Updates an existing category owned by the user")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto categoryRequestDto) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequestDto categoryRequestDto) {
         try {
             CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Category updated successfully", updatedCategory));

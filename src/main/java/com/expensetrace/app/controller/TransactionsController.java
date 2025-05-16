@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -43,7 +44,7 @@ public class TransactionsController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get transaction by ID")
-    public ResponseEntity<ApiResponse> getTransaction(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getTransaction(@PathVariable UUID id) {
         try {
             TransactionResponseDTO txn = transactionService.getTransactionById(id);
             return ResponseEntity.ok(new ApiResponse("Transaction found", txn));
@@ -54,7 +55,7 @@ public class TransactionsController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete transaction")
-    public ResponseEntity<ApiResponse> deleteTransaction(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteTransaction(@PathVariable UUID id) {
         try {
             transactionService.deleteTransactionById(id);
             return ResponseEntity.ok(new ApiResponse("Transaction deleted", null));
@@ -65,7 +66,7 @@ public class TransactionsController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update transaction")
-    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable Long id, @RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequestDTO dto) {
         try {
             TransactionResponseDTO updated = transactionService.updateTransaction(id, dto);
             return ResponseEntity.ok(new ApiResponse("Transaction updated", updated));

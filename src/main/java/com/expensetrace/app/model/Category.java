@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ import lombok.ToString;
 public class Category {
     @Id
     @GeneratedValue
-    private Long id;
+    private UUID id;
 
     @ManyToOne
     private User user;

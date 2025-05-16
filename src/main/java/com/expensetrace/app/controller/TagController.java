@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -30,7 +31,7 @@ public class TagController {
     )
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllTagsByUser() {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         try {
             List<TagResponseDto> tagResponseDto = tagService.getAllTagsByUser(userId);
             return ResponseEntity.ok(new ApiResponse("Found!", tagResponseDto));
@@ -45,7 +46,7 @@ public class TagController {
     )
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addTag(@RequestBody TagRequestDto tagRequestDto) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         try {
             TagResponseDto theTagResponseDto = tagService.addTag(tagRequestDto, userId);
             return ResponseEntity.ok(new ApiResponse("Success", theTagResponseDto));
@@ -59,7 +60,7 @@ public class TagController {
             description = "Fetches a specific tag by its ID. Throws an error if the tag is not found."
     )
     @GetMapping("/tag/{id}")
-    public ResponseEntity<ApiResponse> getTagById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getTagById(@PathVariable UUID id) {
         try {
             TagResponseDto theTagResponseDto = tagService.getTagById(id);
             return ResponseEntity.ok(new ApiResponse("Found", theTagResponseDto));
@@ -73,7 +74,7 @@ public class TagController {
             description = "Deletes the tag with the specified ID. Throws an error if the tag is not found."
     )
     @DeleteMapping("/tag/{id}/delete")
-    public ResponseEntity<ApiResponse> deleteTag(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteTag(@PathVariable UUID id) {
         try {
             tagService.deleteTagById(id);
             return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
@@ -87,7 +88,7 @@ public class TagController {
             description = "Updates the tag with the specified ID using the provided details. Throws an error if the tag is not found."
     )
     @PutMapping("/tag/{id}/update")
-    public ResponseEntity<ApiResponse> updateTag(@PathVariable Long id, @RequestBody TagRequestDto tag) {
+    public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @RequestBody TagRequestDto tag) {
         try {
             TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedTagResponseDto));

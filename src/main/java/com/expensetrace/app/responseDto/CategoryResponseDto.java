@@ -3,9 +3,11 @@ package com.expensetrace.app.responseDto;
 import com.expensetrace.app.enums.CategoryType;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class CategoryResponseDto {
-    private Long id;
+    private UUID id;
     private String name;
     private CategoryType type; // Enum: EXPENSE, INCOME
     private String color;

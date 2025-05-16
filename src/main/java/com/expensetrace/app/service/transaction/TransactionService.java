@@ -26,7 +26,7 @@ public class TransactionService implements  ITransactionService{
     private final ModelMapper modelMapper;
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO dto) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         User user=new User();
         user.setId(userId);
         Transaction txn = new Transaction();
@@ -62,30 +62,30 @@ public class TransactionService implements  ITransactionService{
     }
 
     public List<TransactionResponseDTO> getAllTransactionsByUser() {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         return transactionRepo.findByUserId(userId).stream()
                 .map(txn -> modelMapper.map(txn, TransactionResponseDTO.class))
                 .collect(Collectors.toList());
     }
 
-    public TransactionResponseDTO getTransactionById(Long id) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+    public TransactionResponseDTO getTransactionById(UUID id) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
         Transaction txn = transactionRepo.findById(id)
                 .filter(t -> t.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
         return modelMapper.map(txn, TransactionResponseDTO.class);
     }
 
-    public void deleteTransactionById(Long id) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+    public void deleteTransactionById(UUID id) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
         Transaction txn = transactionRepo.findById(id)
                 .filter(t -> t.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
         transactionRepo.delete(txn);
     }
 
-    public TransactionResponseDTO updateTransaction(Long id, TransactionRequestDTO dto) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+    public TransactionResponseDTO updateTransaction(UUID id, TransactionRequestDTO dto) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
         Transaction txn = transactionRepo.findById(id)
                 .filter(t -> t.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));

@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +26,14 @@ public class TagService implements ITagService {
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
     @Override
-    public TagResponseDto getTagById(Long id) {
+    public TagResponseDto getTagById(UUID id) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
         return modelMapper.map(tag, TagResponseDto.class);
     }
 
     @Override
-    public List<TagResponseDto> getAllTagsByUser(Long userId) {
+    public List<TagResponseDto> getAllTagsByUser(UUID userId) {
         return tagRepository.findByUserId(userId)
                 .stream()
                 .map(tag -> modelMapper.map(tag, TagResponseDto.class))
@@ -40,7 +41,7 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public TagResponseDto addTag(TagRequestDto tagRequestDto,Long userId) {
+    public TagResponseDto addTag(TagRequestDto tagRequestDto,UUID userId) {
         if (tagRepository.existsByNameAndUserId(tagRequestDto.getName(),userId)) {
             throw new AlreadyExistsException(tagRequestDto.getName() + " already exists");
         }
@@ -55,7 +56,7 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public TagResponseDto updateTag(TagRequestDto tagRequestDto, Long id) {
+    public TagResponseDto updateTag(TagRequestDto tagRequestDto, UUID id) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
 
@@ -67,7 +68,7 @@ public class TagService implements ITagService {
 
 
     @Override
-    public void deleteTagById(Long id) {
+    public void deleteTagById(UUID id) {
         tagRepository.findById(id)
                 .ifPresentOrElse(tagRepository::delete, () -> {
                     throw new ResourceNotFoundException("Category not found!");

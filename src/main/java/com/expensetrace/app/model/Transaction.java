@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ import java.util.Set;
 @Entity
 public class Transaction {
     @Id @GeneratedValue
-    private Long id;
+    private UUID id;
 
     @ManyToOne private User user;
 

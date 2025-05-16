@@ -7,7 +7,6 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
-import com.expensetrace.app.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -41,7 +41,7 @@ public class AccountController {
 
     @PutMapping("/{id}/default-payment-mode")
     @Operation(summary = "Set default payment mode", description = "Update default payment mode for the authenticated user")
-    public ResponseEntity<ApiResponse> updateDefaultPaymentMode(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> updateDefaultPaymentMode(@PathVariable UUID id) {
         try {
             AccountResponseDto updated = accountService.updateDefaultPaymentMode(id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));
@@ -76,7 +76,7 @@ public class AccountController {
 
     @GetMapping("/account/{id}")
     @Operation(summary = "Get account by ID", description = "Retrieve an account using its ID")
-    public ResponseEntity<ApiResponse> getAccountById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getAccountById(@PathVariable UUID id) {
         try {
             AccountResponseDto response = accountService.getAccountById(id);
             return ResponseEntity.ok(new ApiResponse("Found", response));
@@ -98,7 +98,7 @@ public class AccountController {
 
     @DeleteMapping("/account/{id}")
     @Operation(summary = "Delete account", description = "Delete an account by its ID")
-    public ResponseEntity<ApiResponse> deleteAccount(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteAccount(@PathVariable UUID id) {
         try {
             accountService.deleteAccountById(id);
             return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
@@ -109,7 +109,7 @@ public class AccountController {
 
     @PutMapping("/account/{id}")
     @Operation(summary = "Update account", description = "Update account information by ID")
-    public ResponseEntity<ApiResponse> updateAccount(@PathVariable Long id, @RequestBody AccountRequestDto accountDto) {
+    public ResponseEntity<ApiResponse> updateAccount(@PathVariable UUID id, @RequestBody AccountRequestDto accountDto) {
         try {
             AccountResponseDto updated = accountService.updateAccount(accountDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +15,7 @@ import lombok.ToString;
 @Entity
 public class Attachment {
     @Id @GeneratedValue
-    private Long id;
+    private UUID id;
 
     @OneToOne
     @JoinColumn(name = "transaction_id")

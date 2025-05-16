@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +21,7 @@ public class PaymentModeService implements IPaymentModeService {
     private final PaymentModeRepository paymentModeRepository;
     private final ModelMapper modelMapper;
     @Override
-    public PaymentModeResponseDto getPaymentModeById(Long id) {
+    public PaymentModeResponseDto getPaymentModeById(UUID id) {
         PaymentMode paymentMode = paymentModeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PaymentMode not found!"));
         return modelMapper.map(paymentMode, PaymentModeResponseDto.class);
@@ -35,7 +36,7 @@ public class PaymentModeService implements IPaymentModeService {
     }
 
     @Override
-    public List<PaymentModeResponseDto> getAllPaymentModesByAccount(Long accountId) {
+    public List<PaymentModeResponseDto> getAllPaymentModesByAccount(UUID accountId) {
         return paymentModeRepository.findByAccountId(accountId)
                 .stream()
                 .map(paymentMode -> modelMapper.map(paymentMode, PaymentModeResponseDto.class))
@@ -43,7 +44,7 @@ public class PaymentModeService implements IPaymentModeService {
     }
 
     @Override
-    public PaymentModeResponseDto addPaymentMode(Long accountId,PaymentModeRequestDto paymentModeRequestDto) {
+    public PaymentModeResponseDto addPaymentMode(UUID accountId,PaymentModeRequestDto paymentModeRequestDto) {
         if (paymentModeRepository.existsByName(paymentModeRequestDto.getName())) {
             throw new AlreadyExistsException(paymentModeRequestDto.getName() + " already exists");
         }
@@ -61,7 +62,7 @@ public class PaymentModeService implements IPaymentModeService {
 
 
     @Override
-    public PaymentModeResponseDto updatePaymentMode(PaymentModeRequestDto paymentModeRequestDto, Long id) {
+    public PaymentModeResponseDto updatePaymentMode(PaymentModeRequestDto paymentModeRequestDto, UUID id) {
         PaymentMode existingPaymentMode = paymentModeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PaymentMode not found!"));
 
@@ -74,7 +75,7 @@ public class PaymentModeService implements IPaymentModeService {
 
 
     @Override
-    public void deletePaymentModeById(Long id) {
+    public void deletePaymentModeById(UUID id) {
         paymentModeRepository.findById(id)
                 .ifPresentOrElse(paymentModeRepository::delete, () -> {
                     throw new ResourceNotFoundException("PaymentMode not found!");

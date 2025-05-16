@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +26,7 @@ public class AccountService implements IAccountService {
     private final ModelMapper modelMapper;
     private final SecurityUtil securityUtil;
     @Override
-    public AccountResponseDto getAccountById(Long id) {
+    public AccountResponseDto getAccountById(UUID id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         return modelMapper.map(account, AccountResponseDto.class);
@@ -33,15 +34,15 @@ public class AccountService implements IAccountService {
 
     @Override
     public AccountResponseDto getDefaultPaymentModeByUserId() {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         Account defaultAccount = accountRepository.findByUserIdAndIsDefaultTrue(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("No default account found for user"));
         return modelMapper.map(defaultAccount, AccountResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto updateDefaultPaymentMode(Long accountId) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+    public AccountResponseDto updateDefaultPaymentMode(UUID accountId) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
         Account accountToSetDefault = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
 
@@ -75,7 +76,7 @@ public class AccountService implements IAccountService {
 
     @Override
     public Map<AccountType, List<AccountResponseDto>> getAllAccountsByUserGroupedByType() {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
 
         return accountRepository.findByUserId(userId)
                 .stream()
@@ -85,7 +86,7 @@ public class AccountService implements IAccountService {
 
     @Override
     public AccountResponseDto addAccount(AccountRequestDto accountRequestDto) {
-        Long userId = securityUtil.getAuthenticatedUserId();
+        UUID userId = securityUtil.getAuthenticatedUserId();
         if (accountRepository.existsByName(accountRequestDto.getName())) {
             throw new AlreadyExistsException(accountRequestDto.getName() + " already exists");
         }
@@ -111,7 +112,7 @@ public class AccountService implements IAccountService {
 
 
     @Override
-    public AccountResponseDto updateAccount(AccountRequestDto accountRequestDto, Long id) {
+    public AccountResponseDto updateAccount(AccountRequestDto accountRequestDto, UUID id) {
         Account existing = accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
 
@@ -129,7 +130,7 @@ public class AccountService implements IAccountService {
 
 
     @Override
-    public void deleteAccountById(Long id) {
+    public void deleteAccountById(UUID id) {
         accountRepository.findById(id)
                 .ifPresentOrElse(accountRepository::delete,
                         () -> { throw new ResourceNotFoundException("Account not found!"); });

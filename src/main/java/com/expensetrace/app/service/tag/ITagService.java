@@ -5,11 +5,12 @@ import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.responseDto.TagResponseDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ITagService {
-    TagResponseDto getTagById(Long id);
-    List<TagResponseDto> getAllTagsByUser(Long userId);
-    TagResponseDto addTag(TagRequestDto tagRequestDto,Long userId);
-    TagResponseDto updateTag(TagRequestDto tagRequestDto, Long id);
-    void deleteTagById(Long id);
+    TagResponseDto getTagById(UUID id);
+    List<TagResponseDto> getAllTagsByUser(UUID userId);
+    TagResponseDto addTag(TagRequestDto tagRequestDto,UUID userId);
+    TagResponseDto updateTag(TagRequestDto tagRequestDto, UUID id);
+    void deleteTagById(UUID id);
 }

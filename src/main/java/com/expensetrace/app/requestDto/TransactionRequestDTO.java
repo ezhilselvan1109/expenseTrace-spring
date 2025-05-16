@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class TransactionRequestDTO {
@@ -15,9 +16,9 @@ public class TransactionRequestDTO {
     private LocalDate date;
     private LocalTime time;
     private BigDecimal amount;
-    private Long categoryId;
-    private Long accountId;
+    private UUID categoryId;
+    private UUID accountId;
     private String description;
-    private List<Long> tagIds;
+    private List<UUID> tagIds;
 }
 

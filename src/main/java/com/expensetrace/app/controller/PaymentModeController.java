@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -31,7 +32,7 @@ public class PaymentModeController {
             description = "Returns a list of all payment modes associated with a specific account by account ID"
     )
     @GetMapping("/{accountId}/all")
-    public ResponseEntity<ApiResponse> getAllPaymentModesByAccount(@PathVariable Long accountId) {
+    public ResponseEntity<ApiResponse> getAllPaymentModesByAccount(@PathVariable UUID accountId) {
         try {
             List<PaymentModeResponseDto> paymentModeRequestDto = paymentModeService.getAllPaymentModesByAccount(accountId);
             return ResponseEntity.ok(new ApiResponse("Found!", paymentModeRequestDto));
@@ -59,7 +60,7 @@ public class PaymentModeController {
             description = "Creates a new payment mode for a specific account. Returns an error if it already exists."
     )
     @PostMapping("/{accountId}/add")
-    public ResponseEntity<ApiResponse> addPaymentMode(@PathVariable Long accountId, @Valid @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
+    public ResponseEntity<ApiResponse> addPaymentMode(@PathVariable UUID accountId, @Valid @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
         try {
             PaymentModeResponseDto thePaymentMode = paymentModeService.addPaymentMode(accountId, paymentModeRequestDto);
             return ResponseEntity.ok(new ApiResponse("Success", thePaymentMode));
@@ -73,7 +74,7 @@ public class PaymentModeController {
             description = "Returns a single payment mode by its ID"
     )
     @GetMapping("/{paymentModeId}")
-    public ResponseEntity<ApiResponse> getPaymentModeById(@PathVariable Long paymentModeId) {
+    public ResponseEntity<ApiResponse> getPaymentModeById(@PathVariable UUID paymentModeId) {
         try {
             PaymentModeResponseDto thePaymentMode = paymentModeService.getPaymentModeById(paymentModeId);
             return ResponseEntity.ok(new ApiResponse("Found", thePaymentMode));
@@ -87,7 +88,7 @@ public class PaymentModeController {
             description = "Deletes a specific payment mode by its ID"
     )
     @DeleteMapping("/{paymentModeId}/delete")
-    public ResponseEntity<ApiResponse> deletePaymentMode(@PathVariable Long paymentModeId) {
+    public ResponseEntity<ApiResponse> deletePaymentMode(@PathVariable UUID paymentModeId) {
         try {
             paymentModeService.deletePaymentModeById(paymentModeId);
             return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
@@ -101,7 +102,7 @@ public class PaymentModeController {
             description = "Updates the details of an existing payment mode by its ID"
     )
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse> updatePaymentMode(@PathVariable Long id, @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
+    public ResponseEntity<ApiResponse> updatePaymentMode(@PathVariable UUID id, @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
         try {
             PaymentModeResponseDto updatedPaymentMode = paymentModeService.updatePaymentMode(paymentModeRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedPaymentMode));

@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class UserController {
             description = "Fetches a user from the database using the provided user ID."
     )
     @GetMapping("/user/{id}")
-    public ResponseEntity<ApiResponse> getUserById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse> getUserById(@PathVariable UUID id){
         try {
             UserResponseDto theUser = userService.getUserById(id);
             return  ResponseEntity.ok(new ApiResponse("Found", theUser));
@@ -56,7 +58,7 @@ public class UserController {
             description = "Removes a user from the system based on the provided user ID."
     )
     @DeleteMapping("/user/{id}/delete")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id){
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable UUID id){
         try {
             userService.deleteUserById(id);
             return  ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
@@ -70,7 +72,7 @@ public class UserController {
             description = "Updates user information for the specified ID with the provided details."
     )
     @PutMapping("/user/{id}/update")
-    public ResponseEntity<ApiResponse> updateUser(@PathVariable Long id, @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<ApiResponse> updateUser(@PathVariable UUID id, @RequestBody UserRequestDto userRequestDto) {
         try {
             UserResponseDto updatedUser = userService.updateUser(userRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedUser));

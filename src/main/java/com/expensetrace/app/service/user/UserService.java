@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +21,7 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     @Override
-    public UserResponseDto getUserById(Long id) {
+    public UserResponseDto getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
         return modelMapper.map(user, UserResponseDto.class);
@@ -39,7 +40,7 @@ public class UserService implements IUserService {
 
 
     @Override
-    public UserResponseDto updateUser(UserRequestDto userRequestDto, Long id) {
+    public UserResponseDto updateUser(UserRequestDto userRequestDto, UUID id) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
 
@@ -55,7 +56,7 @@ public class UserService implements IUserService {
 
 
     @Override
-    public void deleteUserById(Long id) {
+    public void deleteUserById(UUID id) {
         userRepository.findById(id)
                 .ifPresentOrElse(userRepository::delete, () -> {
                     throw new ResourceNotFoundException("Category not found!");
