@@ -1,9 +1,11 @@
 package com.expensetrace.app.controller;
 
 import com.expensetrace.app.enums.AccountType;
-import com.expensetrace.app.requestDto.AccountRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
+import com.expensetrace.app.requestDto.BankAccountRequestDto;
+import com.expensetrace.app.requestDto.CreditCardAccountRequestDto;
+import com.expensetrace.app.requestDto.WalletAccountRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
@@ -62,18 +64,6 @@ public class AccountController {
         }
     }
 
-
-    @PostMapping("/add")
-    @Operation(summary = "Add a new account", description = "Create a new account for the authenticated user")
-    public ResponseEntity<ApiResponse> addAccount(@RequestBody AccountRequestDto requestDto) {
-        try {
-            AccountResponseDto response = accountService.addAccount(requestDto);
-            return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
-        } catch (AlreadyExistsException e) {
-            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
     @GetMapping("/account/{id}")
     @Operation(summary = "Get account by ID", description = "Retrieve an account using its ID")
     public ResponseEntity<ApiResponse> getAccountById(@PathVariable UUID id) {
@@ -85,16 +75,84 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/account/name/{name}")
-    @Operation(summary = "Get account by name", description = "Retrieve an account using its name")
-    public ResponseEntity<ApiResponse> getAccountByName(@PathVariable String name) {
+    @GetMapping("/bank")
+    @Operation(summary = "Get bank account", description = "Retrieve an all bank account")
+    public ResponseEntity<ApiResponse> getAllBankAccountsByUser() {
         try {
-            AccountResponseDto response = accountService.getAccountByName(name);
+            List<AccountResponseDto> response = accountService.getAllBankAccountsByUser();
             return ResponseEntity.ok(new ApiResponse("Found", response));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @GetMapping("/wallet")
+    @Operation(summary = "Get wallet account", description = "Retrieve an all wallet account")
+    public ResponseEntity<ApiResponse> getAllWalletAccountsByUser() {
+        try {
+            List<AccountResponseDto> response = accountService.getAllWalletAccountsByUser();
+            return ResponseEntity.ok(new ApiResponse("Found", response));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/credit-card")
+    @Operation(summary = "Get all credit card account", description = "Retrieve an all credit card account")
+    public ResponseEntity<ApiResponse> getAllCreditCardAccountsByUser() {
+        try {
+            List<AccountResponseDto> response = accountService.getAllCreditCardAccountsByUser();
+            return ResponseEntity.ok(new ApiResponse("Found", response));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/cash")
+    @Operation(summary = "Get all cash in account", description = "Retrieve an all cash account")
+    public ResponseEntity<ApiResponse> getAllCashAccountsByUser() {
+        try {
+            List<AccountResponseDto> response = accountService.getAllCashAccountsByUser();
+            return ResponseEntity.ok(new ApiResponse("Found", response));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("/bank")
+    @Operation(summary = "Add a new bank account", description = "Create a new bank account for the authenticated user")
+    public ResponseEntity<ApiResponse> addBankAccount(@RequestBody BankAccountRequestDto requestDto) {
+        try {
+            AccountResponseDto response = accountService.addBankAccount(requestDto);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("/wallet")
+    @Operation(summary = "Add a new wallet account", description = "Create a new wallet account for the authenticated user")
+    public ResponseEntity<ApiResponse> addWallet(@RequestBody WalletAccountRequestDto requestDto) {
+        try {
+            AccountResponseDto response = accountService.addWalletAccount(requestDto);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("/debit-card")
+    @Operation(summary = "Add a new DebitCard account", description = "Create a new DebitCard account for the authenticated user")
+    public ResponseEntity<ApiResponse> addDebitCard(@RequestBody CreditCardAccountRequestDto requestDto) {
+        try {
+            AccountResponseDto response = accountService.addCreditCardAccount(requestDto);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+
 
     @DeleteMapping("/account/{id}")
     @Operation(summary = "Delete account", description = "Delete an account by its ID")
@@ -107,11 +165,33 @@ public class AccountController {
         }
     }
 
-    @PutMapping("/account/{id}")
-    @Operation(summary = "Update account", description = "Update account information by ID")
-    public ResponseEntity<ApiResponse> updateAccount(@PathVariable UUID id, @RequestBody AccountRequestDto accountDto) {
+    @PutMapping("/bank/{id}")
+    @Operation(summary = "Update bank account", description = "Update bank account information by ID")
+    public ResponseEntity<ApiResponse> updateBankAccount(@PathVariable UUID id, @RequestBody BankAccountRequestDto accountDto) {
         try {
-            AccountResponseDto updated = accountService.updateAccount(accountDto, id);
+            AccountResponseDto updated = accountService.updateBankAccount(accountDto, id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/wallet/{id}")
+    @Operation(summary = "Update account", description = "Update account information by ID")
+    public ResponseEntity<ApiResponse> updateWalletAccount(@PathVariable UUID id, @RequestBody WalletAccountRequestDto accountDto) {
+        try {
+            AccountResponseDto updated = accountService.updateWalletAccount(accountDto, id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/credit-card/{id}")
+    @Operation(summary = "Update account", description = "Update account information by ID")
+    public ResponseEntity<ApiResponse> updateCreditCardAccount(@PathVariable UUID id, @RequestBody CreditCardAccountRequestDto accountDto) {
+        try {
+            AccountResponseDto updated = accountService.updateCreditCardAccount(accountDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

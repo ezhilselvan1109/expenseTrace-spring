@@ -7,17 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Entity
-public class Account {
+public abstract class Account {
+
     @Id
     @GeneratedValue
     private UUID id;
@@ -27,19 +27,9 @@ public class Account {
 
     private String name;
 
+    private boolean isDefault;
+
+    @Column(name = "type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private AccountType type;
-
-    private BigDecimal currentBalance;
-
-    // Credit card specific fields
-    private BigDecimal availableCredit;
-    private BigDecimal creditLimit;
-    private LocalDate billingStart;
-    private LocalDate dueDate;
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<PaymentMode> paymentModes;
-
-    private boolean isDefault;
 }
