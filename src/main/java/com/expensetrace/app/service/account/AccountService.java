@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -227,4 +228,50 @@ public class AccountService implements IAccountService {
         Account updated = creditCardAccountRepository.save(existing);
         return modelMapper.map(updated, CreditCardAccountResponseDto.class);
     }
+
+    @Override
+    public BigDecimal getAvailableAmount() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        BigDecimal bankTotal = bankAccountRepository.findAll()
+                .stream()
+                .filter(acc -> acc.getUser().getId().equals(userId))
+                .map(BankAccount::getCurrentBalance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal cashTotal = cashAccountRepository.findAll()
+                .stream()
+                .filter(acc -> acc.getUser().getId().equals(userId))
+                .map(CashAccount::getCurrentBalance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal walletTotal = walletAccountRepository.findAll()
+                .stream()
+                .filter(acc -> acc.getUser().getId().equals(userId))
+                .map(WalletAccount::getCurrentBalance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return bankTotal.add(cashTotal).add(walletTotal);
+    }
+
+    @Override
+    public BigDecimal getCreditOutstanding() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        List<CreditCardAccount> accounts = creditCardAccountRepository.findAll(); // You can optimize with a custom query later
+
+        return accounts.stream()
+                .filter(account -> account.getUser().getId().equals(userId))
+                .map(account -> account.getTotalCreditLimit().subtract(account.getCurrentAvailableLimit()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public BigDecimal getCreditAvailable() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+
+        return creditCardAccountRepository.findByUserId(userId).stream()
+                .map(CreditCardAccount::getCurrentAvailableLimit)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

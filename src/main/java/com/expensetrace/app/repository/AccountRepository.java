@@ -12,7 +12,6 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
     Optional<Account> findByUserIdAndIsDefaultTrue(UUID userId);
-
     List<Account> findByUserId(UUID userId);
     List<Account> findByUserIdAndType(UUID userId,AccountType type);
 }

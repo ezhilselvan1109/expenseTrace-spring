@@ -7,6 +7,7 @@ import com.expensetrace.app.requestDto.CreditCardAccountRequestDto;
 import com.expensetrace.app.requestDto.WalletAccountRequestDto;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,5 +45,9 @@ public interface IAccountService {
 
     AccountResponseDto updateCreditCardAccount(CreditCardAccountRequestDto accountDto, UUID id);
 
+    BigDecimal getAvailableAmount();
 
+    BigDecimal getCreditOutstanding();
+
+    BigDecimal getCreditAvailable();
 }

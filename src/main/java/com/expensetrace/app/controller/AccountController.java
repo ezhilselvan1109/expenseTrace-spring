@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +37,39 @@ public class AccountController {
         try {
             AccountResponseDto defaultAccount = accountService.getDefaultPaymentModeByUserId();
             return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("available-amount")
+    @Operation(summary = "Get available-amount", description = "Retrieve the available-amount for the authenticated user")
+    public ResponseEntity<ApiResponse> getAvailableAmount() {
+        try {
+            BigDecimal availableAmount = accountService.getAvailableAmount();
+            return ResponseEntity.ok(new ApiResponse("Found!", availableAmount));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("credit/outstanding")
+    @Operation(summary = "Get credit-amount", description = "Retrieve the available-amount for the authenticated user")
+    public ResponseEntity<ApiResponse> getCreditOutstanding() {
+        try {
+            BigDecimal availableAmount = accountService.getCreditOutstanding();
+            return ResponseEntity.ok(new ApiResponse("Found!", availableAmount));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("credit/available")
+    @Operation(summary = "Get credit-amount", description = "Retrieve the available-amount for the authenticated user")
+    public ResponseEntity<ApiResponse> getCreditAvailable() {
+        try {
+            BigDecimal availableAmount = accountService.getCreditAvailable();
+            return ResponseEntity.ok(new ApiResponse("Found!", availableAmount));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
