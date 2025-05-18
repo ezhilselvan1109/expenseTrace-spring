@@ -1,6 +1,6 @@
 # 💰 Expense Trace - Personal Expense Tracking Application
 
-A simple Spring Boot-based application to track your personal expenses efficiently and securely.
+A Spring Boot-based application to track your personal expenses efficiently and securely.
 
 ---
 
