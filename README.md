@@ -16,7 +16,7 @@ A simple Spring Boot-based application to track your personal expenses efficient
 - Java 17+
 - Maven
 - Docker
-- MySQL or compatible relational database
+- PostgreSQL or compatible relational database
 
 ---
 
@@ -27,3 +27,21 @@ Make sure to configure the following environment variables before running the ap
 ```env
 DB_USERNAME=database_username
 DB_PASSWORD=database_password
+```
+
+---
+
+## 🔧 Building the Docker Image
+In project root directory (where the Dockerfile is located), run the following command to build the Docker image:
+
+```env
+docker build -t expense-trace .
+```
+
+---
+## ▶️ Running the Docker Container
+Run the Docker container and pass in the required environment variables:
+
+```
+docker run -p 8080:8080 \ -e DB_USERNAME=database_username \ -e DB_PASSWORD=database_password \ expense-trace
+```

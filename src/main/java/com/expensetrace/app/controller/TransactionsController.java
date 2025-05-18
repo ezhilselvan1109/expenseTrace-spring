@@ -8,6 +8,7 @@ import com.expensetrace.app.service.transaction.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,18 +36,40 @@ public class TransactionsController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Get all transactions")
     public ResponseEntity<ApiResponse> getAllTransactions() {
         List<TransactionResponseDTO> txns = transactionService.getAllTransactionsByUser();
         return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
     }
 
+    @GetMapping
+    @Operation(summary = "Get all transactions with pagination")
+    public ResponseEntity<ApiResponse> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<TransactionResponseDTO> txns = transactionService.getAllTransactionsByUser(page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
+    }
+
+
     @GetMapping("/{id}")
     @Operation(summary = "Get transaction by ID")
     public ResponseEntity<ApiResponse> getTransaction(@PathVariable UUID id) {
         try {
             TransactionResponseDTO txn = transactionService.getTransactionById(id);
+            return ResponseEntity.ok(new ApiResponse("Transaction found", txn));
+        } catch (Exception e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/account/{id}")
+    @Operation(summary = "Get all transaction by account ID")
+    public ResponseEntity<ApiResponse> getAllTransactionByAccountId(@PathVariable UUID accountId) {
+        try {
+            TransactionResponseDTO txn = transactionService.getTransactionById(accountId);
             return ResponseEntity.ok(new ApiResponse("Transaction found", txn));
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

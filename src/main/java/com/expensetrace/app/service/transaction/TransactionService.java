@@ -8,6 +8,10 @@ import com.expensetrace.app.responseDto.TransactionResponseDTO;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -66,6 +70,17 @@ public class TransactionService implements  ITransactionService{
                 .map(txn -> modelMapper.map(txn, TransactionResponseDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Page<TransactionResponseDTO> getAllTransactionsByUser(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
+
+        Page<Transaction> txnPage = transactionRepo.findByUserId(userId, pageable);
+
+        return txnPage.map(txn -> modelMapper.map(txn, TransactionResponseDTO.class));
+    }
+
 
     public TransactionResponseDTO getTransactionById(UUID id) {
         UUID userId = securityUtil.getAuthenticatedUserId();
