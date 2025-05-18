@@ -27,7 +27,7 @@ public interface IAccountService {
 
     AccountResponseDto updateDefaultPaymentMode(UUID accountId);
 
-    Map<AccountType, List<AccountResponseDto>> getAllAccountsByUserGroupedByType();
+    List<AccountResponseDto> getAllAccountsByUserGroupedByType();
 
     void deleteAccountById(UUID id);
 

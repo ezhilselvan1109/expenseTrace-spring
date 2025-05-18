@@ -47,14 +47,15 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public Map<AccountType, List<AccountResponseDto>> getAllAccountsByUserGroupedByType() {
+    public List<AccountResponseDto> getAllAccountsByUserGroupedByType() {
         UUID userId = securityUtil.getAuthenticatedUserId();
 
         return accountRepository.findByUserId(userId)
                 .stream()
                 .map(account -> modelMapper.map(account, AccountResponseDto.class))
-                .collect(Collectors.groupingBy(AccountResponseDto::getType));
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<AccountResponseDto> getAllBankAccountsByUser() {

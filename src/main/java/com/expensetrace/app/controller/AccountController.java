@@ -90,7 +90,7 @@ public class AccountController {
     @Operation(summary = "Get all accounts", description = "Retrieve all available accounts grouped by account type")
     public ResponseEntity<ApiResponse> getAllAccounts() {
         try {
-            Map<AccountType, List<AccountResponseDto>> groupedAccounts = accountService.getAllAccountsByUserGroupedByType();
+            List<AccountResponseDto> groupedAccounts = accountService.getAllAccountsByUserGroupedByType();
             return ResponseEntity.ok(new ApiResponse("Found!", groupedAccounts));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
