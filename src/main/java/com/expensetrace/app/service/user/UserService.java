@@ -7,6 +7,7 @@ import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.responseDto.UserResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
+import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final IAccountService accountService;
+    private final SecurityUtil securityUtil;
+
     @Override
-    public UserResponseDto getUserById(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+    public UserResponseDto getUser() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found!"));
         return modelMapper.map(user, UserResponseDto.class);
     }
 

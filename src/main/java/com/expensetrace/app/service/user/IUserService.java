@@ -6,7 +6,7 @@ import com.expensetrace.app.responseDto.UserResponseDto;
 import java.util.UUID;
 
 public interface IUserService {
-    UserResponseDto getUserById(UUID id);
+    UserResponseDto getUser();
     UserResponseDto addUser(UserRequestDto user);
     UserResponseDto updateUser(UserRequestDto userRequest, UUID id);
     void deleteUserById(UUID id);

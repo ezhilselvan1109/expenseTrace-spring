@@ -43,10 +43,10 @@ public class UserController {
             summary = "Retrieve a user by ID",
             description = "Fetches a user from the database using the provided user ID."
     )
-    @GetMapping("/user/{id}")
-    public ResponseEntity<ApiResponse> getUserById(@PathVariable UUID id){
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse> getUserById(){
         try {
-            UserResponseDto theUser = userService.getUserById(id);
+            UserResponseDto theUser = userService.getUser();
             return  ResponseEntity.ok(new ApiResponse("Found", theUser));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
