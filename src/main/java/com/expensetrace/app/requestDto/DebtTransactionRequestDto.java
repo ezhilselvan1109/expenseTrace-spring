@@ -5,6 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Data
 public class DebtTransactionRequestDto {
@@ -15,6 +16,8 @@ public class DebtTransactionRequestDto {
     private BigDecimal amount;
 
     private String description;
+
+    private UUID accountId;
 
     private DebtTransactionType type;
 }
