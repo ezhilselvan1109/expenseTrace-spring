@@ -26,6 +26,7 @@ public class Debt {
     private String personName;
 
     private LocalDate dueDate;
+
     private String additionalDetail;
 
     @Enumerated(EnumType.STRING)
