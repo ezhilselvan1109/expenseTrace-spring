@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping("${api.prefix}/debts")
 @Tag(name = "Debt", description = "manage debts")
-public class Debt {
+public class DebtController {
     private final IDebtService debtService;
     @PostMapping
     @Operation(summary = "Add a new debt", description = "Create a new debt for the authenticated user")
