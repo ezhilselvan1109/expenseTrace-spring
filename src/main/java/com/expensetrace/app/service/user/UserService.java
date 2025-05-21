@@ -42,7 +42,6 @@ public class UserService implements IUserService {
         return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
-
     @Override
     public UserResponseDto updateUser(UserRequestDto userRequestDto, UUID id) {
         User existingUser = userRepository.findById(id)
@@ -57,13 +56,11 @@ public class UserService implements IUserService {
         return modelMapper.map(updatedUser, UserResponseDto.class);
     }
 
-
-
     @Override
     public void deleteUserById(UUID id) {
         userRepository.findById(id)
                 .ifPresentOrElse(userRepository::delete, () -> {
-                    throw new ResourceNotFoundException("Category not found!");
+                    throw new ResourceNotFoundException("User not found!");
                 });
     }
 }

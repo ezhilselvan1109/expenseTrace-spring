@@ -46,6 +46,7 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setDate(dto.getDate());
         debtTransaction.setTime(dto.getTime());
         debtTransaction.setAccount(account);
+        debtTransaction.setAmount(dto.getAmount());
         debtTransaction.setDescription(dto.getDescription());
 
         DebtTransaction savedTxn = debtRepo.save(debtTransaction);
@@ -96,6 +97,7 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setType(dto.getType());
         debtTransaction.setDate(dto.getDate());
         debtTransaction.setTime(dto.getTime());
+        debtTransaction.setAmount(dto.getAmount());
         debtTransaction.setAccount(account);
         debtTransaction.setDescription(dto.getDescription());
 

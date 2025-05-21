@@ -13,6 +13,4 @@ public class DebtRequestDto {
     private String additionalDetail;
 
     private DebtsType type;
-
-    private DebtTransactionRequestDto transaction;
 }

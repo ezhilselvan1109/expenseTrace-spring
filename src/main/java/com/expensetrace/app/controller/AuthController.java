@@ -22,13 +22,9 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    @Operation(
-            summary = "User login",
-            description = "Authenticates the user with email and password, and sets a JWT in an HTTP-only cookie upon successful login."
-    )
+    @Operation(summary = "User login", description = "Authenticates user and sets JWT in HttpOnly cookie.")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequestDto,
-                                             HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         User user = userRepository.findAll().stream()
                 .filter(u -> u.getEmail().equals(loginRequestDto.getEmail()) &&
                         u.getPassword().equals(loginRequestDto.getPassword()))
@@ -52,10 +48,7 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse("Login successful", null));
     }
 
-    @Operation(
-            summary = "User logout",
-            description = "Logs out the current user by clearing the JWT cookie."
-    )
+    @Operation(summary = "User logout", description = "Clears JWT cookie to log out the user.")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", "");
