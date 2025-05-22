@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DebtTransactionService implements IDebtTransactionService {
 
-    private final DebtTransactionRepository debtRepo;
+    private final DebtTransactionRepository debtTransactionRepo;
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
 
@@ -49,12 +49,12 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setAmount(dto.getAmount());
         debtTransaction.setDescription(dto.getDescription());
 
-        DebtTransaction savedTxn = debtRepo.save(debtTransaction);
+        DebtTransaction savedTxn = debtTransactionRepo.save(debtTransaction);
         return modelMapper.map(savedTxn, DebtTransactionResponseDto.class);
     }
 
     public List<DebtTransactionResponseDto> getAllDebtTransactionsByUser(UUID debtId) {
-        return debtRepo.findByDebtId(debtId).stream()
+        return debtTransactionRepo.findByDebtId(debtId).stream()
                 .map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class))
                 .collect(Collectors.toList());
     }
@@ -63,26 +63,26 @@ public class DebtTransactionService implements IDebtTransactionService {
     public Page<DebtTransactionResponseDto> getAllDebtTransactionsByUser(UUID debtId,int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
 
-        Page<DebtTransaction> debtPage = debtRepo.findByDebtId(debtId, pageable);
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
 
         return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
     }
 
 
     public DebtTransactionResponseDto getDebtTransactionById(UUID id) {
-        DebtTransaction debt = debtRepo.findById(id)
+        DebtTransaction debt = debtTransactionRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DebtTransaction not found"));
         return modelMapper.map(debt, DebtTransactionResponseDto.class);
     }
 
     public void deleteDebtTransactionById(UUID id) {
-        DebtTransaction debt = debtRepo.findById(id)
+        DebtTransaction debt = debtTransactionRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DebtTransaction not found"));
-        debtRepo.delete(debt);
+        debtTransactionRepo.delete(debt);
     }
 
     public DebtTransactionResponseDto updateDebtTransaction(UUID id, DebtTransactionRequestDto dto) {
-        DebtTransaction debtTransaction = debtRepo.findById(id)
+        DebtTransaction debtTransaction = debtTransactionRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("DebtTransaction not found"));
 
         Account account=new Account() {
@@ -101,7 +101,7 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setAccount(account);
         debtTransaction.setDescription(dto.getDescription());
 
-        DebtTransaction updated = debtRepo.save(debtTransaction);
+        DebtTransaction updated = debtTransactionRepo.save(debtTransaction);
         return modelMapper.map(updated, DebtTransactionResponseDto.class);
     }
 }

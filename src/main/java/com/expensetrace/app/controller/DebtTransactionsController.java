@@ -54,9 +54,10 @@ public class DebtTransactionsController {
         }
     }
 
-    @GetMapping("/{debtId}")
+    @GetMapping("/id/{debtId}")
     @Operation(summary = "get all debt Transaction", description = "get all debt Transaction for the authenticated user")
     public ResponseEntity<ApiResponse> getAllDebtTransaction(@PathVariable UUID debtId) {
+        System.out.println("debtId : "+debtId);
         List<DebtTransactionResponseDto> debts = debtTransactionService.getAllDebtTransactionsByUser(debtId);
         return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
     }
