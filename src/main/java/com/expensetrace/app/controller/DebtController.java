@@ -3,15 +3,20 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.DebtResponseDto;
+import com.expensetrace.app.responseDto.TransactionResponseDTO;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -55,11 +60,21 @@ public class DebtController {
         }
     }
 
-    @GetMapping
+    @GetMapping("all")
     @Operation(summary = "get all debt", description = "get all debt for the authenticated user")
     public ResponseEntity<ApiResponse> getAllDebt() {
         List<DebtResponseDto> debts = debtService.getAllDebtsByUser();
         return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all transactions with pagination")
+    public ResponseEntity<ApiResponse> getAllDebt(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<DebtResponseDto> txns = debtService.getAllDebtsByUser(page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
     }
 
     @DeleteMapping("/{id}")

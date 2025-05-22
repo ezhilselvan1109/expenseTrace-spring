@@ -11,8 +11,6 @@ import java.util.UUID;
 public class DebtTransactionRequestDto {
     private LocalDate date;
 
-    private LocalTime time;
-
     private BigDecimal amount;
 
     private String description;

@@ -5,6 +5,7 @@ import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.responseDto.DebtResponseDto;
+import com.expensetrace.app.responseDto.TransactionResponseDTO;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -51,11 +52,11 @@ public class DebtService implements IDebtService {
     @Override
     public Page<DebtResponseDto> getAllDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
+        Pageable pageable = PageRequest.of(page, size);
 
-        Page<Debt> debtPage = debtRepo.findByUserId(userId, pageable);
+        Page<Debt> txnPage = debtRepo.findByUserId(userId, pageable);
 
-        return debtPage.map(debt -> modelMapper.map(debt, DebtResponseDto.class));
+        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
     }
 
 

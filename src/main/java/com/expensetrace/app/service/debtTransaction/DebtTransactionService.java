@@ -1,6 +1,5 @@
 package com.expensetrace.app.service.debtTransaction;
 
-
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.Account;
 import com.expensetrace.app.model.Debt;
@@ -44,7 +43,6 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setDebt(debt);
         debtTransaction.setType(dto.getType());
         debtTransaction.setDate(dto.getDate());
-        debtTransaction.setTime(dto.getTime());
         debtTransaction.setAccount(account);
         debtTransaction.setAmount(dto.getAmount());
         debtTransaction.setDescription(dto.getDescription());
@@ -96,7 +94,6 @@ public class DebtTransactionService implements IDebtTransactionService {
         debtTransaction.setDebt(debt);
         debtTransaction.setType(dto.getType());
         debtTransaction.setDate(dto.getDate());
-        debtTransaction.setTime(dto.getTime());
         debtTransaction.setAmount(dto.getAmount());
         debtTransaction.setAccount(account);
         debtTransaction.setDescription(dto.getDescription());
