@@ -36,6 +36,28 @@ public class CategoryController {
         }
     }
 
+    @GetMapping("/income")
+    @Operation(summary = "Get all income categories", description = "Retrieves all income categories for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllIncomeCategories() {
+        try {
+            List<CategoryResponseDto> categories = categoryService.getAllIncomeCategories();
+            return ResponseEntity.ok(new ApiResponse("Income Categories retrieved successfully", categories));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
+        }
+    }
+
+    @GetMapping("/expense")
+    @Operation(summary = "Get all expense categories", description = "Retrieves all expense categories for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllExpenseCategories() {
+        try {
+            List<CategoryResponseDto> categories = categoryService.getAllExpenseCategories();
+            return ResponseEntity.ok(new ApiResponse("Expense Categories retrieved successfully", categories));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
+        }
+    }
+
     @PostMapping
     @Operation(summary = "Add a category", description = "Creates a new category for the authenticated user")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {

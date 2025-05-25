@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.category;
 
+import com.expensetrace.app.enums.CategoryType;
 import com.expensetrace.app.model.Category;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.requestDto.CategoryRequestDto;
@@ -76,5 +77,21 @@ public class CategoryService implements ICategoryService {
                 .ifPresentOrElse(categoryRepository::delete, () -> {
                     throw new ResourceNotFoundException("Category not found!");
                 });
+    }
+
+    @Override
+    public List<CategoryResponseDto> getAllIncomeCategories() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        return categoryRepository.findByUserIdAndType(userId, CategoryType.INCOME).stream()
+                .map(category -> modelMapper.map(category, CategoryResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CategoryResponseDto> getAllExpenseCategories() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        return categoryRepository.findByUserIdAndType(userId, CategoryType.EXPENSE).stream()
+                .map(category -> modelMapper.map(category, CategoryResponseDto.class))
+                .collect(Collectors.toList());
     }
 }

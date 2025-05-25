@@ -12,4 +12,8 @@ public interface ICategoryService {
     CategoryResponseDto addCategory(CategoryRequestDto category);
     CategoryResponseDto updateCategory(CategoryRequestDto category, UUID id);
     void deleteCategoryById(UUID id);
+
+    List<CategoryResponseDto> getAllIncomeCategories();
+
+    List<CategoryResponseDto> getAllExpenseCategories();
 }
