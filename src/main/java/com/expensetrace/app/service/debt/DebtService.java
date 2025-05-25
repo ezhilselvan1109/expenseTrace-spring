@@ -1,18 +1,17 @@
 package com.expensetrace.app.service.debt;
 
+import com.expensetrace.app.enums.DebtsType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.responseDto.DebtResponseDto;
-import com.expensetrace.app.responseDto.TransactionResponseDTO;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,6 +55,22 @@ public class DebtService implements IDebtService {
 
         Page<Debt> txnPage = debtRepo.findByUserId(userId, pageable);
 
+        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
+    }
+
+    @Override
+    public Page<DebtResponseDto> getAllBorrowingDebtsByUser(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtsType.BORROWING, pageable);
+        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
+    }
+
+    @Override
+    public Page<DebtResponseDto> getAllLendingDebtsByUser(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtsType.LENDING, pageable);
         return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
     }
 

@@ -67,8 +67,28 @@ public class DebtController {
         return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
     }
 
+    @GetMapping("/borrowing")
+    @Operation(summary = "Get all Borrowing debts with pagination")
+    public ResponseEntity<ApiResponse> getAllBorrowingDebt(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<DebtResponseDto> txns = debtService.getAllBorrowingDebtsByUser(page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
+    }
+
+    @GetMapping("/lending")
+    @Operation(summary = "Get all Lending debts with pagination")
+    public ResponseEntity<ApiResponse> getAllLendingDebt(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<DebtResponseDto> txns = debtService.getAllLendingDebtsByUser(page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
+    }
+
     @GetMapping
-    @Operation(summary = "Get all transactions with pagination")
+    @Operation(summary = "Get all debts with pagination")
     public ResponseEntity<ApiResponse> getAllDebt(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

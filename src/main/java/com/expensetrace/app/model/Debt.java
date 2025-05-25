@@ -16,15 +16,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "Debt")
+@Table(name = "debts", indexes = {
+        @Index(name = "idx_user_type", columnList = "user_id, type")
+})
 public class Debt {
+
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private String personName;
 
     private LocalDate dueDate;
@@ -32,6 +37,7 @@ public class Debt {
     private String additionalDetail;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DebtsType type;
 
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -11,6 +11,8 @@ public interface IDebtService {
     DebtResponseDto createDebt(DebtRequestDto dto);
     List<DebtResponseDto> getAllDebtsByUser();
     Page<DebtResponseDto> getAllDebtsByUser(int page, int size);
+    Page<DebtResponseDto> getAllBorrowingDebtsByUser(int page, int size);
+    Page<DebtResponseDto> getAllLendingDebtsByUser(int page, int size);
     DebtResponseDto getDebtById(UUID id);
     void deleteDebtById(UUID id);
     DebtResponseDto updateDebt(UUID id, DebtRequestDto dto);
