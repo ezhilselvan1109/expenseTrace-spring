@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -21,7 +22,8 @@ public class Debt {
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne private User user;
+    @ManyToOne
+    private User user;
 
     private String personName;
 
@@ -31,4 +33,7 @@ public class Debt {
 
     @Enumerated(EnumType.STRING)
     private DebtsType type;
+
+    @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DebtTransaction> transactions;
 }

@@ -24,7 +24,9 @@ public class DebtTransaction {
     private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "debt_id")
     private Debt debt;
+
 
     private LocalDate date;
 
