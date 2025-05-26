@@ -4,6 +4,7 @@ import com.expensetrace.app.requestDto.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
+import com.expensetrace.app.responseDto.AccountResponseDto;
 import com.expensetrace.app.responseDto.CategoryResponseDto;
 import com.expensetrace.app.service.category.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,7 +58,6 @@ public class CategoryController {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
         }
     }
-
     @PostMapping
     @Operation(summary = "Add a category", description = "Creates a new category for the authenticated user")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
@@ -97,6 +97,50 @@ public class CategoryController {
         try {
             CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Category updated successfully", updatedCategory));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/{id}/income-default")
+    @Operation(summary = "Set default income category", description = "Update default income category for the authenticated user")
+    public ResponseEntity<ApiResponse> updateDefaultIncomeCategory(@PathVariable UUID id) {
+        try {
+            CategoryResponseDto updated = categoryService.updateDefaultIncomeCategory(id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/income-default")
+    @Operation(summary = "Get default income category", description = "Retrieve the default income category for the authenticated user")
+    public ResponseEntity<ApiResponse> getDefaultIncomeCategory() {
+        try {
+            CategoryResponseDto defaultAccount = categoryService.getDefaultIncomeCategoryByUserId();
+            return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/{id}/expense-default")
+    @Operation(summary = "Set default expense category", description = "Update default expense category for the authenticated user")
+    public ResponseEntity<ApiResponse> updateDefaultExpenseCategory(@PathVariable UUID id) {
+        try {
+            CategoryResponseDto updated = categoryService.updateDefaultExpenseCategory(id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/expense-default")
+    @Operation(summary = "Get default expense category", description = "Retrieve the default expense category for the authenticated user")
+    public ResponseEntity<ApiResponse> getDefaultExpenseCategory() {
+        try {
+            CategoryResponseDto defaultAccount = categoryService.getDefaultExpenseCategoryByUserId();
+            return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

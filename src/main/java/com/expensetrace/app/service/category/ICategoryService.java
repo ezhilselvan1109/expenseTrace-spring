@@ -16,4 +16,12 @@ public interface ICategoryService {
     List<CategoryResponseDto> getAllIncomeCategories();
 
     List<CategoryResponseDto> getAllExpenseCategories();
+
+    CategoryResponseDto getDefaultExpenseCategoryByUserId();
+
+    CategoryResponseDto updateDefaultExpenseCategory(UUID categoryId);
+
+    CategoryResponseDto getDefaultIncomeCategoryByUserId();
+
+    CategoryResponseDto updateDefaultIncomeCategory(UUID categoryId);
 }

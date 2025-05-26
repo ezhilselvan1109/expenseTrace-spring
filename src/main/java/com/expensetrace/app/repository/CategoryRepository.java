@@ -1,6 +1,7 @@
 package com.expensetrace.app.repository;
 
 import com.expensetrace.app.enums.CategoryType;
+import com.expensetrace.app.model.Account;
 import com.expensetrace.app.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +14,5 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     List<Category> findByUserId(UUID userId);
     List<Category> findByUserIdAndType(UUID userId, CategoryType type);
     Optional<Category> findByIdAndUserId(UUID id, UUID userId);
+    Optional<Category> findByUserIdAndTypeAndIsDefaultTrue(UUID userId,CategoryType type);
 }

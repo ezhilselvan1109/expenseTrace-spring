@@ -94,4 +94,73 @@ public class CategoryService implements ICategoryService {
                 .map(category -> modelMapper.map(category, CategoryResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public CategoryResponseDto getDefaultExpenseCategoryByUserId() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Category defaultCategory = categoryRepository.findByUserIdAndTypeAndIsDefaultTrue(userId,CategoryType.EXPENSE)
+                .orElseThrow(() -> new ResourceNotFoundException("No default category found for user"));
+        return modelMapper.map(defaultCategory, CategoryResponseDto.class);
+    }
+
+    @Override
+    public CategoryResponseDto updateDefaultExpenseCategory(UUID categoryId) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Category categoryToSetDefault = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+
+        if (!categoryToSetDefault.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Category does not belong to the user");
+        }
+        if (!categoryToSetDefault.getType().equals(CategoryType.EXPENSE)) {
+            throw new ResourceNotFoundException("This Category does not belong to the Expense");
+        }
+        List<Category> userCategory = categoryRepository.findByUserIdAndType(userId,CategoryType.EXPENSE);
+        userCategory.forEach(a -> {
+            if (a.isDefault()) {
+                a.setDefault(false);
+                categoryRepository.save(a);
+            }
+        });
+
+        categoryToSetDefault.setDefault(true);
+        categoryRepository.save(categoryToSetDefault);
+
+        return modelMapper.map(categoryToSetDefault, CategoryResponseDto.class);
+    }
+
+    @Override
+    public CategoryResponseDto getDefaultIncomeCategoryByUserId() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Category defaultCategory = categoryRepository.findByUserIdAndTypeAndIsDefaultTrue(userId,CategoryType.INCOME)
+                .orElseThrow(() -> new ResourceNotFoundException("No default category found for user"));
+        return modelMapper.map(defaultCategory, CategoryResponseDto.class);
+    }
+
+    @Override
+    public CategoryResponseDto updateDefaultIncomeCategory(UUID categoryId) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Category categoryToSetDefault = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+
+        if (!categoryToSetDefault.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Category does not belong to the user");
+        }
+        if (!categoryToSetDefault.getType().equals(CategoryType.INCOME)) {
+            throw new ResourceNotFoundException("This Category does not belong to the Income");
+        }
+
+        List<Category> userCategory = categoryRepository.findByUserIdAndType(userId,CategoryType.INCOME);
+        userCategory.forEach(a -> {
+            if (a.isDefault()) {
+                a.setDefault(false);
+                categoryRepository.save(a);
+            }
+        });
+
+        categoryToSetDefault.setDefault(true);
+        categoryRepository.save(categoryToSetDefault);
+
+        return modelMapper.map(categoryToSetDefault, CategoryResponseDto.class);
+    }
 }
