@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.debtTransaction;
 
+import com.expensetrace.app.enums.DebtTransactionType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.Account;
 import com.expensetrace.app.model.Debt;
@@ -106,7 +107,7 @@ public class DebtTransactionService implements IDebtTransactionService {
     public Page<DebtTransactionResponseDto> getAllReceivedDebtTransactionsByUser(UUID debtId,int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
 
-        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtIdAndType(debtId, DebtTransactionType.RECEIVED, pageable);
 
         return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
     }
@@ -115,7 +116,7 @@ public class DebtTransactionService implements IDebtTransactionService {
     public Page<DebtTransactionResponseDto> getAllAdjustmentDebtTransactionsByUser(UUID debtId,int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
 
-        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtIdAndType(debtId, DebtTransactionType.ADJUSTMENT, pageable);
 
         return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
     }
@@ -124,7 +125,7 @@ public class DebtTransactionService implements IDebtTransactionService {
     public Page<DebtTransactionResponseDto> getAllPaidDebtTransactionsByUser(UUID debtId,int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
 
-        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtIdAndType(debtId,DebtTransactionType.PAID, pageable);
 
         return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
     }
