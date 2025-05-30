@@ -101,4 +101,31 @@ public class DebtTransactionService implements IDebtTransactionService {
         DebtTransaction updated = debtTransactionRepo.save(debtTransaction);
         return modelMapper.map(updated, DebtTransactionResponseDto.class);
     }
+
+    @Override
+    public Page<DebtTransactionResponseDto> getAllReceivedDebtTransactionsByUser(UUID debtId,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
+
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+
+        return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
+    }
+
+    @Override
+    public Page<DebtTransactionResponseDto> getAllAdjustmentDebtTransactionsByUser(UUID debtId,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
+
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+
+        return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
+    }
+
+    @Override
+    public Page<DebtTransactionResponseDto> getAllPaidDebtTransactionsByUser(UUID debtId,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
+
+        Page<DebtTransaction> debtPage = debtTransactionRepo.findByDebtId(debtId, pageable);
+
+        return debtPage.map(debt -> modelMapper.map(debt, DebtTransactionResponseDto.class));
+    }
 }

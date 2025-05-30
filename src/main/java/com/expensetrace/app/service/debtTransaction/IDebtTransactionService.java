@@ -15,4 +15,9 @@ public interface IDebtTransactionService {
     void deleteDebtTransactionById(UUID id);
     DebtTransactionResponseDto updateDebtTransaction(UUID id, DebtTransactionRequestDto dto);
 
+    Page<DebtTransactionResponseDto> getAllReceivedDebtTransactionsByUser(UUID debtId,int page, int size);
+
+    Page<DebtTransactionResponseDto> getAllAdjustmentDebtTransactionsByUser(UUID debtId,int page, int size);
+
+    Page<DebtTransactionResponseDto> getAllPaidDebtTransactionsByUser(UUID debtId,int page, int size);
 }

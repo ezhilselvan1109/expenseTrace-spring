@@ -7,6 +7,7 @@ import com.expensetrace.app.service.debtTransaction.IDebtTransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,12 @@ import static org.springframework.http.HttpStatus.*;
 @Tag(name = "Debt Transactions", description = "manage debts Transactions")
 public class DebtTransactionsController {
     private final IDebtTransactionService debtTransactionService;
+
     @PostMapping("/{debtId}")
     @Operation(summary = "Add a new debt Transaction", description = "Create a new debt Transaction for the authenticated user")
     public ResponseEntity<ApiResponse> addDebtTransaction(@PathVariable UUID debtId, @RequestBody DebtTransactionRequestDto debtTransactionRequestDto) {
         try {
-            DebtTransactionResponseDto debt = debtTransactionService.createDebtTransaction(debtId,debtTransactionRequestDto);
+            DebtTransactionResponseDto debt = debtTransactionService.createDebtTransaction(debtId, debtTransactionRequestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Debt created", debt));
         } catch (Exception e) {
             return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
@@ -56,9 +58,39 @@ public class DebtTransactionsController {
 
     @GetMapping("/id/{debtId}")
     @Operation(summary = "get all debt Transaction", description = "get all debt Transaction for the authenticated user")
-    public ResponseEntity<ApiResponse> getAllDebtTransaction(@PathVariable UUID debtId) {
-        System.out.println("debtId : "+debtId);
+    public ResponseEntity<ApiResponse> getAllDebtTransactions(@PathVariable UUID debtId) {
         List<DebtTransactionResponseDto> debts = debtTransactionService.getAllDebtTransactionsByUser(debtId);
+        return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
+    }
+
+    @GetMapping("/{debtId}/all")
+    @Operation(summary = "get all debt Transaction with pagination", description = "get all debt Transaction with pagination for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllDebtTransactions(@PathVariable UUID debtId, @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
+        List<DebtTransactionResponseDto> debts = debtTransactionService.getAllDebtTransactionsByUser(debtId);
+        return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
+    }
+    @GetMapping("/{debtId}/paid")
+    @Operation(summary = "get all paid debt Transaction", description = "get all paid debt Transaction for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllPaidDebtTransactions(@PathVariable UUID debtId, @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size) {
+        Page<DebtTransactionResponseDto> debts = debtTransactionService.getAllPaidDebtTransactionsByUser(debtId, page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
+    }
+
+    @GetMapping("/{debtId}/adjustment")
+    @Operation(summary = "get all adjustment debt Transaction", description = "get all adjustment debt Transaction for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllAdjustmentDebtTransactions(@PathVariable UUID debtId, @RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        Page<DebtTransactionResponseDto> debts = debtTransactionService.getAllAdjustmentDebtTransactionsByUser(debtId, page, size);
+        return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
+    }
+
+    @GetMapping("/id/{debtId}/received")
+    @Operation(summary = "get all received debt Transaction", description = "get all received debt Transaction for the authenticated user")
+    public ResponseEntity<ApiResponse> getAllReceivedDebtTransactions(@PathVariable UUID debtId, @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size) {
+        Page<DebtTransactionResponseDto> debts = debtTransactionService.getAllReceivedDebtTransactionsByUser(debtId, page, size);
         return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
     }
 
