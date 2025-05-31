@@ -1,15 +1,13 @@
 package com.expensetrace.app.service.account;
 
-import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.requestDto.BankAccountRequestDto;
-import com.expensetrace.app.requestDto.CreditCardAccountRequestDto;
-import com.expensetrace.app.requestDto.WalletAccountRequestDto;
+import com.expensetrace.app.requestDto.BankRequestDto;
+import com.expensetrace.app.requestDto.CreditCardRequestDto;
+import com.expensetrace.app.requestDto.WalletRequestDto;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public interface IAccountService {
@@ -31,19 +29,19 @@ public interface IAccountService {
 
     void deleteAccountById(UUID id);
 
-    AccountResponseDto addCreditCardAccount(CreditCardAccountRequestDto requestDto);
+    AccountResponseDto addCreditCardAccount(CreditCardRequestDto requestDto);
 
-    AccountResponseDto addWalletAccount(WalletAccountRequestDto walletAccountRequestDto);
+    AccountResponseDto addWalletAccount(WalletRequestDto walletRequestDto);
 
-    AccountResponseDto addBankAccount(BankAccountRequestDto requestDto);
+    AccountResponseDto addBankAccount(BankRequestDto requestDto);
 
     void addCashAccount(User user);
 
-    AccountResponseDto updateBankAccount(BankAccountRequestDto accountDto, UUID id);
+    AccountResponseDto updateBankAccount(BankRequestDto accountDto, UUID id);
 
-    AccountResponseDto updateWalletAccount(WalletAccountRequestDto accountDto, UUID id);
+    AccountResponseDto updateWalletAccount(WalletRequestDto accountDto, UUID id);
 
-    AccountResponseDto updateCreditCardAccount(CreditCardAccountRequestDto accountDto, UUID id);
+    AccountResponseDto updateCreditCardAccount(CreditCardRequestDto accountDto, UUID id);
 
     BigDecimal getAvailableAmount();
 

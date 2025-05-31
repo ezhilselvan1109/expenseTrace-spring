@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class CreditCardAccount extends Account {
+public class CreditCard extends Account {
     private BigDecimal currentAvailableLimit;
     private BigDecimal totalCreditLimit;
     private LocalDate billingCycleStartDate;

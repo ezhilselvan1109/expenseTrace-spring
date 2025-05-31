@@ -107,4 +107,16 @@ public class DebtController {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @GetMapping("/payable")
+    @Operation(summary = "Get all Lending debts with pagination")
+    public ResponseEntity<ApiResponse> getPayable() {
+        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+    }
+
+    @GetMapping("/receivable")
+    @Operation(summary = "Get all Lending debts with pagination")
+    public ResponseEntity<ApiResponse> getReceivable() {
+        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+    }
 }

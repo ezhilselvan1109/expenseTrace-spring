@@ -2,7 +2,7 @@ package com.expensetrace.app.service.paymentMode;
 
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.BankAccount;
+import com.expensetrace.app.model.Bank;
 import com.expensetrace.app.model.PaymentMode;
 import com.expensetrace.app.model.Account;
 import com.expensetrace.app.repository.PaymentModeRepository;
@@ -53,7 +53,7 @@ public class PaymentModeService implements IPaymentModeService {
         PaymentMode paymentMode = modelMapper.map(paymentModeRequestDto, PaymentMode.class);
 
         // Account reference
-        Account account = new BankAccount();
+        Account account = new Bank();
         account.setId(accountId); // Only setting ID is enough for association
         paymentMode.setAccount(account);
 

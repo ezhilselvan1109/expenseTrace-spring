@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class BankAccountRequestDto extends AccountRequestDto{
+public class BankRequestDto extends AccountRequestDto{
     private BigDecimal currentBalance;
     private List<PaymentModeRequestDto> linkedPaymentModes;
 }

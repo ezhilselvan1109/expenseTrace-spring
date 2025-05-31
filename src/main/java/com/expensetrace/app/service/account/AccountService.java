@@ -4,9 +4,9 @@ import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.requestDto.BankAccountRequestDto;
-import com.expensetrace.app.requestDto.CreditCardAccountRequestDto;
-import com.expensetrace.app.requestDto.WalletAccountRequestDto;
+import com.expensetrace.app.requestDto.BankRequestDto;
+import com.expensetrace.app.requestDto.CreditCardRequestDto;
+import com.expensetrace.app.requestDto.WalletRequestDto;
 import com.expensetrace.app.responseDto.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,10 +23,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountService implements IAccountService {
     private final AccountRepository accountRepository;
-    private final BankAccountRepository bankAccountRepository;
-    private final WalletAccountRepository walletAccountRepository;
-    private final CreditCardAccountRepository creditCardAccountRepository;
-    private final CashAccountRepository cashAccountRepository;
+    private final BankRepository bankRepository;
+    private final WalletRepository walletRepository;
+    private final CreditCardRepository creditCardRepository;
+    private final CashRepository cashRepository;
     private final ModelMapper modelMapper;
     private final SecurityUtil securityUtil;
 
@@ -36,13 +35,13 @@ public class AccountService implements IAccountService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         if(account.getType()==AccountType.BANK){
-            return modelMapper.map(account, BankAccountResponseDto.class);
+            return modelMapper.map(account, BankResponseDto.class);
         }else if(account.getType()==AccountType.WALLET){
-            return modelMapper.map(account, WalletAccountResponseDto.class);
+            return modelMapper.map(account, WalletResponseDto.class);
         }else if(account.getType()==AccountType.CREDIT_CARD){
-            return modelMapper.map(account, CreditCardAccountResponseDto.class);
+            return modelMapper.map(account, CreditCardResponseDto.class);
         }else {
-            return modelMapper.map(account, CashAccountResponseDto.class);
+            return modelMapper.map(account, CashResponseDto.class);
         }
     }
 
@@ -62,8 +61,8 @@ public class AccountService implements IAccountService {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return accountRepository.findByUserIdAndType(userId,AccountType.BANK)
                 .stream()
-                .filter(account -> account instanceof BankAccount)
-                .map(account -> (AccountResponseDto) modelMapper.map((BankAccount) account, BankAccountResponseDto.class))
+                .filter(account -> account instanceof Bank)
+                .map(account -> (AccountResponseDto) modelMapper.map((Bank) account, BankResponseDto.class))
                 .toList();
     }
 
@@ -72,8 +71,8 @@ public class AccountService implements IAccountService {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return accountRepository.findByUserIdAndType(userId,AccountType.CASH)
                 .stream()
-                .filter(account -> account instanceof CashAccount)
-                .map(account -> (AccountResponseDto) modelMapper.map((CashAccount) account, CashAccountResponseDto.class))
+                .filter(account -> account instanceof Cash)
+                .map(account -> (AccountResponseDto) modelMapper.map((Cash) account, CashResponseDto.class))
                 .toList();
     }
 
@@ -82,8 +81,8 @@ public class AccountService implements IAccountService {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return accountRepository.findByUserIdAndType(userId,AccountType.CREDIT_CARD)
                 .stream()
-                .filter(account -> account instanceof CreditCardAccount)
-                .map(account -> (AccountResponseDto) modelMapper.map((CreditCardAccount) account, CreditCardAccountResponseDto.class))
+                .filter(account -> account instanceof CreditCard)
+                .map(account -> (AccountResponseDto) modelMapper.map((CreditCard) account, CreditCardResponseDto.class))
                 .toList();
     }
 
@@ -92,8 +91,8 @@ public class AccountService implements IAccountService {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return accountRepository.findByUserIdAndType(userId,AccountType.WALLET)
                 .stream()
-                .filter(account -> account instanceof WalletAccount)
-                .map(account -> (AccountResponseDto) modelMapper.map((WalletAccount) account, WalletAccountResponseDto.class))
+                .filter(account -> account instanceof Wallet)
+                .map(account -> (AccountResponseDto) modelMapper.map((Wallet) account, WalletResponseDto.class))
                 .toList();
     }
 
@@ -137,50 +136,50 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public AccountResponseDto addCreditCardAccount(CreditCardAccountRequestDto creditCardAccountRequestDto) {
+    public AccountResponseDto addCreditCardAccount(CreditCardRequestDto creditCardRequestDto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        CreditCardAccount account = modelMapper.map(creditCardAccountRequestDto, CreditCardAccount.class);
+        CreditCard account = modelMapper.map(creditCardRequestDto, CreditCard.class);
         User user = new User();
         user.setId(userId);
         account.setUser(user);
         account.setType(AccountType.CREDIT_CARD);
-        Account savedAccount = creditCardAccountRepository.save(account);
-        return modelMapper.map(savedAccount, CreditCardAccountResponseDto.class);
+        Account savedAccount = creditCardRepository.save(account);
+        return modelMapper.map(savedAccount, CreditCardResponseDto.class);
     }
 
     @Override
     public void addCashAccount(User user) {
-        CashAccount account=new CashAccount();
+        Cash account=new Cash();
         account.setUser(user);
         account.setType(AccountType.CASH);
         account.setDefault(true);
         account.setCurrentBalance(BigDecimal.valueOf(0));
         account.setName("Cash");
-        cashAccountRepository.save(account);
+        cashRepository.save(account);
     }
 
     @Override
-    public AccountResponseDto addWalletAccount(WalletAccountRequestDto walletAccountRequestDto) {
+    public AccountResponseDto addWalletAccount(WalletRequestDto walletRequestDto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        WalletAccount account = modelMapper.map(walletAccountRequestDto, WalletAccount.class);
+        Wallet account = modelMapper.map(walletRequestDto, Wallet.class);
         User user = new User();
         user.setId(userId);
         account.setUser(user);
         account.setType(AccountType.WALLET);
-        Account savedAccount = walletAccountRepository.save(account);
-        return modelMapper.map(savedAccount, WalletAccountResponseDto.class);
+        Account savedAccount = walletRepository.save(account);
+        return modelMapper.map(savedAccount, WalletResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto addBankAccount(BankAccountRequestDto bankAccountRequestDto) {
+    public AccountResponseDto addBankAccount(BankRequestDto bankRequestDto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        BankAccount account = modelMapper.map(bankAccountRequestDto, BankAccount.class);
+        Bank account = modelMapper.map(bankRequestDto, Bank.class);
         User user = new User();
         user.setId(userId);
         account.setUser(user);
         account.setType(AccountType.BANK);
-        if (account.getType() == AccountType.BANK && bankAccountRequestDto.getLinkedPaymentModes() != null) {
-            List<PaymentMode> paymentModes = bankAccountRequestDto.getLinkedPaymentModes().stream()
+        if (account.getType() == AccountType.BANK && bankRequestDto.getLinkedPaymentModes() != null) {
+            List<PaymentMode> paymentModes = bankRequestDto.getLinkedPaymentModes().stream()
                     .map(pmDto -> {
                         PaymentMode pm = new PaymentMode();
                         pm.setName(pmDto.getName());
@@ -192,63 +191,63 @@ public class AccountService implements IAccountService {
 
             account.setPaymentModes(paymentModes);
         }
-        Account savedAccount = bankAccountRepository.save(account);
-        return modelMapper.map(savedAccount, BankAccountResponseDto.class);
+        Account savedAccount = bankRepository.save(account);
+        return modelMapper.map(savedAccount, BankResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto updateBankAccount(BankAccountRequestDto bankAccountDto, UUID id) {
-        BankAccount existing = bankAccountRepository.findById(id)
+    public AccountResponseDto updateBankAccount(BankRequestDto bankAccountDto, UUID id) {
+        Bank existing = bankRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         existing.setName(bankAccountDto.getName());
         existing.setCurrentBalance(bankAccountDto.getCurrentBalance());
 
-        BankAccount updated = bankAccountRepository.save(existing);
-        return modelMapper.map(updated, BankAccountResponseDto.class);
+        Bank updated = bankRepository.save(existing);
+        return modelMapper.map(updated, BankResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto updateWalletAccount(WalletAccountRequestDto walletAccountRequestDto, UUID id) {
-        WalletAccount existing = walletAccountRepository.findById(id)
+    public AccountResponseDto updateWalletAccount(WalletRequestDto walletRequestDto, UUID id) {
+        Wallet existing = walletRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
-        existing.setName(walletAccountRequestDto.getName());
-        existing.setCurrentBalance(walletAccountRequestDto.getCurrentBalance());
-        Account updated = walletAccountRepository.save(existing);
-        return modelMapper.map(updated, WalletAccountResponseDto.class);
+        existing.setName(walletRequestDto.getName());
+        existing.setCurrentBalance(walletRequestDto.getCurrentBalance());
+        Account updated = walletRepository.save(existing);
+        return modelMapper.map(updated, WalletResponseDto.class);
     }
 
     @Override
-    public AccountResponseDto updateCreditCardAccount(CreditCardAccountRequestDto accountRequestDto, UUID id) {
-        CreditCardAccount existing = creditCardAccountRepository.findById(id)
+    public AccountResponseDto updateCreditCardAccount(CreditCardRequestDto accountRequestDto, UUID id) {
+        CreditCard existing = creditCardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         existing.setName(accountRequestDto.getName());
         existing.setPaymentDueDate(accountRequestDto.getPaymentDueDate());
         existing.setCurrentAvailableLimit(accountRequestDto.getCurrentAvailableLimit());
         existing.setTotalCreditLimit(accountRequestDto.getTotalCreditLimit());
         existing.setBillingCycleStartDate(accountRequestDto.getBillingCycleStartDate());
-        Account updated = creditCardAccountRepository.save(existing);
-        return modelMapper.map(updated, CreditCardAccountResponseDto.class);
+        Account updated = creditCardRepository.save(existing);
+        return modelMapper.map(updated, CreditCardResponseDto.class);
     }
 
     @Override
     public BigDecimal getAvailableAmount() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        BigDecimal bankTotal = bankAccountRepository.findAll()
+        BigDecimal bankTotal = bankRepository.findAll()
                 .stream()
                 .filter(acc -> acc.getUser().getId().equals(userId))
-                .map(BankAccount::getCurrentBalance)
+                .map(Bank::getCurrentBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal cashTotal = cashAccountRepository.findAll()
+        BigDecimal cashTotal = cashRepository.findAll()
                 .stream()
                 .filter(acc -> acc.getUser().getId().equals(userId))
-                .map(CashAccount::getCurrentBalance)
+                .map(Cash::getCurrentBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal walletTotal = walletAccountRepository.findAll()
+        BigDecimal walletTotal = walletRepository.findAll()
                 .stream()
                 .filter(acc -> acc.getUser().getId().equals(userId))
-                .map(WalletAccount::getCurrentBalance)
+                .map(Wallet::getCurrentBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return bankTotal.add(cashTotal).add(walletTotal);
@@ -257,7 +256,7 @@ public class AccountService implements IAccountService {
     @Override
     public BigDecimal getCreditOutstanding() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        List<CreditCardAccount> accounts = creditCardAccountRepository.findAll(); // You can optimize with a custom query later
+        List<CreditCard> accounts = creditCardRepository.findAll(); // You can optimize with a custom query later
 
         return accounts.stream()
                 .filter(account -> account.getUser().getId().equals(userId))
@@ -269,8 +268,8 @@ public class AccountService implements IAccountService {
     public BigDecimal getCreditAvailable() {
         UUID userId = securityUtil.getAuthenticatedUserId();
 
-        return creditCardAccountRepository.findByUserId(userId).stream()
-                .map(CreditCardAccount::getCurrentAvailableLimit)
+        return creditCardRepository.findByUserId(userId).stream()
+                .map(CreditCard::getCurrentAvailableLimit)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

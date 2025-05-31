@@ -5,6 +5,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class WalletAccountRequestDto extends AccountRequestDto{
+public class WalletRequestDto extends AccountRequestDto{
     private BigDecimal currentBalance;
 }

@@ -1,11 +1,10 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.requestDto.BankAccountRequestDto;
-import com.expensetrace.app.requestDto.CreditCardAccountRequestDto;
-import com.expensetrace.app.requestDto.WalletAccountRequestDto;
+import com.expensetrace.app.requestDto.BankRequestDto;
+import com.expensetrace.app.requestDto.CreditCardRequestDto;
+import com.expensetrace.app.requestDto.WalletRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.AccountResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.*;
@@ -155,7 +153,7 @@ public class AccountController {
 
     @PostMapping("/bank")
     @Operation(summary = "Add a new bank account", description = "Create a new bank account for the authenticated user")
-    public ResponseEntity<ApiResponse> addBankAccount(@RequestBody BankAccountRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> addBankAccount(@RequestBody BankRequestDto requestDto) {
         try {
             AccountResponseDto response = accountService.addBankAccount(requestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
@@ -166,7 +164,7 @@ public class AccountController {
 
     @PostMapping("/wallet")
     @Operation(summary = "Add a new wallet account", description = "Create a new wallet account for the authenticated user")
-    public ResponseEntity<ApiResponse> addWallet(@RequestBody WalletAccountRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> addWallet(@RequestBody WalletRequestDto requestDto) {
         try {
             AccountResponseDto response = accountService.addWalletAccount(requestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
@@ -177,7 +175,7 @@ public class AccountController {
 
     @PostMapping("/debit-card")
     @Operation(summary = "Add a new DebitCard account", description = "Create a new DebitCard account for the authenticated user")
-    public ResponseEntity<ApiResponse> addDebitCard(@RequestBody CreditCardAccountRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> addDebitCard(@RequestBody CreditCardRequestDto requestDto) {
         try {
             AccountResponseDto response = accountService.addCreditCardAccount(requestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Success", response));
@@ -201,7 +199,7 @@ public class AccountController {
 
     @PutMapping("/bank/{id}")
     @Operation(summary = "Update bank account", description = "Update bank account information by ID")
-    public ResponseEntity<ApiResponse> updateBankAccount(@PathVariable UUID id, @RequestBody BankAccountRequestDto accountDto) {
+    public ResponseEntity<ApiResponse> updateBankAccount(@PathVariable UUID id, @RequestBody BankRequestDto accountDto) {
         try {
             AccountResponseDto updated = accountService.updateBankAccount(accountDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));
@@ -212,7 +210,7 @@ public class AccountController {
 
     @PutMapping("/wallet/{id}")
     @Operation(summary = "Update account", description = "Update account information by ID")
-    public ResponseEntity<ApiResponse> updateWalletAccount(@PathVariable UUID id, @RequestBody WalletAccountRequestDto accountDto) {
+    public ResponseEntity<ApiResponse> updateWalletAccount(@PathVariable UUID id, @RequestBody WalletRequestDto accountDto) {
         try {
             AccountResponseDto updated = accountService.updateWalletAccount(accountDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));
@@ -223,7 +221,7 @@ public class AccountController {
 
     @PutMapping("/credit-card/{id}")
     @Operation(summary = "Update account", description = "Update account information by ID")
-    public ResponseEntity<ApiResponse> updateCreditCardAccount(@PathVariable UUID id, @RequestBody CreditCardAccountRequestDto accountDto) {
+    public ResponseEntity<ApiResponse> updateCreditCardAccount(@PathVariable UUID id, @RequestBody CreditCardRequestDto accountDto) {
         try {
             AccountResponseDto updated = accountService.updateCreditCardAccount(accountDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updated));

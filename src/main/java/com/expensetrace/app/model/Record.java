@@ -1,6 +1,6 @@
 package com.expensetrace.app.model;
 
-import com.expensetrace.app.enums.DebtTransactionType;
+import com.expensetrace.app.enums.RecordType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "DebtTransaction")
-public class DebtTransaction {
+@Table(name = "Record")
+public class Record {
     @Id
     @GeneratedValue
     private UUID id;
@@ -39,5 +39,5 @@ public class DebtTransaction {
     @ManyToOne private Account account;
 
     @Enumerated(EnumType.STRING)
-    private DebtTransactionType type;
+    private RecordType type;
 }

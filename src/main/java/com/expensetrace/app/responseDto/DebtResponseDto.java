@@ -1,6 +1,6 @@
 package com.expensetrace.app.responseDto;
 
-import com.expensetrace.app.enums.DebtsType;
+import com.expensetrace.app.enums.DebtType;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,5 +15,5 @@ public class DebtResponseDto {
 
     private String additionalDetail;
 
-    private DebtsType type;
+    private DebtType type;
 }

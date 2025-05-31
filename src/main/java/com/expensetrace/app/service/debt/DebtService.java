@@ -1,6 +1,6 @@
 package com.expensetrace.app.service.debt;
 
-import com.expensetrace.app.enums.DebtsType;
+import com.expensetrace.app.enums.DebtType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.DebtRepository;
@@ -62,7 +62,7 @@ public class DebtService implements IDebtService {
     public Page<DebtResponseDto> getAllBorrowingDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtsType.BORROWING, pageable);
+        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, pageable);
         return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
     }
 
@@ -70,7 +70,7 @@ public class DebtService implements IDebtService {
     public Page<DebtResponseDto> getAllLendingDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtsType.LENDING, pageable);
+        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, pageable);
         return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
     }
 

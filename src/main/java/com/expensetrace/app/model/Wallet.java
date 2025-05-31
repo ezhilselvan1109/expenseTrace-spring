@@ -9,11 +9,11 @@ import lombok.ToString;
 import java.math.BigDecimal;
 
 @Entity
-@DiscriminatorValue("CASH")
+@DiscriminatorValue("WALLET")
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class CashAccount extends Account {
+public class Wallet extends Account {
 
     private BigDecimal currentBalance;
 }

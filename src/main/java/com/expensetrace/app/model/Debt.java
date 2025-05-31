@@ -1,6 +1,6 @@
 package com.expensetrace.app.model;
 
-import com.expensetrace.app.enums.DebtsType;
+import com.expensetrace.app.enums.DebtType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +38,8 @@ public class Debt {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DebtsType type;
+    private DebtType type;
 
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DebtTransaction> transactions;
+    private List<Record> records;
 }
