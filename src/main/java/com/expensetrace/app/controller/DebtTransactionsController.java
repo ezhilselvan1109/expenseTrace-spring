@@ -67,7 +67,7 @@ public class DebtTransactionsController {
     @Operation(summary = "get all debt Transaction with pagination", description = "get all debt Transaction with pagination for the authenticated user")
     public ResponseEntity<ApiResponse> getAllDebtTransactions(@PathVariable UUID debtId, @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size) {
-        List<DebtTransactionResponseDto> debts = debtTransactionService.getAllDebtTransactionsByUser(debtId);
+        Page<DebtTransactionResponseDto> debts = debtTransactionService.getAllDebtTransactionsByUser(debtId, page, size);
         return ResponseEntity.ok(new ApiResponse("Fetched debts", debts));
     }
     @GetMapping("/{debtId}/paid")
