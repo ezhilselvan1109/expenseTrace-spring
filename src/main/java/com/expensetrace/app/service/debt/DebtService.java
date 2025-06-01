@@ -1,8 +1,10 @@
 package com.expensetrace.app.service.debt;
 
 import com.expensetrace.app.enums.DebtType;
+import com.expensetrace.app.enums.RecordType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
+import com.expensetrace.app.model.Record;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.responseDto.DebtResponseDto;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,8 +31,9 @@ public class DebtService implements IDebtService {
 
     public DebtResponseDto createDebt(DebtRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        User user=new User();
+        User user = new User();
         user.setId(userId);
+
         Debt debt = new Debt();
         debt.setUser(user);
         debt.setType(dto.getType());
@@ -37,14 +41,14 @@ public class DebtService implements IDebtService {
         debt.setDueDate(dto.getDueDate());
         debt.setAdditionalDetail(dto.getAdditionalDetail());
 
-        Debt savedTxn = debtRepo.save(debt);
-        return modelMapper.map(savedTxn, DebtResponseDto.class);
+        Debt savedDebt = debtRepo.save(debt);
+        return mapToResponseDto(savedDebt);
     }
 
     public List<DebtResponseDto> getAllDebtsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return debtRepo.findByUserId(userId).stream()
-                .map(debt -> modelMapper.map(debt, DebtResponseDto.class))
+                .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -52,49 +56,51 @@ public class DebtService implements IDebtService {
     public Page<DebtResponseDto> getAllDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
+        Page<Debt> debtPage = debtRepo.findByUserId(userId, pageable);
 
-        Page<Debt> txnPage = debtRepo.findByUserId(userId, pageable);
-
-        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
+        return debtPage.map(this::mapToResponseDto);
     }
 
     @Override
     public Page<DebtResponseDto> getAllBorrowingDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, pageable);
-        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
+        Page<Debt> debtPage = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, pageable);
+
+        return debtPage.map(this::mapToResponseDto);
     }
 
     @Override
     public Page<DebtResponseDto> getAllLendingDebtsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Debt> txnPage = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, pageable);
-        return txnPage.map(txn -> modelMapper.map(txn, DebtResponseDto.class));
-    }
+        Page<Debt> debtPage = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, pageable);
 
+        return debtPage.map(this::mapToResponseDto);
+    }
 
     public DebtResponseDto getDebtById(UUID id) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Debt debt = debtRepo.findById(id)
-                .filter(t -> t.getUser().getId().equals(userId))
+                .filter(d -> d.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Debt not found"));
-        return modelMapper.map(debt, DebtResponseDto.class);
+
+        return mapToResponseDto(debt);
     }
 
     public void deleteDebtById(UUID id) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Debt debt = debtRepo.findById(id)
-                .filter(t -> t.getUser().getId().equals(userId))
+                .filter(d -> d.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Debt not found"));
+
         debtRepo.delete(debt);
     }
 
     public DebtResponseDto updateDebt(UUID id, DebtRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Debt debt = debtRepo.findById(id)
-                .filter(t -> t.getUser().getId().equals(userId))
+                .filter(d -> d.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Debt not found"));
 
         debt.setType(dto.getType());
@@ -102,7 +108,29 @@ public class DebtService implements IDebtService {
         debt.setDueDate(dto.getDueDate());
         debt.setAdditionalDetail(dto.getAdditionalDetail());
 
-        Debt updated = debtRepo.save(debt);
-        return modelMapper.map(updated, DebtResponseDto.class);
+        Debt updatedDebt = debtRepo.save(debt);
+        return mapToResponseDto(updatedDebt);
+    }
+
+    private DebtResponseDto mapToResponseDto(Debt debt) {
+        DebtResponseDto dto = modelMapper.map(debt, DebtResponseDto.class);
+        dto.setAmount(calculateNetAmount(debt.getRecords()));
+        return dto;
+    }
+
+    private BigDecimal calculateNetAmount(List<Record> records) {
+        if (records == null || records.isEmpty()) return BigDecimal.ZERO;
+
+        BigDecimal totalPaid = records.stream()
+                .filter(r -> r.getType() == RecordType.PAID)
+                .map(Record::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalReceived = records.stream()
+                .filter(r -> r.getType() == RecordType.RECEIVED)
+                .map(Record::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalPaid.subtract(totalReceived).abs();
     }
 }

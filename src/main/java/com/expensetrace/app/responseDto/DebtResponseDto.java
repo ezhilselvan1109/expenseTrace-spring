@@ -3,6 +3,7 @@ package com.expensetrace.app.responseDto;
 import com.expensetrace.app.enums.DebtType;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ public class DebtResponseDto {
     private String personName;
 
     private LocalDate dueDate;
+
+    private BigDecimal amount;
 
     private String additionalDetail;
 
