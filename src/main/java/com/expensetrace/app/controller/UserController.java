@@ -37,7 +37,7 @@ public class UserController {
 
     @Operation(summary = "Get current user", description = "Returns user details from JWT token context.")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse> getUserById() {
+    public ResponseEntity<ApiResponse> getMe() {
         try {
             UserResponseDto currentUser = userService.getUser();
             return ResponseEntity.ok(new ApiResponse("Found", currentUser));

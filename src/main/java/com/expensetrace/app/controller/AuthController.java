@@ -45,7 +45,7 @@ public class AuthController {
                 "; Max-Age=" + (24 * 60 * 60);
 
         response.setHeader("Set-Cookie", cookie);
-        return ResponseEntity.ok(new ApiResponse("Login successful", null));
+        return ResponseEntity.ok(new ApiResponse("Login successful", true));
     }
 
     @Operation(summary = "User logout", description = "Clears JWT cookie to log out the user.")
@@ -58,6 +58,6 @@ public class AuthController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
-        return ResponseEntity.ok(new ApiResponse("Logout successful", null));
+        return ResponseEntity.ok(new ApiResponse("Logout successful", true));
     }
 }
