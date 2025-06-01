@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -127,4 +128,15 @@ public class RecordService implements IRecordService {
 
         return debtPage.map(debt -> modelMapper.map(debt, RecordResponseDto.class));
     }
+
+    @Override
+    public BigDecimal getTotalPaid(UUID debtId) {
+        return recordRepo.findTotalAmountByDebtIdAndType(debtId, RecordType.PAID);
+    }
+
+    @Override
+    public BigDecimal getTotalReceived(UUID debtId) {
+        return recordRepo.findTotalAmountByDebtIdAndType(debtId, RecordType.RECEIVED);
+    }
+
 }

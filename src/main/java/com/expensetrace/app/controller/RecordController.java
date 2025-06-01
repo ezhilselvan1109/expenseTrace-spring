@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,15 +106,17 @@ public class RecordController {
         }
     }
 
-    @GetMapping("/total-paid")
+    @GetMapping("/{debtId}/total-paid")
     @Operation(summary = "Get total-paid")
-    public ResponseEntity<ApiResponse> getTotalPaid() {
-        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+    public ResponseEntity<ApiResponse> getTotalPaid(@PathVariable UUID debtId) {
+        BigDecimal totalPaid = debtRecordService.getTotalPaid(debtId);
+        return ResponseEntity.ok(new ApiResponse("Fetched", totalPaid));
     }
 
-    @GetMapping("/total-received")
+    @GetMapping("/{debtId}/total-received")
     @Operation(summary = "Get total received")
-    public ResponseEntity<ApiResponse> getTotalReceived() {
-        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+    public ResponseEntity<ApiResponse> getTotalReceived(@PathVariable UUID debtId) {
+        BigDecimal totalReceived = debtRecordService.getTotalReceived(debtId);
+        return ResponseEntity.ok(new ApiResponse("Fetched", totalReceived));
     }
 }

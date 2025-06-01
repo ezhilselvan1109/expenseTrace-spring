@@ -4,6 +4,7 @@ import com.expensetrace.app.requestDto.RecordRequestDto;
 import com.expensetrace.app.responseDto.RecordResponseDto;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,4 +21,8 @@ public interface IRecordService {
     Page<RecordResponseDto> getAllAdjustmentRecordsByUser(UUID debtId, int page, int size);
 
     Page<RecordResponseDto> getAllPaidRecordsByUser(UUID debtId, int page, int size);
+
+    BigDecimal getTotalPaid(UUID debtId);
+
+    BigDecimal getTotalReceived(UUID debtId);
 }
