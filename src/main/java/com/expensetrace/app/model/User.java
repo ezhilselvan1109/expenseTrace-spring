@@ -32,6 +32,6 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Category> userCategories = new HashSet<>();
+    private final Set<Category> userCategories = new HashSet<>();
 
 }

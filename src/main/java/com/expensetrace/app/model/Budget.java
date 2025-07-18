@@ -36,5 +36,5 @@ public class Budget {
     private double totalLimit;
 
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CategoryBudgetLimit> categoryLimits = new HashSet<>();
+    private final Set<CategoryBudgetLimit> categoryLimits = new HashSet<>();
 }
