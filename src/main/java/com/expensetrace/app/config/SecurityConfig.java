@@ -48,11 +48,11 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--96435430.local-credentialless.webcontainer-api.io/",
+                        .allowedOrigins("https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--96435430.local-credentialless.webcontainer-api.io/"
                                 ,"https://expensetrace-nextjs.vercel.app/"
                                 ,"https://expensetrace.vercel.app/",
                                 "http://localhost:3000",
-                                "http://localhost:5173")
+                                "http://localhost:5173/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
