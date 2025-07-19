@@ -15,6 +15,7 @@ public class JwtUtil {
     private final long EXPIRATION = 1000 * 60 * 60;
 
     private Key getSigningKey() {
+
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
