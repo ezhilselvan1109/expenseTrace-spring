@@ -163,4 +163,32 @@ public class CategoryService implements ICategoryService {
 
         return modelMapper.map(categoryToSetDefault, CategoryResponseDto.class);
     }
+
+    public void createDefaultCategoriesForUser(User user) {
+        List<Category> expenseCategories = List.of(
+                createCategory(user, "Food", CategoryType.EXPENSE, "apple", "red", true),
+                createCategory(user, "Travel", CategoryType.EXPENSE, "airplane", "blue", false),
+                createCategory(user, "Medical", CategoryType.EXPENSE, "pill", "teal", false),
+                createCategory(user, "Shopping", CategoryType.EXPENSE, "shopping-bag", "violet", false)
+        );
+
+        List<Category> incomeCategories = List.of(
+                createCategory(user, "Salary", CategoryType.INCOME, "wallet", "green", true),
+                createCategory(user, "Investment", CategoryType.INCOME, "bank", "yellow", false)
+        );
+
+        categoryRepository.saveAll(expenseCategories);
+        categoryRepository.saveAll(incomeCategories);
+    }
+
+    private Category createCategory(User user, String name, CategoryType type, String icon, String color, boolean isDefault) {
+        Category category = new Category();
+        category.setUser(user);
+        category.setName(name);
+        category.setType(type);
+        category.setIcon(icon);
+        category.setColor(color);
+        category.setDefault(isDefault);
+        return category;
+    }
 }
