@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
@@ -30,4 +32,11 @@ public class BudgetController {
         budgetService.createYearlyBudget(requestDto);
         return ResponseEntity.status(CREATED).body(new ApiResponse("Yearly budget created successfully", null));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteBudget(@PathVariable UUID id) {
+        budgetService.deleteBudget(id);
+        return ResponseEntity.ok(new ApiResponse("Budget deleted successfully", null));
+    }
+
 }

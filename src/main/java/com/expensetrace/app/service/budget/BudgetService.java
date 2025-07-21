@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.budget;
 
+import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.BudgetRepository;
 import com.expensetrace.app.repository.CategoryRepository;
@@ -25,7 +26,7 @@ public class BudgetService implements IBudgetService {
     private final MonthlyBudgetRepository monthlyBudgetRepo;
     private final YearlyBudgetRepository yearlyBudgetRepo;
     private final CategoryRepository categoryRepo;
-
+    private final BudgetRepository budgetRepository;
     @Override
     @Transactional
     public void createMonthlyBudget(MonthlyBudgetRequestDto dto) {
@@ -86,4 +87,19 @@ public class BudgetService implements IBudgetService {
         budget.setCategoryLimits(categoryLimits);
         yearlyBudgetRepo.save(budget);
     }
+
+    @Override
+    @Transactional
+    public void deleteBudget(UUID id) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        if (!budget.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You are not authorized to delete this budget.");
+        }
+
+        budgetRepository.delete(budget);
+    }
+
 }
