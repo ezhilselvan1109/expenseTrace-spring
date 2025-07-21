@@ -39,4 +39,20 @@ public class BudgetController {
         return ResponseEntity.ok(new ApiResponse("Budget deleted successfully", null));
     }
 
+    @PutMapping("/month/{id}")
+    public ResponseEntity<ApiResponse> updateMonthlyBudget(
+            @PathVariable UUID id,
+            @RequestBody MonthlyBudgetRequestDto request) {
+        budgetService.updateMonthlyBudget(id, request);
+        return ResponseEntity.ok(new ApiResponse("Monthly budget updated successfully", null));
+    }
+
+    @PutMapping("/year/{id}")
+    public ResponseEntity<ApiResponse> updateYearlyBudget(
+            @PathVariable UUID id,
+            @RequestBody YearlyBudgetRequestDto request) {
+        budgetService.updateYearlyBudget(id, request);
+        return ResponseEntity.ok(new ApiResponse("Yearly budget updated successfully", null));
+    }
+
 }

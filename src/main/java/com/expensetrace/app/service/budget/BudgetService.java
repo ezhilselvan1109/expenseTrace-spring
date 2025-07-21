@@ -90,6 +90,66 @@ public class BudgetService implements IBudgetService {
 
     @Override
     @Transactional
+    public void updateMonthlyBudget(UUID id, MonthlyBudgetRequestDto request) {
+        MonthlyBudget budget = monthlyBudgetRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Monthly budget not found"));
+
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        if (!budget.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("Not authorized");
+        }
+
+        budget.setYear(request.getYear());
+        budget.setMonth(request.getMonth());
+        budget.setTotalLimit(request.getTotalLimit());
+
+        budget.getCategoryLimits().clear();
+
+        for (CategoryLimitDto dto : request.getCategoryLimits()) {
+            Category category = categoryRepo.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            CategoryBudgetLimit limit = new CategoryBudgetLimit();
+            limit.setBudget(budget);
+            limit.setCategory(category);
+            limit.setCategoryLimit(dto.getCategoryLimit());
+            budget.getCategoryLimits().add(limit);
+        }
+
+        monthlyBudgetRepo.save(budget);
+    }
+
+    @Override
+    @Transactional
+    public void updateYearlyBudget(UUID id, YearlyBudgetRequestDto request) {
+        YearlyBudget budget = yearlyBudgetRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Yearly budget not found"));
+
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        if (!budget.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("Not authorized");
+        }
+
+        budget.setYear(request.getYear());
+        budget.setTotalLimit(request.getTotalLimit());
+
+        budget.getCategoryLimits().clear();
+
+        for (CategoryLimitDto dto : request.getCategoryLimits()) {
+            Category category = categoryRepo.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            CategoryBudgetLimit limit = new CategoryBudgetLimit();
+            limit.setBudget(budget);
+            limit.setCategory(category);
+            limit.setCategoryLimit(dto.getCategoryLimit());
+            budget.getCategoryLimits().add(limit);
+        }
+
+        yearlyBudgetRepo.save(budget);
+    }
+
+
+    @Override
+    @Transactional
     public void deleteBudget(UUID id) {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Budget not found"));
