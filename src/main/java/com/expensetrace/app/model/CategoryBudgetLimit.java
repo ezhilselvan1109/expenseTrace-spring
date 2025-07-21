@@ -28,4 +28,3 @@ public class CategoryBudgetLimit {
 
     private double categoryLimit;
 }
-
