@@ -26,7 +26,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    private LocalDate date;
+    private int date;
+    private int month;
+    private int year;
     private LocalTime time;
     private BigDecimal amount;
 

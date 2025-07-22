@@ -3,8 +3,8 @@ package com.expensetrace.app.service.transaction;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.repository.*;
-import com.expensetrace.app.requestDto.TransactionRequestDTO;
-import com.expensetrace.app.responseDto.TransactionResponseDTO;
+import com.expensetrace.app.requestDto.TransactionRequestDto;
+import com.expensetrace.app.responseDto.TransactionResponseDto;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,7 +28,7 @@ public class TransactionService implements  ITransactionService{
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
 
-    public TransactionResponseDTO createTransaction(TransactionRequestDTO dto) {
+    public TransactionResponseDto createTransaction(TransactionRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         User user=new User();
         user.setId(userId);
@@ -36,7 +36,8 @@ public class TransactionService implements  ITransactionService{
         txn.setUser(user);
         txn.setType(dto.getType());
         txn.setDate(dto.getDate());
-        txn.setTime(dto.getTime());
+        txn.setMonth(dto.getMonth());
+        txn.setYear(dto.getYear());
         txn.setAmount(dto.getAmount());
         txn.setDescription(dto.getDescription());
 
@@ -61,33 +62,33 @@ public class TransactionService implements  ITransactionService{
         }
 
         Transaction savedTxn = transactionRepo.save(txn);
-        return modelMapper.map(savedTxn, TransactionResponseDTO.class);
+        return modelMapper.map(savedTxn, TransactionResponseDto.class);
     }
 
-    public List<TransactionResponseDTO> getAllTransactionsByUser() {
+    public List<TransactionResponseDto> getAllTransactionsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         return transactionRepo.findByUserId(userId).stream()
-                .map(txn -> modelMapper.map(txn, TransactionResponseDTO.class))
+                .map(txn -> modelMapper.map(txn, TransactionResponseDto.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Page<TransactionResponseDTO> getAllTransactionsByUser(int page, int size) {
+    public Page<TransactionResponseDto> getAllTransactionsByUser(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending().and(Sort.by("time").descending()));
 
         Page<Transaction> txnPage = transactionRepo.findByUserId(userId, pageable);
 
-        return txnPage.map(txn -> modelMapper.map(txn, TransactionResponseDTO.class));
+        return txnPage.map(txn -> modelMapper.map(txn, TransactionResponseDto.class));
     }
 
 
-    public TransactionResponseDTO getTransactionById(UUID id) {
+    public TransactionResponseDto getTransactionById(UUID id) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Transaction txn = transactionRepo.findById(id)
                 .filter(t -> t.getUser().getId().equals(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
-        return modelMapper.map(txn, TransactionResponseDTO.class);
+        return modelMapper.map(txn, TransactionResponseDto.class);
     }
 
     public void deleteTransactionById(UUID id) {
@@ -98,7 +99,7 @@ public class TransactionService implements  ITransactionService{
         transactionRepo.delete(txn);
     }
 
-    public TransactionResponseDTO updateTransaction(UUID id, TransactionRequestDTO dto) {
+    public TransactionResponseDto updateTransaction(UUID id, TransactionRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Transaction txn = transactionRepo.findById(id)
                 .filter(t -> t.getUser().getId().equals(userId))
@@ -106,7 +107,8 @@ public class TransactionService implements  ITransactionService{
 
         txn.setType(dto.getType());
         txn.setDate(dto.getDate());
-        txn.setTime(dto.getTime());
+        txn.setMonth(dto.getMonth());
+        txn.setYear(dto.getYear());
         txn.setAmount(dto.getAmount());
         txn.setDescription(dto.getDescription());
 
@@ -128,6 +130,6 @@ public class TransactionService implements  ITransactionService{
         }
 
         Transaction updated = transactionRepo.save(txn);
-        return modelMapper.map(updated, TransactionResponseDTO.class);
+        return modelMapper.map(updated, TransactionResponseDto.class);
     }
 }

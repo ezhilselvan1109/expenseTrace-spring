@@ -1,9 +1,9 @@
 package com.expensetrace.app.controller;
 
 
-import com.expensetrace.app.requestDto.TransactionRequestDTO;
+import com.expensetrace.app.requestDto.TransactionRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.TransactionResponseDTO;
+import com.expensetrace.app.responseDto.TransactionResponseDto;
 import com.expensetrace.app.service.transaction.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,9 +27,9 @@ public class TransactionsController {
 
     @PostMapping
     @Operation(summary = "Create a transaction")
-    public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequestDto dto) {
         try {
-            TransactionResponseDTO txn = transactionService.createTransaction(dto);
+            TransactionResponseDto txn = transactionService.createTransaction(dto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Transaction created", txn));
         } catch (Exception e) {
             return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
@@ -39,7 +39,7 @@ public class TransactionsController {
     @GetMapping("/all")
     @Operation(summary = "Get all transactions")
     public ResponseEntity<ApiResponse> getAllTransactions() {
-        List<TransactionResponseDTO> txns = transactionService.getAllTransactionsByUser();
+        List<TransactionResponseDto> txns = transactionService.getAllTransactionsByUser();
         return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
     }
 
@@ -49,7 +49,7 @@ public class TransactionsController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<TransactionResponseDTO> txns = transactionService.getAllTransactionsByUser(page, size);
+        Page<TransactionResponseDto> txns = transactionService.getAllTransactionsByUser(page, size);
         return ResponseEntity.ok(new ApiResponse("Fetched transactions", txns));
     }
 
@@ -58,7 +58,7 @@ public class TransactionsController {
     @Operation(summary = "Get transaction by ID")
     public ResponseEntity<ApiResponse> getTransaction(@PathVariable UUID id) {
         try {
-            TransactionResponseDTO txn = transactionService.getTransactionById(id);
+            TransactionResponseDto txn = transactionService.getTransactionById(id);
             return ResponseEntity.ok(new ApiResponse("Transaction found", txn));
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -69,7 +69,7 @@ public class TransactionsController {
     @Operation(summary = "Get all transaction by account ID")
     public ResponseEntity<ApiResponse> getAllTransactionByAccountId(@PathVariable UUID accountId) {
         try {
-            TransactionResponseDTO txn = transactionService.getTransactionById(accountId);
+            TransactionResponseDto txn = transactionService.getTransactionById(accountId);
             return ResponseEntity.ok(new ApiResponse("Transaction found", txn));
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -89,9 +89,9 @@ public class TransactionsController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update transaction")
-    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequestDto dto) {
         try {
-            TransactionResponseDTO updated = transactionService.updateTransaction(id, dto);
+            TransactionResponseDto updated = transactionService.updateTransaction(id, dto);
             return ResponseEntity.ok(new ApiResponse("Transaction updated", updated));
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

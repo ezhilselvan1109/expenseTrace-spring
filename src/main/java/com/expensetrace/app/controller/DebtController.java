@@ -3,20 +3,16 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.DebtResponseDto;
-import com.expensetrace.app.responseDto.TransactionResponseDTO;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.springframework.http.HttpStatus.*;
 

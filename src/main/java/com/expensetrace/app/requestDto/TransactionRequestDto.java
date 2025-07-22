@@ -4,16 +4,16 @@ import com.expensetrace.app.enums.TransactionType;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
 @Data
-public class TransactionRequestDTO {
+public class TransactionRequestDto {
     private TransactionType type;
-    private LocalDate date;
-    private LocalTime time;
+    private int date;
+    private int month;
+    private int year;
     private BigDecimal amount;
     private UUID categoryId;
     private UUID accountId;
