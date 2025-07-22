@@ -3,6 +3,8 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.MonthlyBudgetRequestDto;
 import com.expensetrace.app.requestDto.YearlyBudgetRequestDto;
 import com.expensetrace.app.response.ApiResponse;
+import com.expensetrace.app.responseDto.MonthlyBudgetBreakdownResponseDto;
+import com.expensetrace.app.responseDto.YearlyBudgetBreakdownResponseDto;
 import com.expensetrace.app.service.budget.IBudgetService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +56,27 @@ public class BudgetController {
         budgetService.updateYearlyBudget(id, request);
         return ResponseEntity.ok(new ApiResponse("Yearly budget updated successfully", null));
     }
+
+    @GetMapping("/summary/month")
+    public ResponseEntity<?> getMonthlyBudgetSummary() {
+        return ResponseEntity.ok(budgetService.getMonthlyBudgetSummary());
+    }
+
+    @GetMapping("/summary/year")
+    public ResponseEntity<?> getYearlyBudgetSummary() {
+        return ResponseEntity.ok(budgetService.getYearlyBudgetSummary());
+    }
+
+
+    @GetMapping("/monthly/{budgetId}")
+    public ResponseEntity<MonthlyBudgetBreakdownResponseDto> getMonthlyBudgetBreakdown(@PathVariable UUID budgetId) {
+        return ResponseEntity.ok(budgetService.getMonthlyBudgetBreakdown(budgetId));
+    }
+
+    @GetMapping("/yearly/{budgetId}")
+    public ResponseEntity<YearlyBudgetBreakdownResponseDto> getYearlyBudgetBreakdown(@PathVariable UUID budgetId) {
+        return ResponseEntity.ok(budgetService.getYearlyBudgetBreakdown(budgetId));
+    }
+
 
 }

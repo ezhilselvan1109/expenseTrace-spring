@@ -2,21 +2,18 @@ package com.expensetrace.app.service.budget;
 
 import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
-import com.expensetrace.app.repository.BudgetRepository;
-import com.expensetrace.app.repository.CategoryRepository;
-import com.expensetrace.app.repository.MonthlyBudgetRepository;
-import com.expensetrace.app.repository.YearlyBudgetRepository;
+import com.expensetrace.app.repository.*;
 import com.expensetrace.app.requestDto.CategoryLimitDto;
 import com.expensetrace.app.requestDto.MonthlyBudgetRequestDto;
 import com.expensetrace.app.requestDto.YearlyBudgetRequestDto;
+import com.expensetrace.app.responseDto.*;
 import com.expensetrace.app.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +24,8 @@ public class BudgetService implements IBudgetService {
     private final YearlyBudgetRepository yearlyBudgetRepo;
     private final CategoryRepository categoryRepo;
     private final BudgetRepository budgetRepository;
+    private final TransactionRepository transactionRepo;
+
     @Override
     @Transactional
     public void createMonthlyBudget(MonthlyBudgetRequestDto dto) {
@@ -160,6 +159,140 @@ public class BudgetService implements IBudgetService {
         }
 
         budgetRepository.delete(budget);
+    }
+
+    @Override
+    public Map<String, List<MonthlyBudgetSummaryResponseDto>> getMonthlyBudgetSummary() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        List<MonthlyBudget> budgets = monthlyBudgetRepo.findAllByUserId(userId);
+
+        LocalDate today = LocalDate.now();
+
+        Map<String, List<MonthlyBudgetSummaryResponseDto>> result = new HashMap<>();
+        result.put("past", new ArrayList<>());
+        result.put("active", new ArrayList<>());
+        result.put("upcoming", new ArrayList<>());
+
+        for (MonthlyBudget b : budgets) {
+            LocalDate budgetDate = LocalDate.of(b.getYear(), b.getMonth(), 1);
+            double spent = transactionRepo.sumAmountByUserIdAndMonthAndYear(userId, b.getMonth(), b.getYear());
+
+            MonthlyBudgetSummaryResponseDto dto = new MonthlyBudgetSummaryResponseDto(b.getId(),
+                    b.getMonth(), b.getYear(), b.getTotalLimit(), spent
+            );
+
+            if (budgetDate.getYear() == today.getYear() && budgetDate.getMonth() == today.getMonth()) {
+                result.get("active").add(dto);
+            } else if (budgetDate.isBefore(today.withDayOfMonth(1))) {
+                result.get("past").add(dto);
+            } else {
+                result.get("upcoming").add(dto);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Map<String, List<YearlyBudgetSummaryResponseDto>> getYearlyBudgetSummary() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        List<YearlyBudget> budgets = yearlyBudgetRepo.findAllByUserId(userId);
+
+        int currentYear = LocalDate.now().getYear();
+
+        Map<String, List<YearlyBudgetSummaryResponseDto>> result = new HashMap<>();
+        result.put("past", new ArrayList<>());
+        result.put("active", new ArrayList<>());
+        result.put("upcoming", new ArrayList<>());
+
+        for (YearlyBudget b : budgets) {
+            double spent = transactionRepo.sumAmountByUserIdAndYear(userId, b.getYear());
+
+            YearlyBudgetSummaryResponseDto dto = new YearlyBudgetSummaryResponseDto(b.getId(),
+                    b.getYear(), b.getTotalLimit(), spent
+            );
+
+            if (b.getYear() == currentYear) {
+                result.get("active").add(dto);
+            } else if (b.getYear() < currentYear) {
+                result.get("past").add(dto);
+            } else {
+                result.get("upcoming").add(dto);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public MonthlyBudgetBreakdownResponseDto getMonthlyBudgetBreakdown(UUID budgetId) {
+        MonthlyBudget budget = monthlyBudgetRepo.findById(budgetId)
+                .orElseThrow(() -> new RuntimeException("Monthly Budget not found"));
+
+        double totalSpent = 0;
+        List<CategorySpendResponseDto> categorySpends = new ArrayList<>();
+
+        for (CategoryBudgetLimit limit : budget.getCategoryLimits()) {
+            Category category = limit.getCategory();
+
+            double spent = transactionRepo.sumByCategoryAndMonthAndYear(
+                    category.getId(), budget.getMonth(), budget.getYear(), budget.getUser().getId());
+
+            totalSpent += spent;
+
+            categorySpends.add(new CategorySpendResponseDto(
+                    category.getId(),
+                    category.getName(),
+                    category.getColor(),
+                    category.getIcon(),
+                    limit.getCategoryLimit(),
+                    spent
+            ));
+        }
+
+        return new MonthlyBudgetBreakdownResponseDto(
+                budget.getId(),
+                budget.getMonth(),
+                budget.getYear(),
+                budget.getTotalLimit(),
+                totalSpent,
+                categorySpends
+        );
+    }
+
+    @Override
+    public YearlyBudgetBreakdownResponseDto getYearlyBudgetBreakdown(UUID budgetId) {
+        YearlyBudget budget = yearlyBudgetRepo.findById(budgetId)
+                .orElseThrow(() -> new RuntimeException("Yearly Budget not found"));
+
+        double totalSpent = 0;
+        List<CategorySpendResponseDto> categorySpends = new ArrayList<>();
+
+        for (CategoryBudgetLimit limit : budget.getCategoryLimits()) {
+            Category category = limit.getCategory();
+
+            double spent = transactionRepo.sumByCategoryAndYear(
+                    category.getId(), budget.getYear(), budget.getUser().getId());
+
+            totalSpent += spent;
+
+            categorySpends.add(new CategorySpendResponseDto(
+                    category.getId(),
+                    category.getName(),
+                    category.getColor(),
+                    category.getIcon(),
+                    limit.getCategoryLimit(),
+                    spent
+            ));
+        }
+
+        return new YearlyBudgetBreakdownResponseDto(
+                budget.getId(),
+                budget.getYear(),
+                budget.getTotalLimit(),
+                totalSpent,
+                categorySpends
+        );
     }
 
 }
