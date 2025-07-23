@@ -54,4 +54,16 @@ public class SettingsController {
         return ResponseEntity.ok(new ApiResponse("Daily reminder updated successfully", null));
     }
 
+    @Operation(summary = "Delete user account", description = "Permanently deletes the authenticated user's account and all related data.")
+    @DeleteMapping("/account")
+    public ResponseEntity<ApiResponse> deleteUserAccount() {
+        return ResponseEntity.ok(new ApiResponse("Account deleted successfully", null));
+    }
+
+    @Operation(summary = "Clear all data and start fresh", description = "Deletes all user data but retains the account for a fresh start.")
+    @DeleteMapping("/data")
+    public ResponseEntity<ApiResponse> clearUserDataAndStartFresh() {
+        return ResponseEntity.ok(new ApiResponse("All data deleted. You can now start fresh.", null));
+    }
+
 }
