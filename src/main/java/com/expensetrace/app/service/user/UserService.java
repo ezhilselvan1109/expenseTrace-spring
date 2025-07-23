@@ -8,6 +8,7 @@ import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.responseDto.UserResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
 import com.expensetrace.app.service.category.ICategoryService;
+import com.expensetrace.app.service.settings.ISettingsService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,6 +24,7 @@ public class UserService implements IUserService {
     private final IAccountService accountService;
     private final SecurityUtil securityUtil;
     private final ICategoryService categoryService;
+    private final ISettingsService settingService;
     @Override
     public UserResponseDto getUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -40,6 +42,7 @@ public class UserService implements IUserService {
         User user = modelMapper.map(userRequestDto, User.class);
         User savedUser = userRepository.save(user);
         accountService.addCashAccount(savedUser);
+        settingService.addSettings(savedUser);
         categoryService.createDefaultCategoriesForUser(savedUser);
         return modelMapper.map(savedUser, UserResponseDto.class);
     }
