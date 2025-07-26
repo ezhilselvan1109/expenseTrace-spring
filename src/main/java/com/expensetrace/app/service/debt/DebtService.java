@@ -8,6 +8,8 @@ import com.expensetrace.app.model.Record;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.responseDto.DebtResponseDto;
+import com.expensetrace.app.responseDto.DebtSummaryResponseDto;
+import com.expensetrace.app.service.record.IRecordService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,7 @@ public class DebtService implements IDebtService {
     private final DebtRepository debtRepo;
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
+    private final IRecordService recordService;
 
     public DebtResponseDto createDebt(DebtRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -42,6 +45,7 @@ public class DebtService implements IDebtService {
         debt.setAdditionalDetail(dto.getAdditionalDetail());
 
         Debt savedDebt = debtRepo.save(debt);
+        recordService.createRecord(savedDebt.getId(),dto.getRecord());
         return mapToResponseDto(savedDebt);
     }
 
@@ -133,4 +137,41 @@ public class DebtService implements IDebtService {
 
         return totalPaid.subtract(totalReceived).abs();
     }
+
+    public BigDecimal getTotalPayableAmount() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        List<Debt> borrowingDebts = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, Pageable.unpaged()).getContent();
+
+        return borrowingDebts.stream()
+                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getTotalReceivableAmount() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
+
+        return lendingDebts.stream()
+                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public DebtSummaryResponseDto getPayableAndReceivableSummary() {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+
+        List<Debt> borrowingDebts = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, Pageable.unpaged()).getContent();
+        List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
+
+        BigDecimal totalPayable = borrowingDebts.stream()
+                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalReceivable = lendingDebts.stream()
+                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return new DebtSummaryResponseDto(totalPayable, totalReceivable);
+    }
+
+
 }

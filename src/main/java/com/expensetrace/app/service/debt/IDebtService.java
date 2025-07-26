@@ -2,8 +2,10 @@ package com.expensetrace.app.service.debt;
 
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.responseDto.DebtResponseDto;
+import com.expensetrace.app.responseDto.DebtSummaryResponseDto;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,5 +18,8 @@ public interface IDebtService {
     DebtResponseDto getDebtById(UUID id);
     void deleteDebtById(UUID id);
     DebtResponseDto updateDebt(UUID id, DebtRequestDto dto);
+    BigDecimal getTotalPayableAmount();
+    BigDecimal getTotalReceivableAmount();
+    DebtSummaryResponseDto getPayableAndReceivableSummary();
 
 }

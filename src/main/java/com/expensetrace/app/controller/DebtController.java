@@ -3,6 +3,7 @@ package com.expensetrace.app.controller;
 import com.expensetrace.app.requestDto.DebtRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.responseDto.DebtResponseDto;
+import com.expensetrace.app.responseDto.DebtSummaryResponseDto;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,14 +107,24 @@ public class DebtController {
     }
 
     @GetMapping("/payable")
-    @Operation(summary = "Get all Lending debts with pagination")
+    @Operation(summary = "Get total Payable amount", description = "Sum of all borrowing debts")
     public ResponseEntity<ApiResponse> getPayable() {
-        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+        BigDecimal totalPayable = debtService.getTotalPayableAmount();
+        return ResponseEntity.ok(new ApiResponse("Total Payable fetched", totalPayable));
     }
 
     @GetMapping("/receivable")
-    @Operation(summary = "Get all Lending debts with pagination")
+    @Operation(summary = "Get total Receivable amount", description = "Sum of all lending debts")
     public ResponseEntity<ApiResponse> getReceivable() {
-        return ResponseEntity.ok(new ApiResponse("Fetched", null));
+        BigDecimal totalReceivable = debtService.getTotalReceivableAmount();
+        return ResponseEntity.ok(new ApiResponse("Total Receivable fetched", totalReceivable));
     }
+
+    @GetMapping("/summary")
+    @Operation(summary = "Get total Payable and Receivable summary")
+    public ResponseEntity<ApiResponse> getDebtSummary() {
+        DebtSummaryResponseDto summary = debtService.getPayableAndReceivableSummary();
+        return ResponseEntity.ok(new ApiResponse("Debt summary fetched", summary));
+    }
+
 }

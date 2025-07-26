@@ -13,4 +13,6 @@ public class DebtRequestDto {
     private String additionalDetail;
 
     private DebtType type;
+
+    private RecordRequestDto record;
 }
