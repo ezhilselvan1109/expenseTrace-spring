@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Transaction Type: 1=EXPENSE, 2=INCOME, 3=TRANSFER")
+@Schema(description = "Transaction Type: 1=EXPENSE, 2=INCOME, 3=TRANSFER,4=ADJUSTMENT")
 public enum TransactionType {
     EXPENSE(1),
     INCOME(2),
-    TRANSFER(3);
+    TRANSFER(3),
+    ADJUSTMENT(4);
 
     private final int code;
 

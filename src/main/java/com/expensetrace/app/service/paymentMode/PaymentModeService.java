@@ -2,9 +2,9 @@ package com.expensetrace.app.service.paymentMode;
 
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Bank;
-import com.expensetrace.app.model.PaymentMode;
-import com.expensetrace.app.model.Account;
+import com.expensetrace.app.model.account.Bank;
+import com.expensetrace.app.model.account.PaymentMode;
+import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.repository.PaymentModeRepository;
 import com.expensetrace.app.requestDto.PaymentModeRequestDto;
 import com.expensetrace.app.responseDto.PaymentModeResponseDto;

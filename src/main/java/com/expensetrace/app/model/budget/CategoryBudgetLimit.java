@@ -1,5 +1,7 @@
-package com.expensetrace.app.model;
+package com.expensetrace.app.model.budget;
 
+import com.expensetrace.app.model.Category;
+import com.expensetrace.app.model.budget.Budget;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

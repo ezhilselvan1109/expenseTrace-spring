@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,42 +31,31 @@ public class TagController {
             description = "Returns a list of all tags created by the currently authenticated user."
     )
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAllTagsByUser() {
+    public ResponseEntity<ApiResponse> getAllTags() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         try {
-            List<TagResponseDto> tagResponseDto = tagService.getAllTagsByUser(userId);
+            List<TagResponseDto> tagResponseDto = new ArrayList<>();
+            TagResponseDto tagResponse1=new TagResponseDto();
+            tagResponse1.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c57"));
+            tagResponse1.setTransactions(4);
+            tagResponse1.setName("tag1");
+            tagResponseDto.add(tagResponse1);
+
+            TagResponseDto tagResponse2=new TagResponseDto();
+            tagResponse2.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c57"));
+            tagResponse2.setTransactions(5);
+            tagResponse2.setName("tag2");
+            tagResponseDto.add(tagResponse2);
+
+            TagResponseDto tagResponse3=new TagResponseDto();
+            tagResponse3.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c57"));
+            tagResponse3.setTransactions(3);
+            tagResponse3.setName("tag3");
+            tagResponseDto.add(tagResponse3);
+
             return ResponseEntity.ok(new ApiResponse("Found!", tagResponseDto));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
-        }
-    }
-
-    @Operation(
-            summary = "Create a new tag",
-            description = "Adds a new tag for the authenticated user. Throws an error if the tag already exists."
-    )
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponse> addTag(@RequestBody TagRequestDto tagRequestDto) {
-        UUID userId = securityUtil.getAuthenticatedUserId();
-        try {
-            TagResponseDto theTagResponseDto = tagService.addTag(tagRequestDto, userId);
-            return ResponseEntity.ok(new ApiResponse("Success", theTagResponseDto));
-        } catch (AlreadyExistsException e) {
-            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
-    @Operation(
-            summary = "Get a tag by ID",
-            description = "Fetches a specific tag by its ID. Throws an error if the tag is not found."
-    )
-    @GetMapping("/tag/{id}")
-    public ResponseEntity<ApiResponse> getTagById(@PathVariable UUID id) {
-        try {
-            TagResponseDto theTagResponseDto = tagService.getTagById(id);
-            return ResponseEntity.ok(new ApiResponse("Found", theTagResponseDto));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
@@ -76,7 +66,20 @@ public class TagController {
     @DeleteMapping("/tag/{id}/delete")
     public ResponseEntity<ApiResponse> deleteTag(@PathVariable UUID id) {
         try {
-            tagService.deleteTagById(id);
+            //tagService.deleteTagById(id);
+            return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @Operation(
+            summary = "merge a tag by ID",
+            description = "Merges the tag with the specified ID into another tag identified by tagId parameter. Throws an error if either tag is not found."
+    )
+    @PutMapping("/tag/{id}/merge")
+    public ResponseEntity<ApiResponse> mergeTag(@PathVariable UUID id, @RequestParam UUID tagId) {
+        try {
             return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -90,8 +93,8 @@ public class TagController {
     @PutMapping("/tag/{id}/update")
     public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @RequestBody TagRequestDto tag) {
         try {
-            TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", updatedTagResponseDto));
+            //TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

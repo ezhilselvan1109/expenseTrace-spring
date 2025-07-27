@@ -2,6 +2,8 @@ package com.expensetrace.app.service.transaction;
 
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
+import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.requestDto.TransactionRequestDto;
 import com.expensetrace.app.responseDto.TransactionResponseDto;

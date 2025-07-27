@@ -1,7 +1,6 @@
 package com.expensetrace.app.repository;
 
 import com.expensetrace.app.enums.CategoryType;
-import com.expensetrace.app.model.Account;
 import com.expensetrace.app.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 

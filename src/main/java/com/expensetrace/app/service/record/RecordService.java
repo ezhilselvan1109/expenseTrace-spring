@@ -2,9 +2,9 @@ package com.expensetrace.app.service.record;
 
 import com.expensetrace.app.enums.RecordType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Account;
-import com.expensetrace.app.model.Debt;
-import com.expensetrace.app.model.Record;
+import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.debt.Debt;
+import com.expensetrace.app.model.debt.Record;
 import com.expensetrace.app.repository.RecordsRepository;
 import com.expensetrace.app.requestDto.RecordRequestDto;
 import com.expensetrace.app.responseDto.RecordResponseDto;

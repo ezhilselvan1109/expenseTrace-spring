@@ -1,6 +1,6 @@
 package com.expensetrace.app.repository;
 
-import com.expensetrace.app.model.PaymentMode;
+import com.expensetrace.app.model.account.PaymentMode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

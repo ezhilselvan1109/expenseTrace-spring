@@ -1,4 +1,4 @@
-package com.expensetrace.app.model;
+package com.expensetrace.app.model.account;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;

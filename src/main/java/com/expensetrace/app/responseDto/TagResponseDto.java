@@ -8,4 +8,5 @@ import java.util.UUID;
 public class TagResponseDto {
     private UUID id;
     private String name;
+    private Integer transactions;
 }

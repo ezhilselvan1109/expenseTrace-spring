@@ -1,6 +1,6 @@
 package com.expensetrace.app.repository;
 
-import com.expensetrace.app.model.Cash;
+import com.expensetrace.app.model.account.Cash;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 

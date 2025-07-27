@@ -1,6 +1,7 @@
-package com.expensetrace.app.model;
+package com.expensetrace.app.model.debt;
 
 import com.expensetrace.app.enums.DebtType;
+import com.expensetrace.app.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

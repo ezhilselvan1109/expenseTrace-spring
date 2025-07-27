@@ -1,6 +1,6 @@
 package com.expensetrace.app.repository;
 
-import com.expensetrace.app.model.YearlyBudget;
+import com.expensetrace.app.model.budget.YearlyBudget;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

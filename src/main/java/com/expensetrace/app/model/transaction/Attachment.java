@@ -1,5 +1,6 @@
-package com.expensetrace.app.model;
+package com.expensetrace.app.model.transaction;
 
+import com.expensetrace.app.model.transaction.Transaction;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

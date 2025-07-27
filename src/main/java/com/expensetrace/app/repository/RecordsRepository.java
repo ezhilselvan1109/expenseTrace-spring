@@ -1,7 +1,7 @@
 package com.expensetrace.app.repository;
 
 import com.expensetrace.app.enums.RecordType;
-import com.expensetrace.app.model.Record;
+import com.expensetrace.app.model.debt.Record;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

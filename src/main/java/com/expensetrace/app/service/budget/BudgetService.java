@@ -2,6 +2,10 @@ package com.expensetrace.app.service.budget;
 
 import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
+import com.expensetrace.app.model.budget.Budget;
+import com.expensetrace.app.model.budget.CategoryBudgetLimit;
+import com.expensetrace.app.model.budget.MonthlyBudget;
+import com.expensetrace.app.model.budget.YearlyBudget;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.requestDto.CategoryLimitDto;
 import com.expensetrace.app.requestDto.MonthlyBudgetRequestDto;
