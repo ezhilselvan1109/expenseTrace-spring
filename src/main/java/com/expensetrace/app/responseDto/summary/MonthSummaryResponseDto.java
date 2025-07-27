@@ -1,4 +1,4 @@
-package com.expensetrace.app.responseDto;
+package com.expensetrace.app.responseDto.summary;
 
 import lombok.Data;
 
