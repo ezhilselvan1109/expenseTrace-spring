@@ -141,9 +141,9 @@ public class SummaryController {
 
             categoryResponseDto.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c86"));
             categoryResponseDto.setType(CategoryType.fromCode(1));
-            categoryResponseDto.setName("food");
-            categoryResponseDto.setIcon("food");
-            categoryResponseDto.setColor("blue");
+            categoryResponseDto.setName("Food");
+            categoryResponseDto.setIcon("apple");
+            categoryResponseDto.setColor("red");
             categorySummary.setCategory(categoryResponseDto);
             categorySummary.setAmount(100);
 
@@ -152,9 +152,9 @@ public class SummaryController {
 
             categoryResponseDto.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c88"));
             categoryResponseDto.setType(CategoryType.fromCode(2));
-            categoryResponseDto.setName("parking");
-            categoryResponseDto.setIcon("parking");
-            categoryResponseDto.setColor("red");
+            categoryResponseDto.setName("Travel");
+            categoryResponseDto.setIcon("airplane");
+            categoryResponseDto.setColor("blue");
             categorySummary.setCategory(categoryResponseDto);
             categorySummary.setAmount(400);
 
@@ -163,9 +163,31 @@ public class SummaryController {
 
             categoryResponseDto.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c89"));
             categoryResponseDto.setType(CategoryType.fromCode(1));
-            categoryResponseDto.setName("ice");
-            categoryResponseDto.setIcon("ice");
-            categoryResponseDto.setColor("green");
+            categoryResponseDto.setName("Medical");
+            categoryResponseDto.setIcon("pill");
+            categoryResponseDto.setColor("teal");
+            categorySummary.setCategory(categoryResponseDto);
+            categorySummary.setAmount(700);
+
+            spendingCategory.add(categorySummary);
+            incomeCategory.add(categorySummary);
+
+            categoryResponseDto.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-54b8fd0c6c89"));
+            categoryResponseDto.setType(CategoryType.fromCode(1));
+            categoryResponseDto.setName("Shopping");
+            categoryResponseDto.setIcon("shopping-bag");
+            categoryResponseDto.setColor("violet");
+            categorySummary.setCategory(categoryResponseDto);
+            categorySummary.setAmount(700);
+
+            spendingCategory.add(categorySummary);
+            incomeCategory.add(categorySummary);
+
+            categoryResponseDto.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd8c6c89"));
+            categoryResponseDto.setType(CategoryType.fromCode(1));
+            categoryResponseDto.setName("Family");
+            categoryResponseDto.setIcon("home");
+            categoryResponseDto.setColor("orange");
             categorySummary.setCategory(categoryResponseDto);
             categorySummary.setAmount(700);
 
