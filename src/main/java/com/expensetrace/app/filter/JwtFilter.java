@@ -30,8 +30,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/", "/index.html", "/swagger-ui.html", "/swagger-ui/**",
             "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
-            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add",
-            "/h2-console/**"
+            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add"
+            ,"/api/v1/auth/forgot-password","/api/v1/auth/verify-otp","/api/v1/auth/reset-password","/h2-console/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();

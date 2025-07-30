@@ -60,4 +60,16 @@ public class AuthController {
 
         return ResponseEntity.ok(new ApiResponse("Logout successful", true));
     }
+
+    @Operation(summary = "User forgot-password", description = "forgot-password")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse> forgotPassword(HttpServletResponse response) {
+        return ResponseEntity.ok(new ApiResponse("successful", true));
+    }
+
+    @Operation(summary = "User verify-otp", description = "verify-otp")
+    @PostMapping("/verify-otp")
+    public ResponseEntity<ApiResponse> verifyOtp(HttpServletResponse response) {
+        return ResponseEntity.ok(new ApiResponse("successful", true));
+    }
 }
