@@ -166,7 +166,7 @@ public class CategoryService implements ICategoryService {
 
     public void createDefaultCategoriesForUser(User user) {
         List<Category> expenseCategories = List.of(
-                createCategory(user, "Food", CategoryType.EXPENSE, "apple", "red", true,true),
+                createCategory(user, "Food", CategoryType.EXPENSE, "apple", "red", false,true),
                 createCategory(user, "Travel", CategoryType.EXPENSE, "airplane", "blue", false,true),
                 createCategory(user, "Medical", CategoryType.EXPENSE, "pill", "teal", false,true),
                 createCategory(user, "Shopping", CategoryType.EXPENSE, "shopping-bag", "violet", false,true),
@@ -174,18 +174,18 @@ public class CategoryService implements ICategoryService {
                 createCategory(user, "Entertainment", CategoryType.EXPENSE, "game", "pink", false,true),
                 createCategory(user, "Utilities", CategoryType.EXPENSE, "electricity", "amber", false,true),
                 createCategory(user, "Miscellaneous", CategoryType.EXPENSE, "note", "gray", false,true),
-                createCategory(user, "Others", CategoryType.EXPENSE, "others", "gray", false,false)
+                createCategory(user, "Others", CategoryType.EXPENSE, "others", "gray", true,false)
         );
 
         List<Category> incomeCategories = List.of(
-                createCategory(user, "Salary", CategoryType.INCOME, "wallet", "green", true,true),
+                createCategory(user, "Salary", CategoryType.INCOME, "wallet", "green", false,true),
                 createCategory(user, "Investment", CategoryType.INCOME, "bank", "yellow", false,true),
                 createCategory(user, "Gift", CategoryType.INCOME, "gift", "peach", false,true),
                 createCategory(user, "Bonus", CategoryType.INCOME, "money-bill", "emerald", false,true),
                 createCategory(user, "Side Hustle", CategoryType.INCOME, "briefcase", "cyan", false,true),
                 createCategory(user, "Loan", CategoryType.INCOME, "loan", "lime", false,true),
                 createCategory(user, "Other", CategoryType.INCOME, "misc", "zinc", false,true),
-                createCategory(user, "Others", CategoryType.INCOME, "others", "gray", false,false)
+                createCategory(user, "Others", CategoryType.INCOME, "others", "gray", true,false)
         );
 
         categoryRepository.saveAll(expenseCategories);
