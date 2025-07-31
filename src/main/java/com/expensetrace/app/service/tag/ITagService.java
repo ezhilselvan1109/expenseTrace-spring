@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.tag;
 
-import com.expensetrace.app.requestDto.TagRequestDto;
-import com.expensetrace.app.responseDto.TagResponseDto;
+import com.expensetrace.app.dto.request.TagRequestDto;
+import com.expensetrace.app.dto.response.TagResponseDto;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.settings;
 
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.responseDto.SettingsResponseDto;
+import com.expensetrace.app.dto.response.SettingsResponseDto;
 
 public interface ISettingsService {
     SettingsResponseDto getSettings();

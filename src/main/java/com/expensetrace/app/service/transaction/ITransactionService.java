@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.transaction;
 
-import com.expensetrace.app.requestDto.TransactionRequestDto;
-import com.expensetrace.app.responseDto.TransactionResponseDto;
+import com.expensetrace.app.dto.request.TransactionRequestDto;
+import com.expensetrace.app.dto.response.TransactionResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

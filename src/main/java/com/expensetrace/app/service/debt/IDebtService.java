@@ -1,8 +1,8 @@
 package com.expensetrace.app.service.debt;
 
-import com.expensetrace.app.requestDto.DebtRequestDto;
-import com.expensetrace.app.responseDto.DebtResponseDto;
-import com.expensetrace.app.responseDto.DebtSummaryResponseDto;
+import com.expensetrace.app.dto.request.DebtRequestDto;
+import com.expensetrace.app.dto.response.DebtResponseDto;
+import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;

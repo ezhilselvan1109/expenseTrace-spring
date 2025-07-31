@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.record;
 
-import com.expensetrace.app.requestDto.RecordRequestDto;
-import com.expensetrace.app.responseDto.RecordResponseDto;
+import com.expensetrace.app.dto.request.RecordRequestDto;
+import com.expensetrace.app.dto.response.RecordResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;

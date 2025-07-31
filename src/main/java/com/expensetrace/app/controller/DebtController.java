@@ -1,9 +1,9 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.requestDto.DebtRequestDto;
+import com.expensetrace.app.dto.request.DebtRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.DebtResponseDto;
-import com.expensetrace.app.responseDto.DebtSummaryResponseDto;
+import com.expensetrace.app.dto.response.DebtResponseDto;
+import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,11 +1,10 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.requestDto.CategoryRequestDto;
+import com.expensetrace.app.dto.request.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.AccountResponseDto;
-import com.expensetrace.app.responseDto.CategoryResponseDto;
+import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.service.category.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

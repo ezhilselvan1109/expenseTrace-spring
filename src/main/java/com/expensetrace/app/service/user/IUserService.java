@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.user;
 
-import com.expensetrace.app.requestDto.UserRequestDto;
-import com.expensetrace.app.responseDto.UserResponseDto;
+import com.expensetrace.app.dto.request.UserRequestDto;
+import com.expensetrace.app.dto.response.UserResponseDto;
 
 import java.util.UUID;
 

@@ -1,10 +1,10 @@
 package com.expensetrace.app.service.account;
 
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.requestDto.BankRequestDto;
-import com.expensetrace.app.requestDto.CreditCardRequestDto;
-import com.expensetrace.app.requestDto.WalletRequestDto;
-import com.expensetrace.app.responseDto.AccountResponseDto;
+import com.expensetrace.app.dto.request.BankRequestDto;
+import com.expensetrace.app.dto.request.CreditCardRequestDto;
+import com.expensetrace.app.dto.request.WalletRequestDto;
+import com.expensetrace.app.dto.response.AccountResponseDto;
 
 import java.math.BigDecimal;
 import java.util.List;

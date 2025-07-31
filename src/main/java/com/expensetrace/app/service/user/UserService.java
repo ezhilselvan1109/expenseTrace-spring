@@ -1,11 +1,11 @@
 package com.expensetrace.app.service.user;
 
-import com.expensetrace.app.requestDto.UserRequestDto;
+import com.expensetrace.app.dto.request.UserRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
-import com.expensetrace.app.responseDto.UserResponseDto;
+import com.expensetrace.app.dto.response.UserResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
 import com.expensetrace.app.service.category.ICategoryService;
 import com.expensetrace.app.service.settings.ISettingsService;

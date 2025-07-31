@@ -1,7 +1,7 @@
 package com.expensetrace.app.controller;
 
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.SettingsResponseDto;
+import com.expensetrace.app.dto.response.SettingsResponseDto;
 import com.expensetrace.app.service.settings.ISettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

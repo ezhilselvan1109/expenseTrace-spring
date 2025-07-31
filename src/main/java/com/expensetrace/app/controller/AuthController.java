@@ -2,7 +2,7 @@ package com.expensetrace.app.controller;
 
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
-import com.expensetrace.app.requestDto.LoginRequestDto;
+import com.expensetrace.app.dto.request.LoginRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;

@@ -2,9 +2,9 @@ package com.expensetrace.app.controller;
 
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.requestDto.UserRequestDto;
+import com.expensetrace.app.dto.request.UserRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.UserResponseDto;
+import com.expensetrace.app.dto.response.UserResponseDto;
 import com.expensetrace.app.service.user.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

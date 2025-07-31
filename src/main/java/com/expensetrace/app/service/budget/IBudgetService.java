@@ -1,11 +1,11 @@
 package com.expensetrace.app.service.budget;
 
-import com.expensetrace.app.requestDto.MonthlyBudgetRequestDto;
-import com.expensetrace.app.requestDto.YearlyBudgetRequestDto;
-import com.expensetrace.app.responseDto.MonthlyBudgetBreakdownResponseDto;
-import com.expensetrace.app.responseDto.MonthlyBudgetSummaryResponseDto;
-import com.expensetrace.app.responseDto.YearlyBudgetBreakdownResponseDto;
-import com.expensetrace.app.responseDto.YearlyBudgetSummaryResponseDto;
+import com.expensetrace.app.dto.request.MonthlyBudgetRequestDto;
+import com.expensetrace.app.dto.request.YearlyBudgetRequestDto;
+import com.expensetrace.app.dto.response.MonthlyBudgetBreakdownResponseDto;
+import com.expensetrace.app.dto.response.MonthlyBudgetSummaryResponseDto;
+import com.expensetrace.app.dto.response.YearlyBudgetBreakdownResponseDto;
+import com.expensetrace.app.dto.response.YearlyBudgetSummaryResponseDto;
 import jakarta.transaction.Transactional;
 
 import java.util.List;

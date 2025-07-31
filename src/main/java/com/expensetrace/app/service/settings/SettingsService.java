@@ -6,7 +6,7 @@ import com.expensetrace.app.enums.TimeFormat;
 import com.expensetrace.app.model.Settings;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.SettingRepository;
-import com.expensetrace.app.responseDto.SettingsResponseDto;
+import com.expensetrace.app.dto.response.SettingsResponseDto;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

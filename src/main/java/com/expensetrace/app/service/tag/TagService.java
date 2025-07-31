@@ -2,11 +2,11 @@ package com.expensetrace.app.service.tag;
 
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.requestDto.TagRequestDto;
+import com.expensetrace.app.dto.request.TagRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.repository.TagRepository;
-import com.expensetrace.app.responseDto.TagResponseDto;
+import com.expensetrace.app.dto.response.TagResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

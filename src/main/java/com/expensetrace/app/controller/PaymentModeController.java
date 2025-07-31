@@ -1,10 +1,10 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.requestDto.PaymentModeRequestDto;
+import com.expensetrace.app.dto.request.PaymentModeRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.PaymentModeResponseDto;
+import com.expensetrace.app.dto.response.PaymentModeResponseDto;
 import com.expensetrace.app.service.paymentMode.IPaymentModeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

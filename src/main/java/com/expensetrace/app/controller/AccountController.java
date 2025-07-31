@@ -2,11 +2,11 @@ package com.expensetrace.app.controller;
 
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.requestDto.BankRequestDto;
-import com.expensetrace.app.requestDto.CreditCardRequestDto;
-import com.expensetrace.app.requestDto.WalletRequestDto;
+import com.expensetrace.app.dto.request.BankRequestDto;
+import com.expensetrace.app.dto.request.CreditCardRequestDto;
+import com.expensetrace.app.dto.request.WalletRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.AccountResponseDto;
+import com.expensetrace.app.dto.response.AccountResponseDto;
 import com.expensetrace.app.service.account.IAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

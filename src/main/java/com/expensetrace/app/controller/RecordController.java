@@ -1,8 +1,8 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.requestDto.RecordRequestDto;
+import com.expensetrace.app.dto.request.RecordRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.responseDto.RecordResponseDto;
+import com.expensetrace.app.dto.response.RecordResponseDto;
 import com.expensetrace.app.service.record.IRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
