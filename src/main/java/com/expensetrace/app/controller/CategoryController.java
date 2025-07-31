@@ -8,6 +8,7 @@ import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.service.category.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +60,7 @@ public class CategoryController {
     }
     @PostMapping
     @Operation(summary = "Add a category", description = "Creates a new category for the authenticated user")
-    public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+    public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         try {
             CategoryResponseDto createdCategory = categoryService.addCategory(categoryRequestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Category created successfully", createdCategory));
@@ -92,7 +93,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update category", description = "Updates an existing category owned by the user")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequestDto categoryRequestDto) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable UUID id, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         try {
             CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Category updated successfully", updatedCategory));

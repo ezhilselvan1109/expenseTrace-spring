@@ -6,6 +6,7 @@ import com.expensetrace.app.dto.response.RecordResponseDto;
 import com.expensetrace.app.service.record.IRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class RecordController {
 
     @PostMapping("/{debtId}")
     @Operation(summary = "Add a new debt Record", description = "Create a new debt Record for the authenticated user")
-    public ResponseEntity<ApiResponse> addRecord(@PathVariable UUID debtId, @RequestBody RecordRequestDto recordRequestDto) {
+    public ResponseEntity<ApiResponse> addRecord(@PathVariable UUID debtId, @Valid @RequestBody RecordRequestDto recordRequestDto) {
         try {
             RecordResponseDto debt = debtRecordService.createRecord(debtId, recordRequestDto);
             return ResponseEntity.status(CREATED).body(new ApiResponse(" created", debt));
@@ -37,7 +38,7 @@ public class RecordController {
 
     @PutMapping("/{id}")
     @Operation(summary = "update debt Record", description = "update debt Record for the authenticated user")
-    public ResponseEntity<ApiResponse> updateRecord(@PathVariable UUID id, @RequestBody RecordRequestDto recordRequestDto) {
+    public ResponseEntity<ApiResponse> updateRecord(@PathVariable UUID id, @Valid @RequestBody RecordRequestDto recordRequestDto) {
         try {
             RecordResponseDto updated = debtRecordService.updateRecord(id, recordRequestDto);
             return ResponseEntity.ok(new ApiResponse(" updated", updated));

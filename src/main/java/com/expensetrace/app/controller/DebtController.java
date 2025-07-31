@@ -7,6 +7,7 @@ import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class DebtController {
     private final IDebtService debtService;
     @PostMapping
     @Operation(summary = "Add a new debt", description = "Create a new debt for the authenticated user")
-    public ResponseEntity<ApiResponse> addDebt(@RequestBody DebtRequestDto debtRequestDto) {
+    public ResponseEntity<ApiResponse> addDebt(@Valid @RequestBody DebtRequestDto debtRequestDto) {
         System.out.println("debtRequestDto : "+debtRequestDto);
         try {
             DebtResponseDto debt = debtService.createDebt(debtRequestDto);
@@ -38,7 +39,7 @@ public class DebtController {
 
     @PutMapping("/{id}")
     @Operation(summary = "update debt", description = "update debt for the authenticated user")
-    public ResponseEntity<ApiResponse> updateDebt(@PathVariable UUID id, @RequestBody DebtRequestDto debtRequestDto) {
+    public ResponseEntity<ApiResponse> updateDebt(@PathVariable UUID id, @Valid @RequestBody DebtRequestDto debtRequestDto) {
         try {
             DebtResponseDto updated = debtService.updateDebt(id, debtRequestDto);
             return ResponseEntity.ok(new ApiResponse("Debt updated", updated));

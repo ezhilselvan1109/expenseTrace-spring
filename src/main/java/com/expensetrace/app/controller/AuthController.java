@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AuthController {
 
     @Operation(summary = "User login", description = "Authenticates user and sets JWT in HttpOnly cookie.")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         User user = userRepository.findAll().stream()
                 .filter(u -> u.getEmail().equals(loginRequestDto.getEmail()) &&
                         u.getPassword().equals(loginRequestDto.getPassword()))

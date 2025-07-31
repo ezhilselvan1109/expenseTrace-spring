@@ -7,6 +7,7 @@ import com.expensetrace.app.dto.response.TagResponseDto;
 import com.expensetrace.app.service.tag.ITagService;
 import com.expensetrace.app.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -108,7 +109,7 @@ public class TagController {
             description = "Updates the tag with the specified ID using the provided details. Throws an error if the tag is not found."
     )
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @RequestBody TagRequestDto tag) {
+    public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @Valid @RequestBody TagRequestDto tag) {
         try {
             //TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", null));

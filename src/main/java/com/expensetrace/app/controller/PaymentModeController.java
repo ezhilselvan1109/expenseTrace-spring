@@ -102,7 +102,7 @@ public class PaymentModeController {
             description = "Updates the details of an existing payment mode by its ID"
     )
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse> updatePaymentMode(@PathVariable UUID id, @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
+    public ResponseEntity<ApiResponse> updatePaymentMode(@PathVariable UUID id, @Valid @RequestBody PaymentModeRequestDto paymentModeRequestDto) {
         try {
             PaymentModeResponseDto updatedPaymentMode = paymentModeService.updatePaymentMode(paymentModeRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedPaymentMode));

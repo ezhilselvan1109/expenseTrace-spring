@@ -8,6 +8,7 @@ import com.expensetrace.app.dto.response.YearlyBudgetBreakdownResponseDto;
 import com.expensetrace.app.service.budget.IBudgetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,14 @@ public class BudgetController {
 
     @Operation(summary = "Create monthly budget", description = "Creates a new monthly budget for a user.")
     @PostMapping("/month")
-    public ResponseEntity<ApiResponse> createMonthlyBudget(@RequestBody MonthlyBudgetRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> createMonthlyBudget(@Valid @RequestBody MonthlyBudgetRequestDto requestDto) {
         budgetService.createMonthlyBudget(requestDto);
         return ResponseEntity.status(CREATED).body(new ApiResponse("Monthly budget created successfully", null));
     }
 
     @Operation(summary = "Create yearly budget", description = "Creates a new yearly budget for a user.")
     @PostMapping("/year")
-    public ResponseEntity<ApiResponse> createYearlyBudget(@RequestBody YearlyBudgetRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> createYearlyBudget(@Valid @RequestBody YearlyBudgetRequestDto requestDto) {
         budgetService.createYearlyBudget(requestDto);
         return ResponseEntity.status(CREATED).body(new ApiResponse("Yearly budget created successfully", null));
     }
@@ -49,7 +50,7 @@ public class BudgetController {
     @PutMapping("/month/{id}")
     public ResponseEntity<ApiResponse> updateMonthlyBudget(
             @PathVariable UUID id,
-            @RequestBody MonthlyBudgetRequestDto request) {
+            @Valid @RequestBody MonthlyBudgetRequestDto request) {
         budgetService.updateMonthlyBudget(id, request);
         return ResponseEntity.ok(new ApiResponse("Monthly budget updated successfully", null));
     }
@@ -58,7 +59,7 @@ public class BudgetController {
     @PutMapping("/year/{id}")
     public ResponseEntity<ApiResponse> updateYearlyBudget(
             @PathVariable UUID id,
-            @RequestBody YearlyBudgetRequestDto request) {
+            @Valid @RequestBody YearlyBudgetRequestDto request) {
         budgetService.updateYearlyBudget(id, request);
         return ResponseEntity.ok(new ApiResponse("Yearly budget updated successfully", null));
     }

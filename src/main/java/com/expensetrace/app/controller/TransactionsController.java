@@ -7,6 +7,7 @@ import com.expensetrace.app.dto.response.TransactionResponseDto;
 import com.expensetrace.app.service.transaction.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class TransactionsController {
 
     @PostMapping
     @Operation(summary = "Create a transaction")
-    public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequestDto dto) {
+    public ResponseEntity<ApiResponse> createTransaction(@Valid @RequestBody TransactionRequestDto dto) {
         try {
             TransactionResponseDto txn = transactionService.createTransaction(dto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Transaction created", txn));
@@ -89,7 +90,7 @@ public class TransactionsController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update transaction")
-    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequestDto dto) {
+    public ResponseEntity<ApiResponse> updateTransaction(@PathVariable UUID id, @Valid @RequestBody TransactionRequestDto dto) {
         try {
             TransactionResponseDto updated = transactionService.updateTransaction(id, dto);
             return ResponseEntity.ok(new ApiResponse("Transaction updated", updated));

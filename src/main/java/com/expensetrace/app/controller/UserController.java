@@ -60,7 +60,7 @@ public class UserController {
     @Operation(summary = "Update user", description = "Updates existing user info by ID.")
     @PutMapping("/user/{id}/update")
     public ResponseEntity<ApiResponse> updateUser(@PathVariable UUID id,
-                                                  @RequestBody UserRequestDto userRequestDto) {
+                                                  @Valid @RequestBody UserRequestDto userRequestDto) {
         try {
             UserResponseDto updatedUser = userService.updateUser(userRequestDto, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedUser));
