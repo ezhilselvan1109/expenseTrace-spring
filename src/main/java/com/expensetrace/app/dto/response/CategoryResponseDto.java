@@ -12,4 +12,5 @@ public class CategoryResponseDto {
     private CategoryType type; // Enum: EXPENSE, INCOME
     private String color;
     private String icon;
+    private boolean isDeletable;
 }

@@ -33,4 +33,7 @@ public class Category {
     private String icon;
 
     private boolean isDefault;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isDeletable;
 }

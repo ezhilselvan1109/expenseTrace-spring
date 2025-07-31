@@ -38,7 +38,7 @@ public class SettingsService implements ISettingsService {
         settings.setUser(user);
         settings.setTimeFormat(TimeFormat.TWELVE_HOUR);
         settings.setDecimalFormat(DecimalFormatOption.ONE_DECIMAL);
-        settings.setCurrencyCode("91");
+        settings.setCurrencyCode("INR");
         settings.setNumberFormat(NumberFormatOption.LAKHS);
         settings.setDailyReminder(true);
         settingsRepository.save(settings);
