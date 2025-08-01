@@ -1,14 +1,14 @@
 package com.expensetrace.app.service.account;
 
-import com.expensetrace.app.dto.response.*;
+import com.expensetrace.app.dto.response.account.*;
 import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.account.*;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.dto.request.BankRequestDto;
-import com.expensetrace.app.dto.request.CreditCardRequestDto;
-import com.expensetrace.app.dto.request.WalletRequestDto;
+import com.expensetrace.app.dto.request.account.BankRequestDto;
+import com.expensetrace.app.dto.request.account.CreditCardRequestDto;
+import com.expensetrace.app.dto.request.account.WalletRequestDto;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

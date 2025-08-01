@@ -4,7 +4,7 @@ import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.enums.CategoryType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.dto.response.AccountResponseDto;
+import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.dto.response.summary.*;
 import com.expensetrace.app.dto.response.TransactionResponseDto;

@@ -1,5 +1,5 @@
 package com.expensetrace.app.dto.response.summary;
-import com.expensetrace.app.dto.response.AccountResponseDto;
+import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import lombok.Data;
 
 @Data
