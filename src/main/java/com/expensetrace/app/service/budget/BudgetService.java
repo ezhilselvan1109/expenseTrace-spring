@@ -1,6 +1,10 @@
 package com.expensetrace.app.service.budget;
 
 import com.expensetrace.app.dto.response.*;
+import com.expensetrace.app.dto.response.budget.MonthlyBudgetBreakdownResponseDto;
+import com.expensetrace.app.dto.response.budget.MonthlyBudgetSummaryResponseDto;
+import com.expensetrace.app.dto.response.budget.YearlyBudgetBreakdownResponseDto;
+import com.expensetrace.app.dto.response.budget.YearlyBudgetSummaryResponseDto;
 import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.budget.Budget;
@@ -181,9 +185,12 @@ public class BudgetService implements IBudgetService {
             LocalDate budgetDate = LocalDate.of(b.getYear(), b.getMonth(), 1);
             double spent = transactionRepo.sumAmountByUserIdAndMonthAndYear(userId, b.getMonth(), b.getYear());
 
-            MonthlyBudgetSummaryResponseDto dto = new MonthlyBudgetSummaryResponseDto(b.getId(),
-                    b.getMonth(), b.getYear(), b.getTotalLimit(), spent
-            );
+            MonthlyBudgetSummaryResponseDto dto = new MonthlyBudgetSummaryResponseDto();
+            dto.setId(b.getId());
+            dto.setMonth(b.getMonth());
+            dto.setYear(b.getYear());
+            dto.setBudget(b.getTotalLimit());
+            dto.setTotalSpent(spent);
 
             if (budgetDate.getYear() == today.getYear() && budgetDate.getMonth() == today.getMonth()) {
                 result.get("active").add(dto);
@@ -212,9 +219,11 @@ public class BudgetService implements IBudgetService {
         for (YearlyBudget b : budgets) {
             double spent = transactionRepo.sumAmountByUserIdAndYear(userId, b.getYear());
 
-            YearlyBudgetSummaryResponseDto dto = new YearlyBudgetSummaryResponseDto(b.getId(),
-                    b.getYear(), b.getTotalLimit(), spent
-            );
+            YearlyBudgetSummaryResponseDto dto = new YearlyBudgetSummaryResponseDto();
+            dto.setId(b.getId());
+            dto.setYear(b.getYear());
+            dto.setBudget(b.getTotalLimit());
+            dto.setTotalSpent(spent);
 
             if (b.getYear() == currentYear) {
                 result.get("active").add(dto);
@@ -254,14 +263,15 @@ public class BudgetService implements IBudgetService {
             ));
         }
 
-        return new MonthlyBudgetBreakdownResponseDto(
-                budget.getId(),
-                budget.getMonth(),
-                budget.getYear(),
-                budget.getTotalLimit(),
-                totalSpent,
-                categorySpends
-        );
+        MonthlyBudgetBreakdownResponseDto dto = new MonthlyBudgetBreakdownResponseDto();
+        dto.setId(budget.getId());
+        dto.setMonth(budget.getMonth());
+        dto.setYear(budget.getYear());
+        dto.setBudget(budget.getTotalLimit());
+        dto.setTotalSpent(totalSpent);
+        dto.setCategories(categorySpends);
+
+        return dto;
     }
 
     @Override
@@ -290,13 +300,14 @@ public class BudgetService implements IBudgetService {
             ));
         }
 
-        return new YearlyBudgetBreakdownResponseDto(
-                budget.getId(),
-                budget.getYear(),
-                budget.getTotalLimit(),
-                totalSpent,
-                categorySpends
-        );
+        YearlyBudgetBreakdownResponseDto dto = new YearlyBudgetBreakdownResponseDto();
+        dto.setId(budget.getId());
+        dto.setYear(budget.getYear());
+        dto.setBudget(budget.getTotalLimit());
+        dto.setTotalSpent(totalSpent);
+        dto.setCategories(categorySpends);
+
+        return dto;
     }
 
 }
