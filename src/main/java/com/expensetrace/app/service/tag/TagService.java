@@ -9,6 +9,7 @@ import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.TagRepository;
 import com.expensetrace.app.dto.response.TagResponseDto;
 import com.expensetrace.app.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -60,12 +61,22 @@ public class TagService implements ITagService {
 
 
     @Override
+    @Transactional
     public void deleteTagById(UUID id) {
-        tagRepository.findById(id)
-                .ifPresentOrElse(tagRepository::delete, () -> {
-                    throw new ResourceNotFoundException("Category not found!");
-                });
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
+
+        List<Transaction> transactions = transactionRepository.findByTags_Id(id);
+
+        for (Transaction transaction : transactions) {
+            transaction.getTags().remove(tag);
+        }
+
+        transactionRepository.saveAll(transactions); // Save updated transactions
+
+        tagRepository.delete(tag); // Now safe to delete
     }
+
 
     @Override
     public List<TagResponseDto> getAllTagsByUser(UUID userId) {
