@@ -39,4 +39,6 @@ public class TransactionRequestDto {
     private String description;
 
     private List<UUID> tagIds;
+
+    private List<String> tags;
 }

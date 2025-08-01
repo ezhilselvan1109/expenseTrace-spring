@@ -26,10 +26,7 @@ public class TagController {
     private final ITagService tagService;
     private final SecurityUtil securityUtil;
 
-    @Operation(
-            summary = "Get all tags for the authenticated user",
-            description = "Returns a list of all tags created by the currently authenticated user."
-    )
+    @Operation(summary = "Get all tags for the authenticated user", description = "Returns a list of all tags created by the currently authenticated user.")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllTags() {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -77,10 +74,7 @@ public class TagController {
         }
     }
 
-    @Operation(
-            summary = "Delete a tag by ID",
-            description = "Deletes the tag with the specified ID. Throws an error if the tag is not found."
-    )
+    @Operation(summary = "Delete a tag by ID", description = "Deletes the tag with the specified ID. Throws an error if the tag is not found.")
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<ApiResponse> deleteTag(@PathVariable UUID id) {
         try {
@@ -91,10 +85,7 @@ public class TagController {
         }
     }
 
-    @Operation(
-            summary = "merge a tag by ID",
-            description = "Merges the tag with the specified ID into another tag identified by tagId parameter. Throws an error if either tag is not found."
-    )
+    @Operation(summary = "merge a tag by ID", description = "Merges the tag with the specified ID into another tag identified by tagId parameter. Throws an error if either tag is not found.")
     @PutMapping("/{id}/merge")
     public ResponseEntity<ApiResponse> mergeTag(@PathVariable UUID id, @RequestParam UUID tagId) {
         try {
@@ -104,10 +95,7 @@ public class TagController {
         }
     }
 
-    @Operation(
-            summary = "Update a tag by ID",
-            description = "Updates the tag with the specified ID using the provided details. Throws an error if the tag is not found."
-    )
+    @Operation(summary = "Update a tag by ID", description = "Updates the tag with the specified ID using the provided details. Throws an error if the tag is not found.")
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @Valid @RequestBody TagRequestDto tag) {
         try {

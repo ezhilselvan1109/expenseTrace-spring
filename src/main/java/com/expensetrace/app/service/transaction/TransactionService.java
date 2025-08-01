@@ -63,6 +63,24 @@ public class TransactionService implements  ITransactionService{
             txn.setTags(new HashSet<>(tags));
         }
 
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+            Set<Tag> tagSet = txn.getTags() == null ? new HashSet<>() : txn.getTags();
+
+            for (String tagName : dto.getTags()) {
+                Tag tag = tagRepo.findByNameAndUserId(tagName.trim(), userId)
+                        .orElseGet(() -> {
+                            Tag newTag = new Tag();
+                            newTag.setName(tagName.trim());
+                            newTag.setUser(user);
+                            return tagRepo.save(newTag);
+                        });
+                tagSet.add(tag);
+            }
+
+            txn.setTags(tagSet);
+        }
+
+
         Transaction savedTxn = transactionRepo.save(txn);
         return modelMapper.map(savedTxn, TransactionResponseDto.class);
     }
