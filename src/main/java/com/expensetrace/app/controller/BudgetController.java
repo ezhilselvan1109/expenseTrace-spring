@@ -1,7 +1,7 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.dto.request.MonthlyBudgetRequestDto;
-import com.expensetrace.app.dto.request.YearlyBudgetRequestDto;
+import com.expensetrace.app.dto.request.budget.MonthlyBudgetRequestDto;
+import com.expensetrace.app.dto.request.budget.YearlyBudgetRequestDto;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.dto.response.MonthlyBudgetBreakdownResponseDto;
 import com.expensetrace.app.dto.response.YearlyBudgetBreakdownResponseDto;

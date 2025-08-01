@@ -1,5 +1,6 @@
-package com.expensetrace.app.dto.request;
+package com.expensetrace.app.dto.request.budget;
 
+import com.expensetrace.app.dto.request.CategoryLimitDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -8,7 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class YearlyBudgetRequestDto {
+public class YearlyBudgetRequestDto extends BudgetRequestDto {
 
     @Min(value = 2000, message = "Year must be 2000 or later")
     private int year;
