@@ -12,4 +12,5 @@ public interface ITagService {
     TagResponseDto addTag(TagRequestDto tagRequestDto,UUID userId);
     TagResponseDto updateTag(TagRequestDto tagRequestDto, UUID id);
     void deleteTagById(UUID id);
+    void mergeTags(UUID sourceId, UUID targetId);
 }

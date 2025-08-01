@@ -31,46 +31,10 @@ public class TagController {
     public ResponseEntity<ApiResponse> getAllTags() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         try {
-            List<TagResponseDto> tagResponseDto = new ArrayList<>();
-            TagResponseDto tagResponse1=new TagResponseDto();
-            tagResponse1.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c11"));
-            tagResponse1.setTransactions(4);
-            tagResponse1.setName("tag1");
-            tagResponseDto.add(tagResponse1);
-
-            TagResponseDto tagResponse2=new TagResponseDto();
-            tagResponse2.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c22"));
-            tagResponse2.setTransactions(5);
-            tagResponse2.setName("tag2");
-            tagResponseDto.add(tagResponse2);
-
-            TagResponseDto tagResponse3=new TagResponseDto();
-            tagResponse3.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c33"));
-            tagResponse3.setTransactions(3);
-            tagResponse3.setName("tag3");
-            tagResponseDto.add(tagResponse3);
-
-            TagResponseDto tagResponse4=new TagResponseDto();
-            tagResponse4.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c44"));
-            tagResponse4.setTransactions(4);
-            tagResponse4.setName("tag4");
-            tagResponseDto.add(tagResponse4);
-
-            TagResponseDto tagResponse5=new TagResponseDto();
-            tagResponse5.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c55"));
-            tagResponse5.setTransactions(5);
-            tagResponse5.setName("tag5");
-            tagResponseDto.add(tagResponse5);
-
-            TagResponseDto tagResponse6=new TagResponseDto();
-            tagResponse6.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c66"));
-            tagResponse6.setTransactions(3);
-            tagResponse6.setName("tag6");
-            tagResponseDto.add(tagResponse6);
-
-            return ResponseEntity.ok(new ApiResponse("Found!", tagResponseDto));
+            List<TagResponseDto> tags = tagService.getAllTagsByUser(userId);
+            return ResponseEntity.ok(new ApiResponse("Tags fetched successfully!", tags));
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error fetching tags", null));
         }
     }
 
@@ -78,7 +42,7 @@ public class TagController {
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<ApiResponse> deleteTag(@PathVariable UUID id) {
         try {
-            //tagService.deleteTagById(id);
+            tagService.deleteTagById(id);
             return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
@@ -89,7 +53,8 @@ public class TagController {
     @PutMapping("/{id}/merge")
     public ResponseEntity<ApiResponse> mergeTag(@PathVariable UUID id, @RequestParam UUID tagId) {
         try {
-            return ResponseEntity.ok(new ApiResponse("Deleted successfully", null));
+            tagService.mergeTags(id, tagId);
+            return ResponseEntity.ok(new ApiResponse("Merged successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
@@ -99,8 +64,8 @@ public class TagController {
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @Valid @RequestBody TagRequestDto tag) {
         try {
-            //TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", null));
+            TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
+            return ResponseEntity.ok(new ApiResponse("Update success!", updatedTagResponseDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
