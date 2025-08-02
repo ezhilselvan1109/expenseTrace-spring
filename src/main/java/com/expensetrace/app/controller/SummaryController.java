@@ -7,7 +7,6 @@ import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.dto.response.summary.*;
-import com.expensetrace.app.dto.response.TransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -216,21 +215,9 @@ public class SummaryController {
     public ResponseEntity<ApiResponse> getDaySummary(@RequestParam Integer day, @RequestParam Integer
             month, @RequestParam Integer year) {
         try {
-            List<TransactionResponseDto> transactionResponse = new ArrayList<>();
-            TransactionResponseDto transactionResponseDto1 = new TransactionResponseDto();
-            transactionResponseDto1.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c66"));
-            transactionResponseDto1.setAmount(BigDecimal.valueOf(500));
-            transactionResponse.add(transactionResponseDto1);
-
-            TransactionResponseDto transactionResponseDto2 = new TransactionResponseDto();
-            transactionResponseDto2.setId(UUID.fromString("1e9431a1-adc3-47cb-8645-51b8fd0c6c66"));
-            transactionResponseDto2.setAmount(BigDecimal.valueOf(500));
-            transactionResponse.add(transactionResponseDto2);
-
             DaySummaryResponseDto daySummaryResponseDto = new DaySummaryResponseDto();
             daySummaryResponseDto.setIncome(5000);
             daySummaryResponseDto.setSpending(5000);
-            daySummaryResponseDto.setTransactions(transactionResponse);
             return ResponseEntity.ok(new ApiResponse("Found!", daySummaryResponseDto));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error:", INTERNAL_SERVER_ERROR));
