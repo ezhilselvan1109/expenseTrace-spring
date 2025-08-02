@@ -1,4 +1,4 @@
-package com.expensetrace.app.repository;
+package com.expensetrace.app.repository.transaction;
 
 import com.expensetrace.app.model.transaction.Attachment;
 import org.springframework.data.jpa.repository.JpaRepository;
