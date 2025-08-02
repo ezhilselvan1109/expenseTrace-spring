@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.request;
+package com.expensetrace.app.dto.request.transaction;
 
 import com.expensetrace.app.enums.TransactionType;
 import jakarta.validation.constraints.*;
@@ -29,16 +29,6 @@ public class TransactionRequestDto {
     @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than zero")
     private BigDecimal amount;
 
-    @NotNull(message = "Category ID is required")
-    private UUID categoryId;
-
-    @NotNull(message = "Account ID is required")
-    private UUID accountId;
-
     @Size(max = 255, message = "Description can't exceed 255 characters")
     private String description;
-
-    private List<UUID> tagIds;
-
-    private List<String> tags;
 }
