@@ -2,9 +2,7 @@ package com.expensetrace.app.service.account;
 
 import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.dto.response.account.*;
-import com.expensetrace.app.dto.response.transaction.*;
 import com.expensetrace.app.enums.AccountType;
-import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.account.*;
 import com.expensetrace.app.exception.ResourceNotFoundException;
@@ -15,9 +13,6 @@ import com.expensetrace.app.repository.account.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
