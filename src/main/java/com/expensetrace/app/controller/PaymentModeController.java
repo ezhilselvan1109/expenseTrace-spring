@@ -1,6 +1,6 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.dto.request.PaymentModeRequestDto;
+import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;

@@ -1,7 +1,6 @@
 package com.expensetrace.app.dto.response.account;
 
-import com.expensetrace.app.dto.request.PaymentModeRequestDto;
-import com.expensetrace.app.dto.response.account.AccountResponseDto;
+import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import lombok.Data;
 
 import java.math.BigDecimal;

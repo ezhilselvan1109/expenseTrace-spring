@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.request;
+package com.expensetrace.app.dto.request.account;
 
 import com.expensetrace.app.enums.PaymentModeType;
 import jakarta.validation.constraints.NotBlank;

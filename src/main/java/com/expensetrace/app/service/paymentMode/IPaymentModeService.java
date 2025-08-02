@@ -1,6 +1,6 @@
 package com.expensetrace.app.service.paymentMode;
 
-import com.expensetrace.app.dto.request.PaymentModeRequestDto;
+import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.dto.response.PaymentModeResponseDto;
 
 import java.util.List;

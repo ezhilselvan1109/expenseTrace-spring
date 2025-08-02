@@ -1,7 +1,5 @@
 package com.expensetrace.app.dto.request.account;
 
-import com.expensetrace.app.dto.request.PaymentModeRequestDto;
-import com.expensetrace.app.dto.request.account.AccountRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
