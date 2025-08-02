@@ -2,6 +2,7 @@ package com.expensetrace.app.controller;
 
 
 import com.expensetrace.app.dto.request.transaction.*;
+import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.dto.response.transaction.TransactionResponseDto;
@@ -131,4 +132,20 @@ public class TransactionsController {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get transaction details by ID and type")
+    public ResponseEntity<ApiResponse> getTransactionById(
+            @PathVariable UUID id,
+            @RequestParam Integer type) {
+        try {
+            TransactionResponseDto dto = transactionService.getTransactionByIdAndType(id, TransactionType.fromCode(type));
+            return ResponseEntity.ok(new ApiResponse("Transaction fetched", dto));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error"+e.getMessage(), null));
+        }
+    }
+
 }

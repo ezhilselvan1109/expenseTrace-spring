@@ -2,13 +2,14 @@ package com.expensetrace.app.service.transaction;
 
 import com.expensetrace.app.dto.request.transaction.*;
 import com.expensetrace.app.dto.response.transaction.*;
+import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.transaction.*;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.repository.account.AccountRepository;
-import com.expensetrace.app.repository.transaction.TransactionRepository;
+import com.expensetrace.app.repository.transaction.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,10 @@ import java.util.*;
 public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepo;
+    private final ExpenseTransactionRepository expenseTransactionRepo;
+    private final IncomeTransactionRepository incomeTransactionRepo;
+    private final TransferTransactionRepository transferTransactionRepo;
+    private final AdjustmentTransactionRepository adjustmentTransactionRepo;
     private final AccountRepository accountRepo;
     private final CategoryRepository categoryRepo;
     private final TagRepository tagRepo;
@@ -88,7 +93,7 @@ public class TransactionService implements ITransactionService {
         txn.setFromAccount(from);
         txn.setToAccount(to);
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
+        TransferTransaction saved = transferTransactionRepo.save(txn);
         return modelMapper.map(saved, TransferTransactionResponseDto.class);
     }
 
@@ -218,4 +223,32 @@ public class TransactionService implements ITransactionService {
         }
         return tags;
     }
+
+
+    @Override
+    public TransactionResponseDto getTransactionByIdAndType(UUID id, TransactionType type) {
+        return switch (type) {
+            case EXPENSE -> {
+                ExpenseTransaction txn = expenseTransactionRepo.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Expense transaction not found"));
+                yield modelMapper.map(txn, ExpenseTransactionResponseDto.class);
+            }
+            case INCOME -> {
+                IncomeTransaction txn = incomeTransactionRepo.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Income transaction not found"));
+                yield modelMapper.map(txn, IncomeTransactionResponseDto.class);
+            }
+            case TRANSFER -> {
+                TransferTransaction txn = transferTransactionRepo.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Transfer transaction not found"));
+                yield modelMapper.map(txn, TransferTransactionResponseDto.class);
+            }
+            case ADJUSTMENT -> {
+                AdjustmentTransaction txn = adjustmentTransactionRepo.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Adjustment transaction not found"));
+                yield modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
+            }
+        };
+    }
+
 }

@@ -9,8 +9,4 @@ public class ExpenseTransactionResponseDto extends TransactionResponseDto {
     private UUID categoryId;
 
     private UUID accountId;
-
-    private List<UUID> tagIds;
-
-    private List<String> tags;
 }
