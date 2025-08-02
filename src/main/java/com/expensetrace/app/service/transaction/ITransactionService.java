@@ -13,4 +13,5 @@ public interface ITransactionService {
     void deleteTransactionById(UUID id);
     TransactionResponseDto getTransactionByIdAndType(UUID id, TransactionType type);
     Page<TransactionResponseDto> getAllTransactions(int page, int size);
+    Page<TransactionResponseDto> getAllTransactions(int page, int size,TransactionType type);
 }

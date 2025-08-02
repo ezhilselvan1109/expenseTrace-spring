@@ -38,7 +38,6 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public TransactionResponseDto createTransaction(TransactionRequestDto dto) {
-        System.out.println(dto);
         return switch (dto.getType()) {
             case EXPENSE -> createExpense((ExpenseTransactionRequestDto) dto);
             case INCOME -> createIncome((IncomeTransactionRequestDto) dto);
@@ -276,5 +275,43 @@ public class TransactionService implements ITransactionService {
                         return modelMapper.map(txn, TransactionResponseDto.class);
                     }
                 });
+    }
+
+    @Override
+    public Page<TransactionResponseDto> getAllTransactions(int page, int size,TransactionType type) {
+        return switch (type) {
+            case EXPENSE -> getAllExpenseTransactions(page,size);
+            case INCOME -> getAllIncomeTransactions(page,size);
+            case TRANSFER -> getAllTransferTransactions(page,size);
+            case ADJUSTMENT -> getAllAdjustmentTransactions(page,size);
+        };
+    }
+
+    public Page<TransactionResponseDto> getAllIncomeTransactions(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        return incomeTransactionRepo.findAllByUserId(userId, pageable)
+                .map(txn -> modelMapper.map(txn, IncomeTransactionResponseDto.class));
+    }
+
+    public Page<TransactionResponseDto> getAllExpenseTransactions(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        return expenseTransactionRepo.findAllByUserId(userId, pageable)
+                .map(txn -> modelMapper.map(txn, ExpenseTransactionResponseDto.class));
+    }
+
+    public Page<TransactionResponseDto> getAllTransferTransactions(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        return transferTransactionRepo.findAllByUserId(userId, pageable)
+                .map(txn -> modelMapper.map(txn, TransferTransactionResponseDto.class));
+    }
+
+    public Page<TransactionResponseDto> getAllAdjustmentTransactions(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+        return adjustmentTransactionRepo.findAllByUserId(userId, pageable)
+                .map(txn -> modelMapper.map(txn, AdjustmentTransactionResponseDto.class));
     }
 }
