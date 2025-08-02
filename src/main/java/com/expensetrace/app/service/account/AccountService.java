@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.account;
 
+import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.dto.response.account.*;
 import com.expensetrace.app.dto.response.transaction.*;
 import com.expensetrace.app.enums.AccountType;
@@ -40,13 +41,20 @@ public class AccountService implements IAccountService {
     public AccountResponseDto getAccountById(UUID id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
-        if(account.getType()==AccountType.BANK){
-            return modelMapper.map(account, BankResponseDto.class);
-        }else if(account.getType()==AccountType.WALLET){
+        if (account.getType() == AccountType.BANK) {
+            Bank bank = (Bank) account;
+            BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
+            dto.setLinkedPaymentModes(
+                    bank.getPaymentModes().stream().map(pm -> {
+                        return modelMapper.map(pm, PaymentModeRequestDto.class);
+                    }).collect(Collectors.toList())
+            );
+            return dto;
+        } else if (account.getType() == AccountType.WALLET) {
             return modelMapper.map(account, WalletResponseDto.class);
-        }else if(account.getType()==AccountType.CREDIT_CARD){
+        } else if (account.getType() == AccountType.CREDIT_CARD) {
             return modelMapper.map(account, CreditCardResponseDto.class);
-        }else {
+        } else {
             return modelMapper.map(account, CashResponseDto.class);
         }
     }
@@ -59,7 +67,14 @@ public class AccountService implements IAccountService {
                 .stream()
                 .map(account -> {
                     if (account.getType().equals(AccountType.BANK)) {
-                        return modelMapper.map(account, BankResponseDto.class);
+                        Bank bank = (Bank) account;
+                        BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
+                        dto.setLinkedPaymentModes(
+                                bank.getPaymentModes().stream().map(pm -> {
+                                    return modelMapper.map(pm, PaymentModeRequestDto.class);
+                                }).collect(Collectors.toList())
+                        );
+                        return dto;
                     } else if (account.getType().equals(AccountType.WALLET)) {
                         return modelMapper.map(account, WalletResponseDto.class);
                     } else if (account.getType().equals(AccountType.CREDIT_CARD)) {
@@ -76,17 +91,27 @@ public class AccountService implements IAccountService {
     @Override
     public List<AccountResponseDto> getAllBankAccountsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        return accountRepository.findByUserIdAndType(userId,AccountType.BANK)
+
+        return accountRepository.findByUserIdAndType(userId, AccountType.BANK)
                 .stream()
                 .filter(account -> account instanceof Bank)
-                .map(account -> (AccountResponseDto) modelMapper.map((Bank) account, BankResponseDto.class))
-                .toList();
+                .map(account -> {
+                    Bank bank = (Bank) account;
+                    BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
+                    if (bank.getPaymentModes() != null) {
+                        dto.setLinkedPaymentModes(bank.getPaymentModes().stream().map(pm -> {
+                            return modelMapper.map(pm, PaymentModeRequestDto.class);
+                        }).toList()
+                        );
+                    }
+                    return dto;
+                }).collect(Collectors.toList());
     }
 
     @Override
     public List<AccountResponseDto> getAllCashAccountsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        return accountRepository.findByUserIdAndType(userId,AccountType.CASH)
+        return accountRepository.findByUserIdAndType(userId, AccountType.CASH)
                 .stream()
                 .filter(account -> account instanceof Cash)
                 .map(account -> (AccountResponseDto) modelMapper.map((Cash) account, CashResponseDto.class))
@@ -96,7 +121,7 @@ public class AccountService implements IAccountService {
     @Override
     public List<AccountResponseDto> getAllCreditCardAccountsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        return accountRepository.findByUserIdAndType(userId,AccountType.CREDIT_CARD)
+        return accountRepository.findByUserIdAndType(userId, AccountType.CREDIT_CARD)
                 .stream()
                 .filter(account -> account instanceof CreditCard)
                 .map(account -> (AccountResponseDto) modelMapper.map((CreditCard) account, CreditCardResponseDto.class))
@@ -106,7 +131,7 @@ public class AccountService implements IAccountService {
     @Override
     public List<AccountResponseDto> getAllWalletAccountsByUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        return accountRepository.findByUserIdAndType(userId,AccountType.WALLET)
+        return accountRepository.findByUserIdAndType(userId, AccountType.WALLET)
                 .stream()
                 .filter(account -> account instanceof Wallet)
                 .map(account -> (AccountResponseDto) modelMapper.map((Wallet) account, WalletResponseDto.class))
@@ -166,7 +191,7 @@ public class AccountService implements IAccountService {
 
     @Override
     public void addCashAccount(User user) {
-        Cash account=new Cash();
+        Cash account = new Cash();
         account.setUser(user);
         account.setType(AccountType.CASH);
         account.setDefault(true);
