@@ -1,7 +1,6 @@
 package com.expensetrace.app.dto.response.transaction;
 
 import com.expensetrace.app.enums.TransactionType;
-import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;

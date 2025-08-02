@@ -1,6 +1,5 @@
 package com.expensetrace.app.dto.request.transaction;
 
-import com.expensetrace.app.model.account.Account;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
