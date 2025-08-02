@@ -1,7 +1,7 @@
 package com.expensetrace.app.service.paymentMode;
 
 import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
-import com.expensetrace.app.dto.response.PaymentModeResponseDto;
+import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
 
 import java.util.List;
 import java.util.UUID;

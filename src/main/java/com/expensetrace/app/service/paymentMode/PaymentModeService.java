@@ -7,7 +7,7 @@ import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.repository.account.PaymentModeRepository;
 import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
-import com.expensetrace.app.dto.response.PaymentModeResponseDto;
+import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
