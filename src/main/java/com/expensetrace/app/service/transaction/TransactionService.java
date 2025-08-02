@@ -7,6 +7,8 @@ import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.transaction.*;
 import com.expensetrace.app.repository.*;
+import com.expensetrace.app.repository.account.AccountRepository;
+import com.expensetrace.app.repository.transaction.TransactionRepository;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
