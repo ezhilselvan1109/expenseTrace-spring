@@ -2,6 +2,7 @@ package com.expensetrace.app.controller;
 
 
 import com.expensetrace.app.dto.request.transaction.*;
+import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.dto.response.transaction.TransactionResponseDto;
 import com.expensetrace.app.service.transaction.ITransactionService;
@@ -65,9 +66,60 @@ public class TransactionsController {
             TransactionResponseDto txn = transactionService.createTransaction(dto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Transaction created", txn));
         } catch (Exception e) {
-            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error", null));
         }
     }
+    @PutMapping("/expense/{id}")
+    @Operation(summary = "Update an expense transaction")
+    public ResponseEntity<ApiResponse> updateExpenseTransaction(
+            @PathVariable UUID id,
+            @Valid @RequestBody ExpenseTransactionRequestDto dto) {
+        try {
+            TransactionResponseDto updatedTxn = transactionService.updateTransaction(id, dto);
+            return ResponseEntity.ok(new ApiResponse("Expense transaction updated", updatedTxn));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error", null));
+        }
+    }
+
+    @PutMapping("/income/{id}")
+    @Operation(summary = "Update an income transaction")
+    public ResponseEntity<ApiResponse> updateIncomeTransaction(
+            @PathVariable UUID id,
+            @Valid @RequestBody IncomeTransactionRequestDto dto) {
+        try {
+            TransactionResponseDto updatedTxn = transactionService.updateTransaction(id, dto);
+            return ResponseEntity.ok(new ApiResponse("Income transaction updated", updatedTxn));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error", null));
+        }
+    }
+
+    @PutMapping("/transfer/{id}")
+    @Operation(summary = "Update a transfer transaction")
+    public ResponseEntity<ApiResponse> updateTransferTransaction(
+            @PathVariable UUID id,
+            @Valid @RequestBody TransferTransactionRequestDto dto) {
+        try {
+            TransactionResponseDto updatedTxn = transactionService.updateTransaction(id, dto);
+            return ResponseEntity.ok(new ApiResponse("Transfer transaction updated", updatedTxn));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error", null));
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete transaction")

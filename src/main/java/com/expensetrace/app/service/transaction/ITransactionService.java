@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface ITransactionService {
     TransactionResponseDto createTransaction(TransactionRequestDto dto);
+    TransactionResponseDto updateTransaction(UUID id, TransactionRequestDto dto);
     void deleteTransactionById(UUID id);
 }
