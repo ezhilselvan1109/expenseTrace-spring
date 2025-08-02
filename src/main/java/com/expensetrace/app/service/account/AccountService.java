@@ -1,7 +1,9 @@
 package com.expensetrace.app.service.account;
 
 import com.expensetrace.app.dto.response.account.*;
+import com.expensetrace.app.dto.response.transaction.*;
 import com.expensetrace.app.enums.AccountType;
+import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.account.*;
 import com.expensetrace.app.exception.ResourceNotFoundException;
@@ -12,6 +14,9 @@ import com.expensetrace.app.repository.account.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -52,10 +57,21 @@ public class AccountService implements IAccountService {
 
         return accountRepository.findByUserId(userId)
                 .stream()
-                .map(account -> modelMapper.map(account, AccountResponseDto.class))
+                .map(account -> {
+                    if (account.getType().equals(AccountType.BANK)) {
+                        return modelMapper.map(account, BankResponseDto.class);
+                    } else if (account.getType().equals(AccountType.WALLET)) {
+                        return modelMapper.map(account, WalletResponseDto.class);
+                    } else if (account.getType().equals(AccountType.CREDIT_CARD)) {
+                        return modelMapper.map(account, CreditCardResponseDto.class);
+                    } else if (account.getType().equals(AccountType.CASH)) {
+                        return modelMapper.map(account, CashResponseDto.class);
+                    } else {
+                        return modelMapper.map(account, AccountResponseDto.class);
+                    }
+                })
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<AccountResponseDto> getAllBankAccountsByUser() {
