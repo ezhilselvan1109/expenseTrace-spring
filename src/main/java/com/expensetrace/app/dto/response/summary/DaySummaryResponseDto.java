@@ -1,6 +1,6 @@
 package com.expensetrace.app.dto.response.summary;
 
-import com.expensetrace.app.dto.response.TransactionResponseDto;
+import com.expensetrace.app.dto.response.transaction.TransactionResponseDto;
 import lombok.Data;
 import java.util.List;
 

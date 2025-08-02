@@ -7,14 +7,13 @@ import com.expensetrace.app.dto.response.budget.YearlyBudgetBreakdownResponseDto
 import com.expensetrace.app.dto.response.budget.YearlyBudgetSummaryResponseDto;
 import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
-import com.expensetrace.app.model.budget.Budget;
-import com.expensetrace.app.model.budget.CategoryBudgetLimit;
-import com.expensetrace.app.model.budget.MonthlyBudget;
-import com.expensetrace.app.model.budget.YearlyBudget;
+import com.expensetrace.app.model.budget.*;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.dto.request.CategoryLimitDto;
 import com.expensetrace.app.dto.request.budget.MonthlyBudgetRequestDto;
 import com.expensetrace.app.dto.request.budget.YearlyBudgetRequestDto;
+import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;
+import com.expensetrace.app.repository.transaction.TransactionRepository;
 import com.expensetrace.app.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,7 @@ public class BudgetService implements IBudgetService {
     private final CategoryRepository categoryRepo;
     private final BudgetRepository budgetRepository;
     private final TransactionRepository transactionRepo;
+    private final ExpenseTransactionRepository expenseTransactionRepo;
 
     @Override
     @Transactional
@@ -44,7 +44,7 @@ public class BudgetService implements IBudgetService {
         budget.setYear(dto.getYear());
         budget.setMonth(dto.getMonth());
         budget.setTotalLimit(dto.getTotalLimit());
-        User user=new User();
+        User user = new User();
         user.setId(userId);
         budget.setUser(user);
 
@@ -74,7 +74,7 @@ public class BudgetService implements IBudgetService {
         budget.setId(UUID.randomUUID());
         budget.setYear(dto.getYear());
         budget.setTotalLimit(dto.getTotalLimit());
-        User user=new User();
+        User user = new User();
         user.setId(userId);
         budget.setUser(user);
 
@@ -112,6 +112,7 @@ public class BudgetService implements IBudgetService {
 
         budget.getCategoryLimits().clear();
 
+        Set<CategoryBudgetLimit> updatedLimits = new HashSet<>();
         for (CategoryLimitDto dto : request.getCategoryLimits()) {
             Category category = categoryRepo.findById(dto.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -119,8 +120,9 @@ public class BudgetService implements IBudgetService {
             limit.setBudget(budget);
             limit.setCategory(category);
             limit.setCategoryLimit(dto.getCategoryLimit());
-            budget.getCategoryLimits().add(limit);
+            updatedLimits.add(limit);
         }
+        budget.setCategoryLimits(updatedLimits);
 
         monthlyBudgetRepo.save(budget);
     }
@@ -141,6 +143,7 @@ public class BudgetService implements IBudgetService {
 
         budget.getCategoryLimits().clear();
 
+        Set<CategoryBudgetLimit> updatedLimits = new HashSet<>();
         for (CategoryLimitDto dto : request.getCategoryLimits()) {
             Category category = categoryRepo.findById(dto.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -148,12 +151,12 @@ public class BudgetService implements IBudgetService {
             limit.setBudget(budget);
             limit.setCategory(category);
             limit.setCategoryLimit(dto.getCategoryLimit());
-            budget.getCategoryLimits().add(limit);
+            updatedLimits.add(limit);
         }
+        budget.setCategoryLimits(updatedLimits);
 
         yearlyBudgetRepo.save(budget);
     }
-
 
     @Override
     @Transactional
@@ -218,7 +221,6 @@ public class BudgetService implements IBudgetService {
 
         for (YearlyBudget b : budgets) {
             double spent = transactionRepo.sumAmountByUserIdAndYear(userId, b.getYear());
-
             YearlyBudgetSummaryResponseDto dto = new YearlyBudgetSummaryResponseDto();
             dto.setId(b.getId());
             dto.setYear(b.getYear());
@@ -248,7 +250,7 @@ public class BudgetService implements IBudgetService {
         for (CategoryBudgetLimit limit : budget.getCategoryLimits()) {
             Category category = limit.getCategory();
 
-            double spent = transactionRepo.sumByCategoryAndMonthAndYear(
+            double spent = expenseTransactionRepo.sumByCategoryAndMonthAndYear(
                     category.getId(), budget.getMonth(), budget.getYear(), budget.getUser().getId());
 
             totalSpent += spent;
@@ -285,7 +287,7 @@ public class BudgetService implements IBudgetService {
         for (CategoryBudgetLimit limit : budget.getCategoryLimits()) {
             Category category = limit.getCategory();
 
-            double spent = transactionRepo.sumByCategoryAndYear(
+            double spent = expenseTransactionRepo.sumByCategoryAndYear(
                     category.getId(), budget.getYear(), budget.getUser().getId());
 
             totalSpent += spent;
@@ -309,5 +311,4 @@ public class BudgetService implements IBudgetService {
 
         return dto;
     }
-
 }
