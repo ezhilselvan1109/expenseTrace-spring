@@ -8,7 +8,7 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.TagRepository;
 import com.expensetrace.app.dto.response.TagResponseDto;
-import com.expensetrace.app.repository.TransactionRepository;
+import com.expensetrace.app.repository.transaction.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -72,9 +72,9 @@ public class TagService implements ITagService {
             transaction.getTags().remove(tag);
         }
 
-        transactionRepository.saveAll(transactions); // Save updated transactions
+        transactionRepository.saveAll(transactions);
 
-        tagRepository.delete(tag); // Now safe to delete
+        tagRepository.delete(tag);
     }
 
 
