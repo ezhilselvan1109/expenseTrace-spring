@@ -27,7 +27,7 @@ public enum TransactionType {
         for (TransactionType type : values()) {
             if (type.code == code) return type;
         }
-        throw new IllegalArgumentException("Invalid account type code: " + code);
+        throw new IllegalArgumentException("Invalid Transaction Type code: " + code);
     }
 }
 
