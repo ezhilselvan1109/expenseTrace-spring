@@ -1,4 +1,4 @@
-package com.expensetrace.app.repository;
+package com.expensetrace.app.repository.account;
 
 import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.model.account.Account;

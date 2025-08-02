@@ -1,4 +1,4 @@
-package com.expensetrace.app.repository;
+package com.expensetrace.app.repository.account;
 
 import com.expensetrace.app.model.account.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
