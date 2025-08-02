@@ -148,4 +148,16 @@ public class TransactionsController {
         }
     }
 
+    @GetMapping
+    @Operation(summary = "Get all transactions for logged-in user (paginated)")
+    public ResponseEntity<ApiResponse> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            var transactions = transactionService.getAllTransactions(page, size);
+            return ResponseEntity.ok(new ApiResponse("Transactions fetched", transactions));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Unexpected error: " + e.getMessage(), null));
+        }
+    }
 }

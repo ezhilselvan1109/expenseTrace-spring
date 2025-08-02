@@ -13,4 +13,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     Page<Transaction> findByUserId(UUID userId, Pageable pageable);
     List<Transaction> findByTags_Id(UUID tagId);
     int countByTags_Id(UUID tagId);
+    Page<Transaction> findAllByUserId(UUID userId, Pageable pageable);
 }

@@ -13,6 +13,9 @@ import com.expensetrace.app.repository.transaction.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -150,7 +153,9 @@ public class TransactionService implements ITransactionService {
 
     // --- Helpers ---
     private void populateCommon(Transaction txn, TransactionRequestDto dto) {
-        txn.setUser(new User() {{ setId(securityUtil.getAuthenticatedUserId()); }});
+        txn.setUser(new User() {{
+            setId(securityUtil.getAuthenticatedUserId());
+        }});
         txn.setType(dto.getType());
         txn.setDate(dto.getDate());
         txn.setMonth(dto.getMonth());
@@ -202,7 +207,6 @@ public class TransactionService implements ITransactionService {
     }
 
 
-
     private Set<Tag> resolveTags(List<UUID> tagIds, List<String> names) {
         UUID uid = securityUtil.getAuthenticatedUserId();
         Set<Tag> tags = new HashSet<>();
@@ -215,7 +219,9 @@ public class TransactionService implements ITransactionService {
                         .orElseGet(() -> {
                             Tag newT = new Tag();
                             newT.setName(nm.trim());
-                            newT.setUser(new User() {{ setId(uid); }});
+                            newT.setUser(new User() {{
+                                setId(uid);
+                            }});
                             return tagRepo.save(newT);
                         });
                 tags.add(tg);
@@ -251,4 +257,24 @@ public class TransactionService implements ITransactionService {
         };
     }
 
+    @Override
+    public Page<TransactionResponseDto> getAllTransactions(int page, int size) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        Pageable pageable = PageRequest.of(page, size);
+
+        return transactionRepo.findAllByUserId(userId, pageable)
+                .map(txn -> {
+                    if (txn.getType().equals(TransactionType.EXPENSE)) {
+                        return modelMapper.map(txn, ExpenseTransactionResponseDto.class);
+                    } else if (txn.getType().equals(TransactionType.INCOME)) {
+                        return modelMapper.map(txn, IncomeTransactionResponseDto.class);
+                    } else if (txn.getType().equals(TransactionType.TRANSFER)) {
+                        return modelMapper.map(txn, TransferTransactionResponseDto.class);
+                    } else if (txn.getType().equals(TransactionType.ADJUSTMENT)) {
+                        return modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
+                    } else {
+                        return modelMapper.map(txn, TransactionResponseDto.class);
+                    }
+                });
+    }
 }
