@@ -1,9 +1,9 @@
 package com.expensetrace.app.controller;
 
 import com.expensetrace.app.dto.request.TagRequestDto;
+import com.expensetrace.app.dto.response.tag.TagsResponseDto;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.dto.response.TagResponseDto;
 import com.expensetrace.app.service.tag.ITagService;
 import com.expensetrace.app.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +30,7 @@ public class TagController {
     public ResponseEntity<ApiResponse> getAllTags() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         try {
-            List<TagResponseDto> tags = tagService.getAllTagsByUser(userId);
+            List<TagsResponseDto> tags = tagService.getAllTagsByUser(userId);
             return ResponseEntity.ok(new ApiResponse("Tags fetched successfully!", tags));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error fetching tags", null));
@@ -64,7 +63,7 @@ public class TagController {
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> updateTag(@PathVariable UUID id, @Valid @RequestBody TagRequestDto tag) {
         try {
-            TagResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
+            TagsResponseDto updatedTagResponseDto = tagService.updateTag(tag, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedTagResponseDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

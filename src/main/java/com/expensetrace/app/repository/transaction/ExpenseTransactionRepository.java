@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, UUID> {
@@ -24,5 +25,7 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
                                 @Param("year") int year,
                                 @Param("userId") UUID userId);
 
+    List<ExpenseTransaction> findByTags_Id(UUID tagId);
 
+    int countByTags_Id(UUID tagId);
 }
