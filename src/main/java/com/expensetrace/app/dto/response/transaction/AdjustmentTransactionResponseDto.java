@@ -1,9 +1,9 @@
 package com.expensetrace.app.dto.response.transaction;
 
+import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import lombok.Data;
 
-import java.util.UUID;
 @Data
 public class AdjustmentTransactionResponseDto extends TransactionResponseDto {
-    private UUID accountId;
+    private AccountResponseDto account;
 }

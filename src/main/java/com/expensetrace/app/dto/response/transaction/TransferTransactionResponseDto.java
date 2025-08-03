@@ -1,16 +1,16 @@
 package com.expensetrace.app.dto.response.transaction;
 
+import com.expensetrace.app.dto.response.account.AccountResponseDto;
+import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
 import lombok.Data;
-
-import java.util.UUID;
 
 @Data
 public class TransferTransactionResponseDto extends TransactionResponseDto {
-    private UUID fromAccountId;
+    private AccountResponseDto fromAccount;
 
-    private UUID toAccountId;
+    private AccountResponseDto toAccount;
 
-    private UUID fromPaymentModeId;
+    private PaymentModeResponseDto fromPaymentMode;
 
-    private UUID toPaymentModeId;
+    private PaymentModeResponseDto toPaymentMode;
 }
