@@ -9,4 +9,8 @@ public class TransferTransactionResponseDto extends TransactionResponseDto {
     private UUID fromAccountId;
 
     private UUID toAccountId;
+
+    private UUID fromPaymentModeId;
+
+    private UUID toPaymentModeId;
 }

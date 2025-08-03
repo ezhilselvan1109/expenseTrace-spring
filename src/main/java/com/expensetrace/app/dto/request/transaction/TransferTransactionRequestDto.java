@@ -13,6 +13,10 @@ public class TransferTransactionRequestDto extends TransactionRequestDto{
     @NotNull(message = "To Account ID is required")
     private UUID toAccountId;
 
+    private UUID fromPaymentModeId;
+
+    private UUID toPaymentModeId;
+
     private List<UUID> tagIds;
 
     private List<String> tags;

@@ -14,6 +14,7 @@ import lombok.Setter;
 public class AdjustmentTransaction extends Transaction {
 
     @ManyToOne
+    @JoinColumn(name = "account_id")
     private Account account;
 }
 

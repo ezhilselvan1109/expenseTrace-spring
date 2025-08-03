@@ -13,6 +13,8 @@ public class IncomeTransactionRequestDto extends TransactionRequestDto{
     @NotNull(message = "Account ID is required")
     private UUID accountId;
 
+    private UUID paymentModeId;
+
     private List<UUID> tagIds;
 
     private List<String> tags;
