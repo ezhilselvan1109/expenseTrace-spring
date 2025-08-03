@@ -9,5 +9,5 @@ import java.util.List;
 @Data
 public class BankResponseDto extends AccountResponseDto {
     private BigDecimal currentBalance;
-    private List<PaymentModeRequestDto> linkedPaymentModes;
+    private List<PaymentModeResponseDto> linkedPaymentModes;
 }

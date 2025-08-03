@@ -40,9 +40,7 @@ public class AccountService implements IAccountService {
             Bank bank = (Bank) account;
             BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
             dto.setLinkedPaymentModes(
-                    bank.getPaymentModes().stream().map(pm -> {
-                        return modelMapper.map(pm, PaymentModeRequestDto.class);
-                    }).collect(Collectors.toList())
+                    bank.getPaymentModes().stream().map(pm ->modelMapper.map(pm, PaymentModeResponseDto.class)).collect(Collectors.toList())
             );
             return dto;
         } else if (account.getType() == AccountType.WALLET) {
@@ -65,9 +63,7 @@ public class AccountService implements IAccountService {
                         Bank bank = (Bank) account;
                         BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
                         dto.setLinkedPaymentModes(
-                                bank.getPaymentModes().stream().map(pm -> {
-                                    return modelMapper.map(pm, PaymentModeRequestDto.class);
-                                }).collect(Collectors.toList())
+                                bank.getPaymentModes().stream().map(pm ->modelMapper.map(pm, PaymentModeResponseDto.class)).collect(Collectors.toList())
                         );
                         return dto;
                     } else if (account.getType().equals(AccountType.WALLET)) {
@@ -94,10 +90,7 @@ public class AccountService implements IAccountService {
                     Bank bank = (Bank) account;
                     BankResponseDto dto = modelMapper.map(bank, BankResponseDto.class);
                     if (bank.getPaymentModes() != null) {
-                        dto.setLinkedPaymentModes(bank.getPaymentModes().stream().map(pm -> {
-                            return modelMapper.map(pm, PaymentModeRequestDto.class);
-                        }).toList()
-                        );
+                        bank.getPaymentModes().stream().map(pm ->modelMapper.map(pm, PaymentModeResponseDto.class)).collect(Collectors.toList());
                     }
                     return dto;
                 }).collect(Collectors.toList());
