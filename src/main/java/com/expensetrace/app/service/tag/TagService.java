@@ -1,13 +1,12 @@
 package com.expensetrace.app.service.tag;
 
+import com.expensetrace.app.dto.response.tag.TagsResponseDto;
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.dto.request.TagRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.TagRepository;
-import com.expensetrace.app.dto.response.TagResponseDto;
 import com.expensetrace.app.repository.transaction.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,14 +25,14 @@ public class TagService implements ITagService {
     private final TransactionRepository transactionRepository;
 
     @Override
-    public TagResponseDto getTagById(UUID id) {
+    public TagsResponseDto getTagById(UUID id) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
-        return modelMapper.map(tag, TagResponseDto.class);
+        return modelMapper.map(tag, TagsResponseDto.class);
     }
 
     @Override
-    public TagResponseDto addTag(TagRequestDto tagRequestDto,UUID userId) {
+    public TagsResponseDto addTag(TagRequestDto tagRequestDto,UUID userId) {
         if (tagRepository.existsByNameAndUserId(tagRequestDto.getName(),userId)) {
             throw new AlreadyExistsException(tagRequestDto.getName() + " already exists");
         }
@@ -45,18 +43,18 @@ public class TagService implements ITagService {
         tag.setUser(user);
 
         Tag savedTag = tagRepository.save(tag);
-        return modelMapper.map(savedTag, TagResponseDto.class);
+        return modelMapper.map(savedTag, TagsResponseDto.class);
     }
 
     @Override
-    public TagResponseDto updateTag(TagRequestDto tagRequestDto, UUID id) {
+    public TagsResponseDto updateTag(TagRequestDto tagRequestDto, UUID id) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
 
         existingTag.setName(tagRequestDto.getName());
 
         Tag updatedTag = tagRepository.save(existingTag);
-        return modelMapper.map(updatedTag, TagResponseDto.class);
+        return modelMapper.map(updatedTag, TagsResponseDto.class);
     }
 
 
@@ -66,26 +64,26 @@ public class TagService implements ITagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
 
-        List<Transaction> transactions = transactionRepository.findByTags_Id(id);
+        /*List<Transaction> transactions = transactionRepository.findByTags_Id(id);*/
 
-        for (Transaction transaction : transactions) {
+        /*for (Transaction transaction : transactions) {
             transaction.getTags().remove(tag);
-        }
+        }*/
 
-        transactionRepository.saveAll(transactions);
+        /*transactionRepository.saveAll(transactions);*/
 
         tagRepository.delete(tag);
     }
 
 
     @Override
-    public List<TagResponseDto> getAllTagsByUser(UUID userId) {
+    public List<TagsResponseDto> getAllTagsByUser(UUID userId) {
         return tagRepository.findByUserId(userId)
                 .stream()
                 .map(tag -> {
-                    TagResponseDto dto = modelMapper.map(tag, TagResponseDto.class);
-                    int count = transactionRepository.countByTags_Id(tag.getId());
-                    dto.setTransactions(count);
+                    TagsResponseDto dto = modelMapper.map(tag, TagsResponseDto.class);
+                    /*int count = transactionRepository.countByTags_Id(tag.getId());
+                    dto.setTransactions(count);*/
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -98,15 +96,15 @@ public class TagService implements ITagService {
         Tag target = tagRepository.findById(targetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Target tag not found!"));
 
-        List<Transaction> transactions = transactionRepository.findByTags_Id(sourceId);
+        /*List<Transaction> transactions = transactionRepository.findByTags_Id(sourceId);*/
 
-        for (Transaction transaction : transactions) {
+        /*for (Transaction transaction : transactions) {
             Set<Tag> tags = transaction.getTags();
             tags.remove(source);
             tags.add(target);
-        }
+        }*/
 
-        transactionRepository.saveAll(transactions);
+        /*transactionRepository.saveAll(transactions);*/
         tagRepository.delete(source);
     }
 }

@@ -39,12 +39,4 @@ public abstract class Transaction {
     private TransactionType type;
 
     private String description;
-
-    @ManyToMany
-    @JoinTable(
-            name = "transaction_tags",
-            joinColumns = @JoinColumn(name = "transaction_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags;
 }

@@ -72,7 +72,8 @@ public class TransactionService implements ITransactionService {
         ExpenseTransaction txn = new ExpenseTransaction();
         populateCommon(txn, dto);
         setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId(),dto.getPaymentModeId());
+        setAccount(txn, dto.getAccountId());
+        setPaymentMode(txn, dto.getPaymentModeId());
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, ExpenseTransactionResponseDto.class);
@@ -82,7 +83,8 @@ public class TransactionService implements ITransactionService {
         IncomeTransaction txn = new IncomeTransaction();
         populateCommon(txn, dto);
         setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId(),dto.getPaymentModeId());
+        setAccount(txn, dto.getAccountId());
+        setPaymentMode(txn, dto.getPaymentModeId());
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, IncomeTransactionResponseDto.class);
@@ -95,14 +97,19 @@ public class TransactionService implements ITransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
         Account to = accountRepo.findById(dto.getToAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-        PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
-                .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-        PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
-                .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
         txn.setFromAccount(from);
         txn.setToAccount(to);
-        txn.setFromPaymentMode(fromPaymentMode);
-        txn.setToPaymentMode(toPaymentMode);
+
+        if (dto.getFromPaymentModeId() != null) {
+            PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
+            txn.setFromPaymentMode(fromPaymentMode);
+        }
+        if (dto.getToPaymentModeId() != null) {
+            PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
+            txn.setToPaymentMode(toPaymentMode);
+        }
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         TransferTransaction saved = transferTransactionRepo.save(txn);
         return modelMapper.map(saved, TransferTransactionResponseDto.class);
@@ -111,7 +118,7 @@ public class TransactionService implements ITransactionService {
     private TransactionResponseDto createAdjustment(AdjustmentTransactionRequestDto dto) {
         AdjustmentTransaction txn = new AdjustmentTransaction();
         populateCommon(txn, dto);
-        setAccount(txn, dto.getAccountId(),null);
+        setAccount(txn, dto.getAccountId());
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, AdjustmentTransactionResponseDto.class);
     }
@@ -121,7 +128,8 @@ public class TransactionService implements ITransactionService {
         ExpenseTransaction txn = (ExpenseTransaction) loadExisting(id, ExpenseTransaction.class);
         populateCommon(txn, dto);
         setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId(),dto.getPaymentModeId());
+        setAccount(txn, dto.getAccountId());
+        setPaymentMode(txn, dto.getPaymentModeId());
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, ExpenseTransactionResponseDto.class);
@@ -131,7 +139,8 @@ public class TransactionService implements ITransactionService {
         IncomeTransaction txn = (IncomeTransaction) loadExisting(id, IncomeTransaction.class);
         populateCommon(txn, dto);
         setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId(),dto.getPaymentModeId());
+        setAccount(txn, dto.getAccountId());
+        setPaymentMode(txn, dto.getPaymentModeId());
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, IncomeTransactionResponseDto.class);
@@ -144,14 +153,16 @@ public class TransactionService implements ITransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
         Account to = accountRepo.findById(dto.getToAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-        PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
-                .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-        PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
-                .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-        txn.setFromAccount(from);
-        txn.setToAccount(to);
-        txn.setFromPaymentMode(fromPaymentMode);
-        txn.setToPaymentMode(toPaymentMode);
+        if (dto.getFromPaymentModeId() != null) {
+            PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
+            txn.setFromPaymentMode(fromPaymentMode);
+        }
+        if (dto.getToPaymentModeId() != null) {
+            PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
+            txn.setToPaymentMode(toPaymentMode);
+        }
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, TransferTransactionResponseDto.class);
@@ -160,7 +171,7 @@ public class TransactionService implements ITransactionService {
     private TransactionResponseDto updateAdjustment(UUID id, AdjustmentTransactionRequestDto dto) {
         AdjustmentTransaction txn = (AdjustmentTransaction) loadExisting(id, AdjustmentTransaction.class);
         populateCommon(txn, dto);
-        setAccount(txn, dto.getAccountId(),null);
+        setAccount(txn, dto.getAccountId());
         Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, AdjustmentTransactionResponseDto.class);
     }
@@ -203,25 +214,31 @@ public class TransactionService implements ITransactionService {
         }
     }
 
-    private void setAccount(Transaction txn, UUID acctId,UUID payId) {
+    private void setAccount(Transaction txn, UUID acctId) {
         if (acctId == null) return;
 
         Account account = accountRepo.findById(acctId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
-        PaymentMode paymentMode = paymentModeRepo.findById(payId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment-mode not found"));
-
         if (txn instanceof ExpenseTransaction expenseTxn) {
             expenseTxn.setAccount(account);
-            expenseTxn.setPaymentMode(paymentMode);
         } else if (txn instanceof IncomeTransaction incomeTxn) {
             incomeTxn.setAccount(account);
-            incomeTxn.setPaymentMode(paymentMode);
         } else if (txn instanceof AdjustmentTransaction adjustmentTxn) {
             adjustmentTxn.setAccount(account);
         } else {
             throw new IllegalArgumentException("Account not applicable for this transaction type");
+        }
+    }
+
+    private void setPaymentMode(Transaction txn, UUID payId) {
+        if (payId == null) return;
+        PaymentMode paymentMode = paymentModeRepo.findById(payId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment-mode not found"));
+        if (txn instanceof ExpenseTransaction expenseTxn) {
+            expenseTxn.setPaymentMode(paymentMode);
+        } else if (txn instanceof IncomeTransaction incomeTxn) {
+            incomeTxn.setPaymentMode(paymentMode);
         }
     }
 
@@ -298,12 +315,12 @@ public class TransactionService implements ITransactionService {
     }
 
     @Override
-    public Page<TransactionResponseDto> getAllTransactions(int page, int size,TransactionType type) {
+    public Page<TransactionResponseDto> getAllTransactions(int page, int size, TransactionType type) {
         return switch (type) {
-            case EXPENSE -> getAllExpenseTransactions(page,size);
-            case INCOME -> getAllIncomeTransactions(page,size);
-            case TRANSFER -> getAllTransferTransactions(page,size);
-            case ADJUSTMENT -> getAllAdjustmentTransactions(page,size);
+            case EXPENSE -> getAllExpenseTransactions(page, size);
+            case INCOME -> getAllIncomeTransactions(page, size);
+            case TRANSFER -> getAllTransferTransactions(page, size);
+            case ADJUSTMENT -> getAllAdjustmentTransactions(page, size);
         };
     }
 

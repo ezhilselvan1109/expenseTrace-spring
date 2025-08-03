@@ -1,6 +1,7 @@
 package com.expensetrace.app.model.transaction;
 
 import com.expensetrace.app.model.Category;
+import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;
 import jakarta.persistence.*;
@@ -29,5 +30,13 @@ public class IncomeTransaction extends Transaction {
     @ManyToOne
     @JoinColumn(name = "payment_mode_id")
     private PaymentMode paymentMode;
+
+    @ManyToMany
+    @JoinTable(
+            name = "income_transaction_tags",
+            joinColumns = @JoinColumn(name = "income_transaction_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags;
 }
 

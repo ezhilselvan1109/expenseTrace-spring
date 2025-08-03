@@ -54,6 +54,7 @@ public class TransactionsController {
     @Operation(summary = "Create transfer a transaction")
     public ResponseEntity<ApiResponse> createTransferTransaction(@Valid @RequestBody TransferTransactionRequestDto dto) {
         try {
+            System.out.println("Bachelorhood..............");
             TransactionResponseDto txn = transactionService.createTransaction(dto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Transaction created", txn));
         } catch (Exception e) {

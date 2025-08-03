@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    List<Transaction> findByUserId(UUID userId);
-    Page<Transaction> findByUserId(UUID userId, Pageable pageable);
-    List<Transaction> findByTags_Id(UUID tagId);
-    int countByTags_Id(UUID tagId);
     Page<Transaction> findAllByUserId(UUID userId, Pageable pageable);
 
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user.id = :userId AND t.year = :year")

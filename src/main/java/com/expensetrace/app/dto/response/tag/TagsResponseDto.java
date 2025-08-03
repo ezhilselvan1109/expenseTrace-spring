@@ -1,11 +1,11 @@
-package com.expensetrace.app.dto.response;
+package com.expensetrace.app.dto.response.tag;
 
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
-public class TagResponseDto {
+public class TagsResponseDto {
     private UUID id;
     private String name;
     private Integer transactions=0;
