@@ -3,6 +3,7 @@ package com.expensetrace.app.service.record;
 import com.expensetrace.app.enums.RecordType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.debt.Debt;
 import com.expensetrace.app.model.debt.Record;
 import com.expensetrace.app.repository.RecordsRepository;
@@ -37,6 +38,13 @@ public class RecordService implements IRecordService {
                 super.setId(id);
             }
         };
+
+        PaymentMode paymentMode=new PaymentMode() {
+            @Override
+            public void setId(UUID id) {
+                super.setId(id);
+            }
+        };
         account.setId(dto.getAccountId());
 
         Record record = new Record();
@@ -44,6 +52,7 @@ public class RecordService implements IRecordService {
         record.setType(dto.getType());
         record.setDate(dto.getDate());
         record.setAccount(account);
+        record.setPaymentMode(paymentMode);
         record.setAmount(dto.getAmount());
         record.setDescription(dto.getDescription());
 
@@ -89,6 +98,12 @@ public class RecordService implements IRecordService {
                 super.setId(id);
             }
         };
+        PaymentMode paymentMode=new PaymentMode() {
+            @Override
+            public void setId(UUID id) {
+                super.setId(id);
+            }
+        };
         Debt debt=new Debt();
         debt.setId(id);
         record.setDebt(debt);
@@ -96,6 +111,7 @@ public class RecordService implements IRecordService {
         record.setDate(dto.getDate());
         record.setAmount(dto.getAmount());
         record.setAccount(account);
+        record.setPaymentMode(paymentMode);
         record.setDescription(dto.getDescription());
 
         Record updated = recordRepo.save(record);

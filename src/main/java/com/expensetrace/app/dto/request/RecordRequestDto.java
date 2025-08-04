@@ -24,6 +24,8 @@ public class RecordRequestDto {
     @NotNull(message = "Account ID is required")
     private UUID accountId;
 
+    private UUID paymentModeId;
+
     @NotNull(message = "Record type is required")
     private RecordType type;
 }

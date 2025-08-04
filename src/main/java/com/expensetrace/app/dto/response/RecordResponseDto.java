@@ -17,6 +17,8 @@ public class RecordResponseDto {
 
     private BigDecimal amount;
 
+    private UUID paymentModeId;
+
     private String description;
 
     private RecordType type;

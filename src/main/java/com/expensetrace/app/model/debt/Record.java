@@ -2,6 +2,7 @@ package com.expensetrace.app.model.debt;
 
 import com.expensetrace.app.enums.RecordType;
 import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.account.PaymentMode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,10 @@ public class Record {
     private String description;
 
     @ManyToOne private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "payment_mode_id")
+    private PaymentMode paymentMode;
 
     @Enumerated(EnumType.STRING)
     private RecordType type;
