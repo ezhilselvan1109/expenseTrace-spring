@@ -139,10 +139,9 @@ public class TransactionsController {
     @GetMapping("/{id}")
     @Operation(summary = "Get transaction details by ID and type")
     public ResponseEntity<ApiResponse> getTransactionById(
-            @PathVariable UUID id,
-            @RequestParam Integer type) {
+            @PathVariable UUID id) {
         try {
-            TransactionResponseDto dto = transactionService.getTransactionByIdAndType(id, TransactionType.fromCode(type));
+            TransactionResponseDto dto = transactionService.getTransactionByIdAndType(id);
             return ResponseEntity.ok(new ApiResponse("Transaction fetched", dto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

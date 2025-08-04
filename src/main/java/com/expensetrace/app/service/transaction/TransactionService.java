@@ -111,7 +111,7 @@ public class TransactionService implements ITransactionService {
             txn.setToPaymentMode(toPaymentMode);
         }
         txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        TransferTransaction saved = transferTransactionRepo.save(txn);
+        Transaction saved = transactionRepo.save(txn);
         return modelMapper.map(saved, TransferTransactionResponseDto.class);
     }
 
@@ -153,6 +153,8 @@ public class TransactionService implements ITransactionService {
                 .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
         Account to = accountRepo.findById(dto.getToAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
+        txn.setFromAccount(from);
+        txn.setToAccount(to);
         if (dto.getFromPaymentModeId() != null) {
             PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
                     .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
@@ -268,28 +270,19 @@ public class TransactionService implements ITransactionService {
 
 
     @Override
-    public TransactionResponseDto getTransactionByIdAndType(UUID id, TransactionType type) {
-        return switch (type) {
-            case EXPENSE -> {
-                ExpenseTransaction txn = expenseTransactionRepo.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Expense transaction not found"));
-                yield modelMapper.map(txn, ExpenseTransactionResponseDto.class);
-            }
-            case INCOME -> {
-                IncomeTransaction txn = incomeTransactionRepo.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Income transaction not found"));
-                yield modelMapper.map(txn, IncomeTransactionResponseDto.class);
-            }
-            case TRANSFER -> {
-                TransferTransaction txn = transferTransactionRepo.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Transfer transaction not found"));
-                yield modelMapper.map(txn, TransferTransactionResponseDto.class);
-            }
-            case ADJUSTMENT -> {
-                AdjustmentTransaction txn = adjustmentTransactionRepo.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Adjustment transaction not found"));
-                yield modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
-            }
+    public TransactionResponseDto getTransactionByIdAndType(UUID id) {
+
+        Transaction txn=transactionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));;
+
+        return switch (txn.getType()) {
+            case EXPENSE ->
+                modelMapper.map(txn, ExpenseTransactionResponseDto.class);
+            case INCOME ->
+                modelMapper.map(txn, IncomeTransactionResponseDto.class);
+            case TRANSFER ->
+                modelMapper.map(txn, TransferTransactionResponseDto.class);
+            case ADJUSTMENT ->
+                modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
         };
     }
 
