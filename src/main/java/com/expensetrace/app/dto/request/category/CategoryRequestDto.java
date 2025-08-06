@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.request;
+package com.expensetrace.app.dto.request.category;
 
 import com.expensetrace.app.enums.CategoryType;
 import jakarta.validation.constraints.NotBlank;

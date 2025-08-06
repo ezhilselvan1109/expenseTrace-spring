@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.request;
+package com.expensetrace.app.dto.request.category;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
