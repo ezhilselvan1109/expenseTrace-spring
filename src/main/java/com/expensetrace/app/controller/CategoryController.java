@@ -1,6 +1,6 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.dto.request.CategoryRequestDto;
+import com.expensetrace.app.dto.request.category.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;

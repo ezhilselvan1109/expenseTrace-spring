@@ -9,7 +9,7 @@ import com.expensetrace.app.exception.AccessDeniedException;
 import com.expensetrace.app.model.*;
 import com.expensetrace.app.model.budget.*;
 import com.expensetrace.app.repository.*;
-import com.expensetrace.app.dto.request.CategoryLimitDto;
+import com.expensetrace.app.dto.request.category.CategoryLimitDto;
 import com.expensetrace.app.dto.request.budget.MonthlyBudgetRequestDto;
 import com.expensetrace.app.dto.request.budget.YearlyBudgetRequestDto;
 import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;

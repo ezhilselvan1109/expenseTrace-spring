@@ -3,7 +3,7 @@ package com.expensetrace.app.service.category;
 import com.expensetrace.app.enums.CategoryType;
 import com.expensetrace.app.model.Category;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.dto.request.CategoryRequestDto;
+import com.expensetrace.app.dto.request.category.CategoryRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.repository.CategoryRepository;
