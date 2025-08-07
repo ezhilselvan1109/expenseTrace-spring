@@ -5,6 +5,8 @@ import com.expensetrace.app.dto.request.account.BankRequestDto;
 import com.expensetrace.app.dto.request.account.CreditCardRequestDto;
 import com.expensetrace.app.dto.request.account.WalletRequestDto;
 import com.expensetrace.app.dto.response.account.AccountResponseDto;
+import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.transaction.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -48,4 +50,6 @@ public interface IAccountService {
     BigDecimal getCreditOutstanding();
 
     BigDecimal getCreditAvailable();
+
+    Account getAccount(UUID acctId);
 }

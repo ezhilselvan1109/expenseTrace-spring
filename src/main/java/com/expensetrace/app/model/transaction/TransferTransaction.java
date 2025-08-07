@@ -1,6 +1,7 @@
 package com.expensetrace.app.model.transaction;
 
 import com.expensetrace.app.model.Tag;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;
 import jakarta.persistence.*;
@@ -17,6 +18,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class TransferTransaction extends Transaction {
+
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "from_account_id")

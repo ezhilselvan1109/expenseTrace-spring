@@ -2,6 +2,10 @@ package com.expensetrace.app.model.debt;
 
 import com.expensetrace.app.enums.DebtType;
 import com.expensetrace.app.model.User;
+import com.expensetrace.app.model.transaction.Transaction;
+import com.expensetrace.app.model.transaction.record.AdjustmentRecord;
+import com.expensetrace.app.model.transaction.record.PaidRecord;
+import com.expensetrace.app.model.transaction.record.ReceivedRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,5 +46,12 @@ public class Debt {
     private DebtType type;
 
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Record> records;
+    private List<PaidRecord> paidRecords;
+
+    @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReceivedRecord> receivedRecords;
+
+    @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AdjustmentRecord> adjustmentRecords;
+
 }

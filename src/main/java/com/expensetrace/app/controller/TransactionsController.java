@@ -35,7 +35,7 @@ public class TransactionsController {
             TransactionResponseDto txn = transactionService.createTransaction(dto);
             return ResponseEntity.status(CREATED).body(new ApiResponse("Transaction created", txn));
         } catch (Exception e) {
-            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), e));
         }
     }
 
@@ -141,7 +141,7 @@ public class TransactionsController {
     public ResponseEntity<ApiResponse> getTransactionById(
             @PathVariable UUID id) {
         try {
-            TransactionResponseDto dto = transactionService.getTransactionByIdAndType(id);
+            TransactionResponseDto dto = transactionService.getTransactionById(id);
             return ResponseEntity.ok(new ApiResponse("Transaction fetched", dto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

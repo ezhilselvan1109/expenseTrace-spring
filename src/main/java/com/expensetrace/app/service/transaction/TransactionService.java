@@ -1,17 +1,27 @@
 package com.expensetrace.app.service.transaction;
 
 import com.expensetrace.app.dto.request.transaction.*;
+import com.expensetrace.app.dto.request.transaction.record.AdjustmentRequestDto;
+import com.expensetrace.app.dto.request.transaction.record.PaidRequestDto;
+import com.expensetrace.app.dto.request.transaction.record.ReceivedRequestDto;
 import com.expensetrace.app.dto.response.transaction.*;
+import com.expensetrace.app.dto.response.transaction.record.AdjustmentResponseDto;
+import com.expensetrace.app.dto.response.transaction.record.PaidResponseDto;
+import com.expensetrace.app.dto.response.transaction.record.ReceivedResponseDto;
 import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.*;
-import com.expensetrace.app.model.account.Account;
-import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.transaction.*;
-import com.expensetrace.app.repository.*;
-import com.expensetrace.app.repository.account.AccountRepository;
-import com.expensetrace.app.repository.account.PaymentModeRepository;
+import com.expensetrace.app.model.transaction.record.AdjustmentRecord;
+import com.expensetrace.app.model.transaction.record.PaidRecord;
+import com.expensetrace.app.model.transaction.record.ReceivedRecord;
 import com.expensetrace.app.repository.transaction.*;
+import com.expensetrace.app.service.transaction.adjustment.IAdjustmentTransactionService;
+import com.expensetrace.app.service.transaction.expense.IExpenseTransactionService;
+import com.expensetrace.app.service.transaction.income.IIncomeTransactionService;
+import com.expensetrace.app.service.transaction.record.adjustment.IAdjustmentService;
+import com.expensetrace.app.service.transaction.record.paid.IPaidService;
+import com.expensetrace.app.service.transaction.record.received.IReceivedService;
+import com.expensetrace.app.service.transaction.transfer.ITransferTransactionService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,261 +38,129 @@ import java.util.*;
 public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepo;
-    private final ExpenseTransactionRepository expenseTransactionRepo;
-    private final IncomeTransactionRepository incomeTransactionRepo;
-    private final TransferTransactionRepository transferTransactionRepo;
-    private final AdjustmentTransactionRepository adjustmentTransactionRepo;
-    private final AccountRepository accountRepo;
-    private final CategoryRepository categoryRepo;
-    private final PaymentModeRepository paymentModeRepo;
-    private final TagRepository tagRepo;
+
+    private final IIncomeTransactionService incomeTransactionService;
+    private final IExpenseTransactionService expenseTransactionService;
+    private final ITransferTransactionService transferTransactionService;
+    private final IAdjustmentTransactionService adjustmentTransactionService;
+    private final IPaidService paidService;
+    private final IReceivedService receivedService;
+    private final IAdjustmentService adjustmentService;
+
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
 
     @Override
     public TransactionResponseDto createTransaction(TransactionRequestDto dto) {
         return switch (dto.getType()) {
-            case EXPENSE -> createExpense((ExpenseTransactionRequestDto) dto);
-            case INCOME -> createIncome((IncomeTransactionRequestDto) dto);
-            case TRANSFER -> createTransfer((TransferTransactionRequestDto) dto);
-            case ADJUSTMENT -> createAdjustment((AdjustmentTransactionRequestDto) dto);
+            case EXPENSE -> {
+                ExpenseTransaction txn=new ExpenseTransaction();
+                populateCommon(txn, dto);
+                yield expenseTransactionService.save(txn, (ExpenseTransactionRequestDto) dto);
+            }
+            case INCOME -> {
+                IncomeTransaction txn = new IncomeTransaction();
+                populateCommon(txn, dto);
+                yield incomeTransactionService.save(txn, (IncomeTransactionRequestDto) dto);
+            }
+            case TRANSFER -> {
+                TransferTransaction txn = new TransferTransaction();
+                populateCommon(txn, dto);
+                yield transferTransactionService.save(txn, (TransferTransactionRequestDto) dto);
+            }
+            case ADJUSTMENT -> {
+                AdjustmentTransaction txn = new AdjustmentTransaction();
+                populateCommon(txn, dto);
+                yield adjustmentTransactionService.save(txn, (AdjustmentTransactionRequestDto) dto);
+            }
+            case PAID -> {
+                PaidRecord txn = new PaidRecord();
+                populateCommon(txn, dto);
+                yield paidService.save(txn, (PaidRequestDto) dto);
+            }
+            case RECEIVED -> {
+                ReceivedRecord txn = new ReceivedRecord();
+                populateCommon(txn, dto);
+                yield receivedService.save(txn, (ReceivedRequestDto) dto);
+            }
+            case DEBT_ADJUSTMENT -> {
+                AdjustmentRecord txn = new AdjustmentRecord();
+                populateCommon(txn, dto);
+                yield adjustmentService.save(txn, (AdjustmentRequestDto) dto);
+            }
+        };
+    }
+
+    @Override
+    public TransactionResponseDto createTransaction(UUID debtId, TransactionRequestDto dto) {
+        return switch (dto.getType()) {
+            case EXPENSE, INCOME, TRANSFER, ADJUSTMENT ->
+                    throw new UnsupportedOperationException("Not supported yet: " + dto.getType());
+            case PAID ->{
+                PaidRecord txn = new PaidRecord();
+                populateCommon(txn, dto);
+                yield paidService.save(txn, (PaidRequestDto) dto);
+            }
+            case RECEIVED -> {
+                ReceivedRecord txn = new ReceivedRecord();
+                populateCommon(txn, dto);
+                yield receivedService.save(txn, (ReceivedRequestDto) dto);
+            }
+            case DEBT_ADJUSTMENT -> {
+                AdjustmentRecord txn = new AdjustmentRecord();
+                populateCommon(txn, dto);
+                yield adjustmentService.save(txn, (AdjustmentRequestDto) dto);
+            }
+        };
+    }
+
+    @Transactional
+    public TransactionResponseDto updateTransaction(UUID id, TransactionRequestDto dto) {
+        Transaction txn = loadExisting(id);
+        populateCommon(txn, dto);
+        return switch (dto.getType()) {
+            case EXPENSE -> expenseTransactionService.save((ExpenseTransaction) txn, (ExpenseTransactionRequestDto) dto);
+            case INCOME -> incomeTransactionService.save((IncomeTransaction)txn, (IncomeTransactionRequestDto) dto);
+            case TRANSFER -> transferTransactionService.save((TransferTransaction) txn, (TransferTransactionRequestDto) dto);
+            case ADJUSTMENT -> adjustmentTransactionService.save((AdjustmentTransaction)txn, (AdjustmentTransactionRequestDto) dto);
+            case PAID -> paidService.save(txn, (PaidRequestDto) dto);
+            case RECEIVED -> receivedService.save(txn, (ReceivedRequestDto) dto);
+            case DEBT_ADJUSTMENT -> adjustmentService.save(txn, (AdjustmentRequestDto) dto);
         };
     }
 
     @Transactional
     public void deleteTransactionById(UUID id) {
         Transaction txn = transactionRepo.findById(id)
-                .filter(t -> t.getUser().getId().equals(securityUtil.getAuthenticatedUserId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
         transactionRepo.delete(txn);
     }
 
-    @Transactional
-    public TransactionResponseDto updateTransaction(UUID id, TransactionRequestDto dto) {
-        return switch (dto.getType()) {
-            case EXPENSE -> updateExpense(id, (ExpenseTransactionRequestDto) dto);
-            case INCOME -> updateIncome(id, (IncomeTransactionRequestDto) dto);
-            case TRANSFER -> updateTransfer(id, (TransferTransactionRequestDto) dto);
-            case ADJUSTMENT -> updateAdjustment(id, (AdjustmentTransactionRequestDto) dto);
+    @Override
+    public TransactionResponseDto getTransactionById(UUID id) {
+
+        Transaction txn = transactionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+
+        return switch (txn.getType()) {
+            case EXPENSE -> modelMapper.map(txn, ExpenseTransactionResponseDto.class);
+            case INCOME -> modelMapper.map(txn, IncomeTransactionResponseDto.class);
+            case TRANSFER -> modelMapper.map(txn, TransferTransactionResponseDto.class);
+            case ADJUSTMENT -> modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
+            case PAID -> modelMapper.map(txn, PaidResponseDto.class);
+            case RECEIVED -> modelMapper.map(txn, ReceivedResponseDto.class);
+            case DEBT_ADJUSTMENT -> modelMapper.map(txn, AdjustmentResponseDto.class);
         };
     }
 
-    // --- Creation methods ---
-    private TransactionResponseDto createExpense(ExpenseTransactionRequestDto dto) {
-        ExpenseTransaction txn = new ExpenseTransaction();
-        populateCommon(txn, dto);
-        setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId());
-        setPaymentMode(txn, dto.getPaymentModeId());
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, ExpenseTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto createIncome(IncomeTransactionRequestDto dto) {
-        IncomeTransaction txn = new IncomeTransaction();
-        populateCommon(txn, dto);
-        setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId());
-        setPaymentMode(txn, dto.getPaymentModeId());
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, IncomeTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto createTransfer(TransferTransactionRequestDto dto) {
-        TransferTransaction txn = new TransferTransaction();
-        populateCommon(txn, dto);
-        Account from = accountRepo.findById(dto.getFromAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-        Account to = accountRepo.findById(dto.getToAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-        txn.setFromAccount(from);
-        txn.setToAccount(to);
-
-        if (dto.getFromPaymentModeId() != null) {
-            PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-            txn.setFromPaymentMode(fromPaymentMode);
-        }
-        if (dto.getToPaymentModeId() != null) {
-            PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-            txn.setToPaymentMode(toPaymentMode);
-        }
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, TransferTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto createAdjustment(AdjustmentTransactionRequestDto dto) {
-        AdjustmentTransaction txn = new AdjustmentTransaction();
-        populateCommon(txn, dto);
-        setAccount(txn, dto.getAccountId());
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, AdjustmentTransactionResponseDto.class);
-    }
-
-    // --- Update methods (similar but using findById & mapping fields) ---
-    private TransactionResponseDto updateExpense(UUID id, ExpenseTransactionRequestDto dto) {
-        ExpenseTransaction txn = (ExpenseTransaction) loadExisting(id, ExpenseTransaction.class);
-        populateCommon(txn, dto);
-        setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId());
-        setPaymentMode(txn, dto.getPaymentModeId());
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, ExpenseTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto updateIncome(UUID id, IncomeTransactionRequestDto dto) {
-        IncomeTransaction txn = (IncomeTransaction) loadExisting(id, IncomeTransaction.class);
-        populateCommon(txn, dto);
-        setCategory(txn, dto.getCategoryId());
-        setAccount(txn, dto.getAccountId());
-        setPaymentMode(txn, dto.getPaymentModeId());
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, IncomeTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto updateTransfer(UUID id, TransferTransactionRequestDto dto) {
-        TransferTransaction txn = (TransferTransaction) loadExisting(id, TransferTransaction.class);
-        populateCommon(txn, dto);
-        Account from = accountRepo.findById(dto.getFromAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-        Account to = accountRepo.findById(dto.getToAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-        txn.setFromAccount(from);
-        txn.setToAccount(to);
-        if (dto.getFromPaymentModeId() != null) {
-            PaymentMode fromPaymentMode = paymentModeRepo.findById(dto.getFromPaymentModeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("From account not found"));
-            txn.setFromPaymentMode(fromPaymentMode);
-        }
-        if (dto.getToPaymentModeId() != null) {
-            PaymentMode toPaymentMode = paymentModeRepo.findById(dto.getToPaymentModeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("To account not found"));
-            txn.setToPaymentMode(toPaymentMode);
-        }
-        txn.setTags(resolveTags(dto.getTagIds(), dto.getTags()));
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, TransferTransactionResponseDto.class);
-    }
-
-    private TransactionResponseDto updateAdjustment(UUID id, AdjustmentTransactionRequestDto dto) {
-        AdjustmentTransaction txn = (AdjustmentTransaction) loadExisting(id, AdjustmentTransaction.class);
-        populateCommon(txn, dto);
-        setAccount(txn, dto.getAccountId());
-        Transaction saved = transactionRepo.save(txn);
-        return modelMapper.map(saved, AdjustmentTransactionResponseDto.class);
-    }
-
-    // --- Helpers ---
-    private void populateCommon(Transaction txn, TransactionRequestDto dto) {
-        txn.setUser(new User() {{
-            setId(securityUtil.getAuthenticatedUserId());
-        }});
-        txn.setType(dto.getType());
-        txn.setDate(dto.getDate());
-        txn.setMonth(dto.getMonth());
-        txn.setYear(dto.getYear());
-        txn.setAmount(dto.getAmount());
-        txn.setDescription(dto.getDescription());
-    }
-
-    private Transaction loadExisting(UUID id, Class<? extends Transaction> cls) {
-        Transaction t = transactionRepo.findById(id)
-                .filter(tx -> tx.getUser().getId().equals(securityUtil.getAuthenticatedUserId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
-        if (!cls.isInstance(t)) {
-            throw new IllegalArgumentException("Transaction type mismatch");
-        }
-        return t;
-    }
-
-    private void setCategory(Transaction txn, UUID catId) {
-        if (catId == null) return;
-
-        Category category = categoryRepo.findById(catId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-
-        if (txn instanceof ExpenseTransaction expenseTxn) {
-            expenseTxn.setCategory(category);
-        } else if (txn instanceof IncomeTransaction incomeTxn) {
-            incomeTxn.setCategory(category);
-        } else {
-            throw new IllegalArgumentException("Category not applicable for this transaction type");
-        }
-    }
-
-    private void setAccount(Transaction txn, UUID acctId) {
-        if (acctId == null) return;
-
-        Account account = accountRepo.findById(acctId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
-
-        if (txn instanceof ExpenseTransaction expenseTxn) {
-            expenseTxn.setAccount(account);
-        } else if (txn instanceof IncomeTransaction incomeTxn) {
-            incomeTxn.setAccount(account);
-        } else if (txn instanceof AdjustmentTransaction adjustmentTxn) {
-            adjustmentTxn.setAccount(account);
-        } else {
-            throw new IllegalArgumentException("Account not applicable for this transaction type");
-        }
-    }
-
-    private void setPaymentMode(Transaction txn, UUID payId) {
-        if (payId == null) return;
-        PaymentMode paymentMode = paymentModeRepo.findById(payId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment-mode not found"));
-        if (txn instanceof ExpenseTransaction expenseTxn) {
-            expenseTxn.setPaymentMode(paymentMode);
-        } else if (txn instanceof IncomeTransaction incomeTxn) {
-            incomeTxn.setPaymentMode(paymentMode);
-        }
-    }
-
-
-    private Set<Tag> resolveTags(List<UUID> tagIds, List<String> names) {
-        UUID uid = securityUtil.getAuthenticatedUserId();
-        Set<Tag> tags = new HashSet<>();
-        if (tagIds != null) {
-            tags.addAll(tagRepo.findAllById(tagIds));
-        }
-        if (names != null) {
-            for (String nm : names) {
-                Tag tg = tagRepo.findByNameAndUserId(nm.trim(), uid)
-                        .orElseGet(() -> {
-                            Tag newT = new Tag();
-                            newT.setName(nm.trim());
-                            newT.setUser(new User() {{
-                                setId(uid);
-                            }});
-                            return tagRepo.save(newT);
-                        });
-                tags.add(tg);
-            }
-        }
-        return tags;
-    }
-
-
     @Override
-    public TransactionResponseDto getTransactionByIdAndType(UUID id) {
-
-        Transaction txn=transactionRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));;
-
-        return switch (txn.getType()) {
-            case EXPENSE ->
-                modelMapper.map(txn, ExpenseTransactionResponseDto.class);
-            case INCOME ->
-                modelMapper.map(txn, IncomeTransactionResponseDto.class);
-            case TRANSFER ->
-                modelMapper.map(txn, TransferTransactionResponseDto.class);
-            case ADJUSTMENT ->
-                modelMapper.map(txn, AdjustmentTransactionResponseDto.class);
+    public Page<TransactionResponseDto> getAllTransactions(int page, int size, TransactionType type) {
+        return switch (type) {
+            case EXPENSE -> expenseTransactionService.getAllExpenseTransactions(page, size);
+            case INCOME -> incomeTransactionService.getAllIncomeTransactions(page, size);
+            case TRANSFER -> transferTransactionService.getAllTransferTransactions(page, size);
+            case ADJUSTMENT -> adjustmentTransactionService.getAllAdjustmentTransactions(page, size);
+            case PAID, RECEIVED, DEBT_ADJUSTMENT ->
+                    throw new UnsupportedOperationException("Not supported yet: " + type);
         };
     }
 
@@ -290,7 +168,6 @@ public class TransactionService implements ITransactionService {
     public Page<TransactionResponseDto> getAllTransactions(int page, int size) {
         UUID userId = securityUtil.getAuthenticatedUserId();
         Pageable pageable = PageRequest.of(page, size);
-
         return transactionRepo.findAllByUserId(userId, pageable)
                 .map(txn -> {
                     if (txn.getType().equals(TransactionType.EXPENSE)) {
@@ -307,41 +184,32 @@ public class TransactionService implements ITransactionService {
                 });
     }
 
-    @Override
-    public Page<TransactionResponseDto> getAllTransactions(int page, int size, TransactionType type) {
-        return switch (type) {
-            case EXPENSE -> getAllExpenseTransactions(page, size);
-            case INCOME -> getAllIncomeTransactions(page, size);
-            case TRANSFER -> getAllTransferTransactions(page, size);
-            case ADJUSTMENT -> getAllAdjustmentTransactions(page, size);
-        };
+    public Page<TransactionResponseDto> getAllRecords(UUID debtId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return transactionRepo.findAllRecordByDebtId(debtId, pageable)
+                .map(txn -> {
+                    if (txn.getType().equals(TransactionType.PAID)) {
+                        return modelMapper.map(txn, PaidResponseDto.class);
+                    } else if (txn.getType().equals(TransactionType.RECEIVED)) {
+                        return modelMapper.map(txn, ReceivedResponseDto.class);
+                    }
+                    return null;
+                });
     }
 
-    public Page<TransactionResponseDto> getAllIncomeTransactions(int page, int size) {
-        UUID userId = securityUtil.getAuthenticatedUserId();
-        Pageable pageable = PageRequest.of(page, size);
-        return incomeTransactionRepo.findAllByUserId(userId, pageable)
-                .map(txn -> modelMapper.map(txn, IncomeTransactionResponseDto.class));
+    // --- Helpers ---
+    private void populateCommon(Transaction txn, TransactionRequestDto dto) {
+        txn.setType(dto.getType());
+        txn.setDate(dto.getDate());
+        txn.setMonth(dto.getMonth());
+        txn.setYear(dto.getYear());
+        txn.setAmount(dto.getAmount());
+        txn.setDescription(dto.getDescription());
     }
 
-    public Page<TransactionResponseDto> getAllExpenseTransactions(int page, int size) {
-        UUID userId = securityUtil.getAuthenticatedUserId();
-        Pageable pageable = PageRequest.of(page, size);
-        return expenseTransactionRepo.findAllByUserId(userId, pageable)
-                .map(txn -> modelMapper.map(txn, ExpenseTransactionResponseDto.class));
-    }
-
-    public Page<TransactionResponseDto> getAllTransferTransactions(int page, int size) {
-        UUID userId = securityUtil.getAuthenticatedUserId();
-        Pageable pageable = PageRequest.of(page, size);
-        return transferTransactionRepo.findAllByUserId(userId, pageable)
-                .map(txn -> modelMapper.map(txn, TransferTransactionResponseDto.class));
-    }
-
-    public Page<TransactionResponseDto> getAllAdjustmentTransactions(int page, int size) {
-        UUID userId = securityUtil.getAuthenticatedUserId();
-        Pageable pageable = PageRequest.of(page, size);
-        return adjustmentTransactionRepo.findAllByUserId(userId, pageable)
-                .map(txn -> modelMapper.map(txn, AdjustmentTransactionResponseDto.class));
+    private Transaction loadExisting(UUID id) {
+        Transaction t = transactionRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+        return t;
     }
 }

@@ -1,7 +1,8 @@
 package com.expensetrace.app.service.category;
 
+import com.expensetrace.app.model.Category;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.dto.request.CategoryRequestDto;
+import com.expensetrace.app.dto.request.category.CategoryRequestDto;
 import com.expensetrace.app.dto.response.CategoryResponseDto;
 
 import java.util.List;
@@ -26,4 +27,5 @@ public interface ICategoryService {
 
     CategoryResponseDto updateDefaultIncomeCategory(UUID categoryId);
     void createDefaultCategoriesForUser(User user);
+    Category getCategory(UUID catId);
 }

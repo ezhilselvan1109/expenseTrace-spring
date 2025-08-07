@@ -9,9 +9,12 @@ import java.util.UUID;
 
 public interface ITransactionService {
     TransactionResponseDto createTransaction(TransactionRequestDto dto);
+    TransactionResponseDto createTransaction(UUID debtId,TransactionRequestDto dto);
     TransactionResponseDto updateTransaction(UUID id, TransactionRequestDto dto);
     void deleteTransactionById(UUID id);
-    TransactionResponseDto getTransactionByIdAndType(UUID id);
+    TransactionResponseDto getTransactionById(UUID id);
     Page<TransactionResponseDto> getAllTransactions(int page, int size);
-    Page<TransactionResponseDto> getAllTransactions(int page, int size,TransactionType type);
+    Page<TransactionResponseDto> getAllTransactions(int page, int size, TransactionType type);
+
+    Page<TransactionResponseDto> getAllRecords(UUID debtId, int page, int size);
 }

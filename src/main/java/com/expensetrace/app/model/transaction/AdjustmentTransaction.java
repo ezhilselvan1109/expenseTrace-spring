@@ -1,5 +1,6 @@
 package com.expensetrace.app.model.transaction;
 
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.account.Account;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,6 +13,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class AdjustmentTransaction extends Transaction {
+
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "account_id")

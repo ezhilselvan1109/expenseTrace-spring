@@ -13,12 +13,15 @@ import com.expensetrace.app.repository.TagRepository;
 import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;
 import com.expensetrace.app.repository.transaction.IncomeTransactionRepository;
 import com.expensetrace.app.repository.transaction.TransferTransactionRepository;
+import com.expensetrace.app.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ public class TagService implements ITagService {
 
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
+    private final SecurityUtil securityUtil;
 
     private final ExpenseTransactionRepository expenseTransactionRepository;
     private final IncomeTransactionRepository incomeTransactionRepository;
@@ -149,5 +153,28 @@ public class TagService implements ITagService {
         transferTransactionRepository.saveAll(transferTransactions);
 
         tagRepository.delete(source);
+    }
+
+    public Set<Tag> resolveTags(List<UUID> tagIds, List<String> names) {
+        UUID uid = securityUtil.getAuthenticatedUserId();
+        Set<Tag> tags = new HashSet<>();
+        if (tagIds != null) {
+            tags.addAll(tagRepository.findAllById(tagIds));
+        }
+        if (names != null) {
+            for (String nm : names) {
+                Tag tg = tagRepository.findByNameAndUserId(nm.trim(), uid)
+                        .orElseGet(() -> {
+                            Tag newT = new Tag();
+                            newT.setName(nm.trim());
+                            newT.setUser(new User() {{
+                                setId(uid);
+                            }});
+                            return tagRepository.save(newT);
+                        });
+                tags.add(tg);
+            }
+        }
+        return tags;
     }
 }

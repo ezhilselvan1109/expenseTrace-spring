@@ -204,4 +204,9 @@ public class CategoryService implements ICategoryService {
         category.setDeletable(isDeletable);
         return category;
     }
+
+    public Category getCategory(UUID catId) {
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
 }

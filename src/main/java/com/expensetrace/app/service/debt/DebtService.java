@@ -1,16 +1,17 @@
 package com.expensetrace.app.service.debt;
 
 import com.expensetrace.app.enums.DebtType;
-import com.expensetrace.app.enums.RecordType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.*;
-import com.expensetrace.app.model.debt.Record;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.debt.Debt;
+import com.expensetrace.app.model.transaction.Transaction;
+import com.expensetrace.app.model.transaction.record.PaidRecord;
+import com.expensetrace.app.model.transaction.record.ReceivedRecord;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.dto.request.DebtRequestDto;
 import com.expensetrace.app.dto.response.DebtResponseDto;
 import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
-import com.expensetrace.app.service.record.IRecordService;
+import com.expensetrace.app.service.transaction.ITransactionService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,7 +32,7 @@ public class DebtService implements IDebtService {
     private final DebtRepository debtRepo;
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
-    private final IRecordService recordService;
+    private final ITransactionService transactionService;
 
     public DebtResponseDto createDebt(DebtRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -46,7 +47,8 @@ public class DebtService implements IDebtService {
         debt.setAdditionalDetail(dto.getAdditionalDetail());
 
         Debt savedDebt = debtRepo.save(debt);
-        recordService.createRecord(savedDebt.getId(),dto.getRecord());
+        transactionService.createTransaction(savedDebt.getId(), dto.getRecord());
+
         return mapToResponseDto(savedDebt);
     }
 
@@ -119,22 +121,21 @@ public class DebtService implements IDebtService {
 
     private DebtResponseDto mapToResponseDto(Debt debt) {
         DebtResponseDto dto = modelMapper.map(debt, DebtResponseDto.class);
-        dto.setAmount(calculateNetAmount(debt.getRecords()));
+        dto.setAmount(calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()));
         return dto;
     }
 
-    private BigDecimal calculateNetAmount(List<Record> records) {
-        if (records == null || records.isEmpty()) return BigDecimal.ZERO;
+    private BigDecimal calculateNetAmount(List<? extends Transaction> paidRecords,
+                                          List<? extends Transaction> receivedRecords) {
+        BigDecimal totalPaid = (paidRecords == null) ? BigDecimal.ZERO :
+                paidRecords.stream()
+                        .map(Transaction::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalPaid = records.stream()
-                .filter(r -> r.getType() == RecordType.PAID)
-                .map(Record::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal totalReceived = records.stream()
-                .filter(r -> r.getType() == RecordType.RECEIVED)
-                .map(Record::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalReceived = (receivedRecords == null) ? BigDecimal.ZERO :
+                receivedRecords.stream()
+                        .map(Transaction::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalPaid.subtract(totalReceived).abs();
     }
@@ -144,7 +145,7 @@ public class DebtService implements IDebtService {
         List<Debt> borrowingDebts = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, Pageable.unpaged()).getContent();
 
         return borrowingDebts.stream()
-                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -153,7 +154,7 @@ public class DebtService implements IDebtService {
         List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
 
         return lendingDebts.stream()
-                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -164,15 +165,13 @@ public class DebtService implements IDebtService {
         List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
 
         BigDecimal totalPayable = borrowingDebts.stream()
-                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalReceivable = lendingDebts.stream()
-                .map(debt -> calculateNetAmount(debt.getRecords()))
+                .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new DebtSummaryResponseDto(totalPayable, totalReceivable);
     }
-
-
 }

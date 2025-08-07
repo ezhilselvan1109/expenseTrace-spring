@@ -9,6 +9,7 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.dto.request.account.BankRequestDto;
 import com.expensetrace.app.dto.request.account.CreditCardRequestDto;
 import com.expensetrace.app.dto.request.account.WalletRequestDto;
+import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.account.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -302,6 +303,11 @@ public class AccountService implements IAccountService {
                 .map(CreditCard::getCurrentAvailableLimit)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Account getAccount(UUID acctId) {
+        return accountRepository.findById(acctId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
     }
 
 }

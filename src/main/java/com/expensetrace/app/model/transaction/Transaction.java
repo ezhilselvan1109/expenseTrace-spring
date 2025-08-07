@@ -20,14 +20,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class Transaction {
+public class Transaction {
 
     @Id
     @GeneratedValue
     private UUID id;
-
-    @ManyToOne
-    private User user;
 
     private int date;
     private int month;

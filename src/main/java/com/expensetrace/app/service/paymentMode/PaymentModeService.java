@@ -5,6 +5,7 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.account.Bank;
 import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.account.PaymentModeRepository;
 import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
@@ -81,5 +82,10 @@ public class PaymentModeService implements IPaymentModeService {
                 .ifPresentOrElse(paymentModeRepository::delete, () -> {
                     throw new ResourceNotFoundException("PaymentMode not found!");
                 });
+    }
+
+    public PaymentMode getPaymentMode(UUID payId) {
+        return paymentModeRepository.findById(payId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment-mode not found"));
     }
 }

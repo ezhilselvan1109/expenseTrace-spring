@@ -186,14 +186,14 @@ public class BudgetService implements IBudgetService {
 
         for (MonthlyBudget b : budgets) {
             LocalDate budgetDate = LocalDate.of(b.getYear(), b.getMonth(), 1);
-            double spent = transactionRepo.sumAmountByUserIdAndMonthAndYear(userId, b.getMonth(), b.getYear());
+            /*double spent = transactionRepo.sumAmountByUserIdAndMonthAndYear(userId, b.getMonth(), b.getYear());*/
 
             MonthlyBudgetSummaryResponseDto dto = new MonthlyBudgetSummaryResponseDto();
             dto.setId(b.getId());
             dto.setMonth(b.getMonth());
             dto.setYear(b.getYear());
             dto.setBudget(b.getTotalLimit());
-            dto.setTotalSpent(spent);
+            /*dto.setTotalSpent(spent);*/
 
             if (budgetDate.getYear() == today.getYear() && budgetDate.getMonth() == today.getMonth()) {
                 result.get("active").add(dto);
@@ -220,12 +220,12 @@ public class BudgetService implements IBudgetService {
         result.put("upcoming", new ArrayList<>());
 
         for (YearlyBudget b : budgets) {
-            double spent = transactionRepo.sumAmountByUserIdAndYear(userId, b.getYear());
+            /*double spent = transactionRepo.sumAmountByUserIdAndYear(userId, b.getYear());*/
             YearlyBudgetSummaryResponseDto dto = new YearlyBudgetSummaryResponseDto();
             dto.setId(b.getId());
             dto.setYear(b.getYear());
             dto.setBudget(b.getTotalLimit());
-            dto.setTotalSpent(spent);
+            /*dto.setTotalSpent(spent);*/
 
             if (b.getYear() == currentYear) {
                 result.get("active").add(dto);
