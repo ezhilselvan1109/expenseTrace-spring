@@ -7,15 +7,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import org.springframework.beans.factory.annotation.Value;
-
 @Service
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
-    @Value("${api.prefix}")
-    private String baseUrl;
 
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -23,7 +18,7 @@ public class EmailService {
 
     public void sendActivationEmail(String to, String userName, String token) {
         String subject = "Activate Your Account - ExpenseTrace";
-        String activationLink = baseUrl + "/auth/verify?token=" + token;
+        String activationLink = "https://expensetrace.up.railway.app/api/v1/auth/verify-account?token=" + token;
 
         String content = """
                 <html>
