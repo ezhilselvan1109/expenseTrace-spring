@@ -31,7 +31,9 @@ public class SecurityConfig {
                                 "/", "/index.html",
                                 "/swagger-ui.html", "/swagger-ui/**", "/swagger-ui/index.html","/api/v1/auth/verify",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/api-docs/**",
-                                "/api/v1/users/add", "/api/v1/auth/login","/api/v1/auth/forgot-password","/api/v1/auth/verify-otp","/api/v1/auth/reset-password","/h2-console/**"
+                                "/api/v1/users/add", "/api/v1/auth/login",
+                                "/api/v1/auth/password/forgot",
+                                "/h2-console/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()

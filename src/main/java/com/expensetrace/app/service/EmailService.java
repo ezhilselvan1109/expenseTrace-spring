@@ -14,13 +14,16 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @Value("${api.prefix}")
+    private String baseUrl;
+
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
     public void sendActivationEmail(String to, String userName, String token) {
         String subject = "Activate Your Account - ExpenseTrace";
-        String activationLink = "http://localhost:8080/api/v1/auth/verify?token=" + token;
+        String activationLink = baseUrl + "/auth/verify?token=" + token;
 
         String content = """
                 <html>
@@ -34,33 +37,48 @@ public class EmailService {
                             </a>
                         </div>
                         <p>Hi <b>%s</b>,</p>
-                        <p>We’re excited to have you on board! To start tracking and managing your expenses with ease, please activate your account by clicking the button below.</p>
+                        <p>We’re excited to have you on board! Please activate your account by clicking the button below.</p>
                         
                         <div style="text-align: center; margin: 20px 0;">
-                              <a href="%s" style="background-color: #007BFF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Activate Account</a>
+                              <a href="%s" style="background-color: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">Activate Account</a>
                         </div>
 
-                        <!-- Extra Info -->
-                         <p style="font-size: 14px; color: #555;">
+                        <p style="font-size: 14px; color: #555;">
                             This activation link will expire in 24 hours. If you did not sign up for ExpenseTrace, you can safely ignore this email.
-                         </p>
+                        </p>
                     </div>
                 </body>
                 </html>
-                """.formatted(userName, activationLink, activationLink, activationLink);
+                """.formatted(userName, activationLink);
 
+        sendHtmlEmail(to, subject, content);
+    }
+
+    public void sendOtpEmail(String to, String name, String otp) {
+        String subject = "Password Reset OTP - ExpenseTrace";
+        String content = """
+                <html>
+                <body style="font-family: Arial, sans-serif; color: #333;">
+                    <p>Hi <b>%s</b>,</p>
+                    <p>Your OTP for password reset is: <b>%s</b></p>
+                    <p>This OTP is valid for 5 minutes.</p>
+                </body>
+                </html>
+                """.formatted(name, otp);
+
+        sendHtmlEmail(to, subject, content);
+    }
+
+    private void sendHtmlEmail(String to, String subject, String content) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(content, true); // true = HTML
-
+            helper.setText(content, true);
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send activation email", e);
+            throw new RuntimeException("Failed to send email", e);
         }
     }
-
 }

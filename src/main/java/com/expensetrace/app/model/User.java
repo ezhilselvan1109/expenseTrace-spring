@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,6 +36,10 @@ public class User {
     private boolean enabled = false;
 
     private String verificationToken;
+
+    private String otpCode;
+
+    private LocalDateTime otpExpiry;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final Set<Category> userCategories = new HashSet<>();

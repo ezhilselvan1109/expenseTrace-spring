@@ -30,8 +30,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/", "/index.html", "/swagger-ui.html", "/swagger-ui/**",
             "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
-            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add","/api/v1/auth/verify"
-            ,"/api/v1/auth/forgot-password","/api/v1/auth/verify-otp","/api/v1/auth/reset-password","/h2-console/**"
+            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add",
+            "/api/v1/auth/verify",
+            "/api/v1/auth/password/forgot",
+            "/h2-console/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -48,38 +50,41 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String jwt = null;
+        String loginToken = null;
+        String resetToken = null;
 
-        // Extract JWT from cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("jwt".equals(cookie.getName())) {
-                    jwt = cookie.getValue();
-                    break;
+                    loginToken = cookie.getValue();
+                } else if ("reset_token".equals(cookie.getName())) {
+                    resetToken = cookie.getValue();
                 }
             }
         }
 
         try {
-            if (jwt != null) {
-                String email = jwtUtil.extractEmail(jwt);
-                User user = userRepository.findByEmail(email);
+            String path = request.getRequestURI();
 
-                if (user != null && jwtUtil.validateToken(jwt, email)) {
-                    // Set authentication with dummy role if needed
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    user.getEmail(), null, Collections.singleton(() -> "ROLE_USER"));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+            // If request is for password reset endpoints → use reset token
+            if (path.startsWith("/api/v1/auth/password/")) {
+                if (resetToken != null) {
+                    authenticateUserFromToken(resetToken, "ROLE_RESET");
                 } else {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
             }
+            // Else → use normal login token
+            else {
+                if (loginToken != null) {
+                    authenticateUserFromToken(loginToken, "ROLE_USER");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -87,5 +92,19 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void authenticateUserFromToken(String token, String role) {
+        String email = jwtUtil.extractEmail(token);
+        User user = userRepository.findByEmail(email);
+
+        if (user != null && jwtUtil.validateToken(token, email)) {
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            user.getEmail(), null, Collections.singleton(() -> role));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            throw new RuntimeException("Invalid or expired token");
+        }
     }
 }

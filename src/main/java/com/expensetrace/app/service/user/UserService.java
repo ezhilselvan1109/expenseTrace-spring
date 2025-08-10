@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -61,10 +63,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponseDto updateUser(UserRequestDto userRequestDto, UUID id) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
-
+    public UserResponseDto updateUser(UserRequestDto userRequestDto) {
+        UUID userId = securityUtil.getAuthenticatedUserId();
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found!"));
         existingUser.setFirstName(userRequestDto.getFirstName());
         existingUser.setLastName(userRequestDto.getLastName());
         existingUser.setEmail(userRequestDto.getEmail());
@@ -89,6 +91,57 @@ public class UserService implements IUserService {
         user.setVerificationToken(null); // remove token after verification
         userRepository.save(user);
         return true;
+    }
+
+    public void resetPassword(String newPassword) {
+        UUID userId = securityUtil.getResetUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found!"));
+
+        user.setPassword(newPassword);
+        userRepository.save(user);
+    }
+
+    public boolean verifyOtp(String otp) {
+        UUID userId = securityUtil.getResetUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found!"));
+
+        if (user.getOtpCode() == null || user.getOtpExpiry() == null) {
+            throw new IllegalStateException("OTP not generated");
+        }
+
+        if (LocalDateTime.now().isAfter(user.getOtpExpiry())) {
+            throw new IllegalStateException("OTP expired");
+        }
+
+        if (!user.getOtpCode().equals(otp)) {
+            throw new IllegalArgumentException("Invalid OTP");
+        }
+
+        // OTP verified successfully → clear it
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+        return true;
+    }
+
+    public void sendForgotPasswordOtp(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found");
+        }
+
+        String otp = generateOtp();
+        user.setOtpCode(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), user.getFirstName(), otp);
+    }
+
+    public String generateOtp() {
+        return String.format("%06d", new Random().nextInt(999999));
     }
 
 }

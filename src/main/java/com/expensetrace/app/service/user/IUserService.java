@@ -8,6 +8,6 @@ import java.util.UUID;
 public interface IUserService {
     UserResponseDto getUser();
     UserResponseDto addUser(UserRequestDto user);
-    UserResponseDto updateUser(UserRequestDto userRequest, UUID id);
+    UserResponseDto updateUser(UserRequestDto userRequest);
     void deleteUserById(UUID id);
 }
