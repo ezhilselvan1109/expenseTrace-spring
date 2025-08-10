@@ -30,8 +30,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/", "/index.html", "/swagger-ui.html", "/swagger-ui/**",
             "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
-            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/add",
-            "/api/v1/auth/verify",
+            "/api-docs/**", "/api/v1/auth/login", "/api/v1/users/register",
+            "/api/v1/auth/verify-account",
             "/api/v1/auth/password/forgot",
             "/h2-console/**"
     );

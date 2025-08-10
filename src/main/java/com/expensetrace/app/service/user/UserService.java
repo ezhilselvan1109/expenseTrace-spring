@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.user;
 
+import com.expensetrace.app.dto.request.LoginRequestDto;
 import com.expensetrace.app.dto.request.UserRequestDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
@@ -13,6 +14,7 @@ import com.expensetrace.app.service.settings.ISettingsService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ public class UserService implements IUserService {
     private final ICategoryService categoryService;
     private final ISettingsService settingService;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public UserResponseDto getUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -44,9 +47,9 @@ public class UserService implements IUserService {
         }
 
         User user = modelMapper.map(userRequestDto, User.class);
-        user.setEnabled(false); // not verified yet
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        user.setEnabled(false);
 
-        // Generate token
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
 
@@ -56,7 +59,6 @@ public class UserService implements IUserService {
         settingService.addSettings(savedUser);
         categoryService.createDefaultCategoriesForUser(savedUser);
 
-        // Send mail with token
         emailService.sendActivationEmail(userRequestDto.getEmail(),user.getFirstName(), token);
 
         return modelMapper.map(savedUser, UserResponseDto.class);
@@ -84,11 +86,31 @@ public class UserService implements IUserService {
                 });
     }
 
+    @Override
+    public boolean loginUser(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail());
+
+        if (user == null) {
+            throw new ResourceNotFoundException("Invalid credentials");
+        }
+
+        if (!user.isEnabled()) {
+            throw new IllegalStateException("Account not verified. Please verify your email before login.");
+        }
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+
+        return true;
+    }
+
+
     public boolean verifyUser(String token) {
         User user = userRepository.findByVerificationToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid token"));
         user.setEnabled(true);
-        user.setVerificationToken(null); // remove token after verification
+        user.setVerificationToken(null);
         userRepository.save(user);
         return true;
     }
@@ -98,7 +120,7 @@ public class UserService implements IUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found!"));
 
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
@@ -115,11 +137,10 @@ public class UserService implements IUserService {
             throw new IllegalStateException("OTP expired");
         }
 
-        if (!user.getOtpCode().equals(otp)) {
+        if (!passwordEncoder.matches(otp, user.getOtpCode())) {
             throw new IllegalArgumentException("Invalid OTP");
         }
 
-        // OTP verified successfully → clear it
         user.setOtpCode(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
@@ -133,7 +154,7 @@ public class UserService implements IUserService {
         }
 
         String otp = generateOtp();
-        user.setOtpCode(otp);
+        user.setOtpCode(passwordEncoder.encode(otp));
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
         userRepository.save(user);
 

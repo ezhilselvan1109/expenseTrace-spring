@@ -1,5 +1,6 @@
 package com.expensetrace.app.controller;
 
+import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.dto.request.LoginRequestDto;
@@ -15,8 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,18 +30,21 @@ public class AuthController {
 
     @Operation(summary = "User login")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail());
-
-        if (user == null) {
-            return ResponseEntity.badRequest().body(new ApiResponse("Invalid credentials", null));
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
+                                             HttpServletResponse response) {
+        try {
+            boolean result = userService.loginUser(loginRequestDto);
+            String token = jwtUtil.generateToken(loginRequestDto.getEmail(), 86400000);
+            String cookie = "jwt=" + token + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (24 * 60 * 60);
+            response.setHeader("Set-Cookie", cookie);
+            return ResponseEntity.ok(new ApiResponse("Login successful", true));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(FORBIDDEN).body(new ApiResponse(e.getMessage(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
         }
-
-        String token = jwtUtil.generateToken(user.getEmail(), 86400000);
-        String cookie = "jwt=" + token + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (24 * 60 * 60);
-        response.setHeader("Set-Cookie", cookie);
-
-        return ResponseEntity.ok(new ApiResponse("Login successful", true));
     }
 
     @Operation(summary = "User logout")

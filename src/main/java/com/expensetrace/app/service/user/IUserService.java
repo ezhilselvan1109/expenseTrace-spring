@@ -1,5 +1,6 @@
 package com.expensetrace.app.service.user;
 
+import com.expensetrace.app.dto.request.LoginRequestDto;
 import com.expensetrace.app.dto.request.UserRequestDto;
 import com.expensetrace.app.dto.response.UserResponseDto;
 
@@ -9,5 +10,6 @@ public interface IUserService {
     UserResponseDto getUser();
     UserResponseDto addUser(UserRequestDto user);
     UserResponseDto updateUser(UserRequestDto userRequest);
+    boolean loginUser(LoginRequestDto loginRequestDto);
     void deleteUserById(UUID id);
 }
