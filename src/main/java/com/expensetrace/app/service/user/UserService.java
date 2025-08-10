@@ -6,6 +6,7 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.dto.response.UserResponseDto;
+import com.expensetrace.app.service.EmailService;
 import com.expensetrace.app.service.account.IAccountService;
 import com.expensetrace.app.service.category.ICategoryService;
 import com.expensetrace.app.service.settings.ISettingsService;
@@ -25,6 +26,7 @@ public class UserService implements IUserService {
     private final SecurityUtil securityUtil;
     private final ICategoryService categoryService;
     private final ISettingsService settingService;
+    private final EmailService emailService;
     @Override
     public UserResponseDto getUser() {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -40,10 +42,21 @@ public class UserService implements IUserService {
         }
 
         User user = modelMapper.map(userRequestDto, User.class);
+        user.setEnabled(false); // not verified yet
+
+        // Generate token
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+
         User savedUser = userRepository.save(user);
+
         accountService.addCashAccount(savedUser);
         settingService.addSettings(savedUser);
         categoryService.createDefaultCategoriesForUser(savedUser);
+
+        // Send mail with token
+        emailService.sendActivationEmail(userRequestDto.getEmail(),user.getFirstName(), token);
+
         return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
@@ -68,4 +81,14 @@ public class UserService implements IUserService {
                     throw new ResourceNotFoundException("User not found!");
                 });
     }
+
+    public boolean verifyUser(String token) {
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid token"));
+        user.setEnabled(true);
+        user.setVerificationToken(null); // remove token after verification
+        userRepository.save(user);
+        return true;
+    }
+
 }

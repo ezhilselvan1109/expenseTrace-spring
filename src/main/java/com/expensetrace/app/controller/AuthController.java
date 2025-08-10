@@ -4,6 +4,7 @@ import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.dto.request.LoginRequestDto;
 import com.expensetrace.app.response.ApiResponse;
+import com.expensetrace.app.service.user.UserService;
 import com.expensetrace.app.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/auth")
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "User login", description = "Authenticates user and sets JWT in HttpOnly cookie.")
@@ -73,4 +77,15 @@ public class AuthController {
     public ResponseEntity<ApiResponse> verifyOtp(HttpServletResponse response) {
         return ResponseEntity.ok(new ApiResponse("successful", true));
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<ApiResponse> verifyUser(@RequestParam("token") String token) {
+        boolean verified = userService.verifyUser(token);
+        if (verified) {
+            return ResponseEntity.ok(new ApiResponse("Account verified successfully", null));
+        } else {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Invalid or expired token", null));
+        }
+    }
+
 }

@@ -31,6 +31,11 @@ public class User {
 
     private String password;
 
+    @Column(nullable = false)
+    private boolean enabled = false;
+
+    private String verificationToken;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final Set<Category> userCategories = new HashSet<>();
 
