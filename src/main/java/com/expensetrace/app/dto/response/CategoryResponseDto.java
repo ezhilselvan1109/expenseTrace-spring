@@ -9,7 +9,7 @@ import java.util.UUID;
 public class CategoryResponseDto {
     private UUID id;
     private String name;
-    private CategoryType type; // Enum: EXPENSE, INCOME
+    private CategoryType type;
     private String color;
     private String icon;
     private boolean isDeletable;

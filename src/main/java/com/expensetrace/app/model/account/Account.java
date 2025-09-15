@@ -11,7 +11,8 @@ import lombok.ToString;
 import java.util.UUID;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "accounts")
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
@@ -23,11 +24,13 @@ public abstract class Account {
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private String name;
 
+    @Column(name = "is_default")
     private boolean isDefault;
 
     @Column(name = "type", insertable = false, updatable = false)

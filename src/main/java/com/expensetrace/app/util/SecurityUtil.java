@@ -23,35 +23,6 @@ public class SecurityUtil {
             return null;
         }
 
-        boolean hasUserRole = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_USER"));
-
-        if (!hasUserRole) {
-            return null; // Prevent other roles from accessing
-        }
-
-        String email = (String) authentication.getPrincipal();
-        User user = userRepository.findByEmail(email);
-
-        return user != null ? user.getId() : null;
-    }
-
-    public UUID getResetUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-
-        boolean hasResetRole = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_RESET"));
-
-        if (!hasResetRole) {
-            return null;
-        }
-
         String email = (String) authentication.getPrincipal();
         User user = userRepository.findByEmail(email);
 

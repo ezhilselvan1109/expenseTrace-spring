@@ -10,37 +10,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Entity
-@Table(name = "expense_transaction")
+@Table(name = "expense_transactions")
 @DiscriminatorValue("EXPENSE")
-@Getter
-@Setter
-@NoArgsConstructor
-public class ExpenseTransaction extends Transaction {
+@Getter @Setter @NoArgsConstructor
+public class ExpenseTransaction extends TaggableTransaction {
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_mode_id")
     private PaymentMode paymentMode;
-
-    @ManyToMany
-    @JoinTable(
-            name = "expense_transaction_tags",
-            joinColumns = @JoinColumn(name = "expense_transaction_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags;
 }

@@ -18,7 +18,7 @@ public class EmailService {
 
     public void sendActivationEmail(String to, String userName, String token) {
         String subject = "Activate Your Account - ExpenseTrace";
-        String activationLink = "https://expensetrace.up.railway.app/api/v1/auth/verify-account?token=" + token;
+        String activationLink = "http://localhost:8080/api/v1/auth/verify-account?token=" + token;
 
         String content = """
                 <html>

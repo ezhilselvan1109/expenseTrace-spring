@@ -17,7 +17,5 @@ public class TransferTransactionRequestDto extends TransactionRequestDto{
 
     private UUID toPaymentModeId;
 
-    private List<UUID> tagIds;
-
     private List<String> tags;
 }

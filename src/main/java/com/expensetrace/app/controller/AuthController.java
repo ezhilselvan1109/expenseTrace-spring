@@ -1,22 +1,20 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
-import com.expensetrace.app.dto.request.LoginRequestDto;
-import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.service.user.UserService;
 import com.expensetrace.app.util.JwtUtil;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
+import java.time.Duration;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,78 +23,66 @@ import static org.springframework.http.HttpStatus.*;
 public class AuthController {
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "User login")
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
-                                             HttpServletResponse response) {
-        try {
-            boolean result = userService.loginUser(loginRequestDto);
-            String token = jwtUtil.generateToken(loginRequestDto.getEmail(), 86400000);
-            String cookie = "jwt=" + token + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (24 * 60 * 60);
-            response.setHeader("Set-Cookie", cookie);
-            return ResponseEntity.ok(new ApiResponse("Login successful", true));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(FORBIDDEN).body(new ApiResponse(e.getMessage(), null));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
-        }
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).build();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        return ResponseEntity.ok(Map.of("email", email, "name", user != null ? user.getName() : ""));
     }
 
-    @Operation(summary = "User logout")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse> logout(HttpServletResponse response) {
-        String cookie = "jwt=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (0);
-        response.setHeader("Set-Cookie", cookie);
-        return ResponseEntity.ok(new ApiResponse("Logout successful", true));
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+
+        clearCookie(response, "jwt");
+        clearCookie(response, "refresh");
+
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Request password reset (send OTP)")
-    @PostMapping("/password/forgot")
-    public ResponseEntity<ApiResponse> forgotPassword(@RequestParam String email, HttpServletResponse response) {
-        userService.sendForgotPasswordOtp(email);
-        String token = jwtUtil.generateToken(email, 10 * 60 * 1000);
-        String cookie = "reset_token=" + token + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (10 * 60);
-        response.setHeader("Set-Cookie", cookie);
-        return ResponseEntity.ok(new ApiResponse("OTP sent successfully", true));
-    }
-
-    @Operation(summary = "Verify OTP")
-    @PreAuthorize("hasRole('ROLE_RESET')")
-    @PostMapping("/password/verify-otp")
-    public ResponseEntity<ApiResponse> verifyOtp(@RequestParam String otp) {
-        try {
-            boolean isValid = userService.verifyOtp(otp);
-            return ResponseEntity.ok(new ApiResponse("OTP verified", isValid));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }catch (Exception e) {
-            return ResponseEntity.status(BAD_REQUEST).body(new ApiResponse(e.getMessage(), null));
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refresh".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                }
+            }
         }
-    }
-
-    @Operation(summary = "Reset password")
-    @PreAuthorize("hasRole('ROLE_RESET')")
-    @PostMapping("/password/reset")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String password, HttpServletResponse response) {
-        userService.resetPassword(password);
-        String cookie = "reset_token=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=" + (0);
-        response.setHeader("Set-Cookie", cookie);
-        return ResponseEntity.ok(new ApiResponse("Password reset successfully", true));
-    }
-
-    @Operation(summary = "Verify account email")
-    @GetMapping("/verify-account")
-    public ResponseEntity<ApiResponse> verifyUser(@RequestParam("token") String token) {
-        boolean verified = userService.verifyUser(token);
-        if (verified) {
-            return ResponseEntity.ok(new ApiResponse("Account verified successfully", null));
-        } else {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Invalid or expired token", null));
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken, jwtUtil.extractEmail(refreshToken))) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid refresh token"));
         }
+
+        String email = jwtUtil.extractEmail(refreshToken);
+        String newAccessToken = jwtUtil.generateToken(email, Duration.ofMinutes(15).toMillis());
+
+        addCookie(response, "jwt", newAccessToken, (int) Duration.ofMinutes(15).getSeconds());
+
+        return ResponseEntity.ok(Map.of("message", "Token refreshed"));
+    }
+
+    private void clearCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        cookie.setAttribute("SameSite", "Strict");
+        response.addCookie(cookie);
     }
 }

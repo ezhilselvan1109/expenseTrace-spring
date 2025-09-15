@@ -1,20 +1,17 @@
 package com.expensetrace.app.repository;
 
 import com.expensetrace.app.model.Tag;
+import com.expensetrace.app.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TagRepository extends JpaRepository<Tag, UUID> {
-    Tag findByName(String name);
 
-    boolean existsByName(String name);
+    Page<Tag> findAllByUserId(UUID userId, Pageable pageable);
 
-    List<Tag> findByUserId(UUID userId);
-
-    boolean existsByNameAndUserId(String name, UUID userId);
-
-    Optional<Tag> findByNameAndUserId(String name, UUID userId);
+    Optional<Tag> findByUserIdAndName(UUID userId, String name);
 }
+

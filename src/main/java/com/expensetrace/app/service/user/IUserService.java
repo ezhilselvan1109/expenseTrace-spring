@@ -1,15 +1,12 @@
 package com.expensetrace.app.service.user;
 
-import com.expensetrace.app.dto.request.LoginRequestDto;
-import com.expensetrace.app.dto.request.UserRequestDto;
 import com.expensetrace.app.dto.response.UserResponseDto;
+import com.expensetrace.app.model.User;
 
 import java.util.UUID;
 
 public interface IUserService {
     UserResponseDto getUser();
-    UserResponseDto addUser(UserRequestDto user);
-    UserResponseDto updateUser(UserRequestDto userRequest);
-    boolean loginUser(LoginRequestDto loginRequestDto);
     void deleteUserById(UUID id);
+    User getAuthenticatedUser();
 }

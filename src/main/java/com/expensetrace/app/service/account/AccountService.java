@@ -1,6 +1,5 @@
 package com.expensetrace.app.service.account;
 
-import com.expensetrace.app.dto.request.account.PaymentModeRequestDto;
 import com.expensetrace.app.dto.response.account.*;
 import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.model.*;
@@ -9,7 +8,6 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.dto.request.account.BankRequestDto;
 import com.expensetrace.app.dto.request.account.CreditCardRequestDto;
 import com.expensetrace.app.dto.request.account.WalletRequestDto;
-import com.expensetrace.app.model.transaction.Transaction;
 import com.expensetrace.app.repository.account.*;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -184,7 +182,6 @@ public class AccountService implements IAccountService {
         account.setUser(user);
         account.setType(AccountType.CASH);
         account.setDefault(true);
-        account.setCurrentBalance(BigDecimal.valueOf(0));
         account.setName("Cash");
         cashRepository.save(account);
     }
@@ -231,7 +228,6 @@ public class AccountService implements IAccountService {
         Bank existing = bankRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         existing.setName(bankAccountDto.getName());
-        existing.setCurrentBalance(bankAccountDto.getCurrentBalance());
 
         Bank updated = bankRepository.save(existing);
         return modelMapper.map(updated, BankResponseDto.class);
@@ -242,7 +238,6 @@ public class AccountService implements IAccountService {
         Wallet existing = walletRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found!"));
         existing.setName(walletRequestDto.getName());
-        existing.setCurrentBalance(walletRequestDto.getCurrentBalance());
         Account updated = walletRepository.save(existing);
         return modelMapper.map(updated, WalletResponseDto.class);
     }
@@ -263,7 +258,7 @@ public class AccountService implements IAccountService {
     @Override
     public BigDecimal getAvailableAmount() {
         UUID userId = securityUtil.getAuthenticatedUserId();
-        BigDecimal bankTotal = bankRepository.findAll()
+        /*BigDecimal bankTotal = bankRepository.findAll()
                 .stream()
                 .filter(acc -> acc.getUser().getId().equals(userId))
                 .map(Bank::getCurrentBalance)
@@ -281,7 +276,8 @@ public class AccountService implements IAccountService {
                 .map(Wallet::getCurrentBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return bankTotal.add(cashTotal).add(walletTotal);
+        return bankTotal.add(cashTotal).add(walletTotal);*/
+        return null;
     }
 
     @Override
@@ -304,10 +300,4 @@ public class AccountService implements IAccountService {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
-    public Account getAccount(UUID acctId) {
-        return accountRepository.findById(acctId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
-    }
-
 }

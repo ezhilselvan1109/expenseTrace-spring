@@ -52,6 +52,13 @@ public class SettingsService implements ISettingsService {
     }
 
     @Override
+    public void updateDecimalFormat(int decimalCode) {
+        Settings settings = getCurrentUserSettings();
+        settings.setDecimalFormat(DecimalFormatOption.fromCode(decimalCode));
+        settingsRepository.save(settings);
+    }
+
+    @Override
     public void updateCurrencyCode(String currencyCode) {
         Settings settings = getCurrentUserSettings();
         settings.setCurrencyCode(currencyCode);

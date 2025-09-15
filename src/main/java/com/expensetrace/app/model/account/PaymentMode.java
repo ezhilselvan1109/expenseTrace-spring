@@ -1,7 +1,6 @@
 package com.expensetrace.app.model.account;
 
 import com.expensetrace.app.enums.PaymentModeType;
-import com.expensetrace.app.model.account.Account;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +14,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
+@Table(name = "payment_modes")
 public class PaymentMode {
+
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     private String name;
@@ -28,4 +30,3 @@ public class PaymentMode {
     @Enumerated(EnumType.STRING)
     private PaymentModeType type;
 }
-

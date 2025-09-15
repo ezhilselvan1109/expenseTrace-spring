@@ -1,5 +1,6 @@
 package com.expensetrace.app.model.transaction;
 
+import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.model.Category;
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.User;
@@ -13,33 +14,27 @@ import lombok.Setter;
 import java.util.Set;
 
 @Entity
-@Table(name = "income_transaction")
-@DiscriminatorValue("INCOME")
+@Table(name = "income_transactions")
 @Getter
 @Setter
 @NoArgsConstructor
-public class IncomeTransaction extends Transaction {
-    @ManyToOne
+@DiscriminatorValue("INCOME")
+public class IncomeTransaction extends TaggableTransaction {
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_mode_id")
     private PaymentMode paymentMode;
-
-    @ManyToMany
-    @JoinTable(
-            name = "income_transaction_tags",
-            joinColumns = @JoinColumn(name = "income_transaction_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags;
 }
+
 

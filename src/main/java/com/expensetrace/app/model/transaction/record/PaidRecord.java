@@ -1,26 +1,24 @@
 package com.expensetrace.app.model.transaction.record;
 
+import com.expensetrace.app.enums.TransactionType;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;
-import com.expensetrace.app.model.debt.Debt;
-import com.expensetrace.app.model.transaction.Transaction;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "paid_Record")
-@DiscriminatorValue("PAID")
-@Getter
-@Setter
-@NoArgsConstructor
-public class PaidRecord extends Transaction {
-    @ManyToOne
-    @JoinColumn(name = "debt_id")
-    private Debt debt;
+@Table(name = "paid_records")
+@Getter @Setter @NoArgsConstructor
+@DiscriminatorValue("DEBT_PAID")
+public class PaidRecord extends DebtRecord {
 
-    @ManyToOne private Account account;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
-    @ManyToOne private PaymentMode paymentMode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_mode_id")
+    private PaymentMode paymentMode;
 }

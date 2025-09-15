@@ -1,9 +1,6 @@
 package com.expensetrace.app.dto.request;
 
-import com.expensetrace.app.dto.request.transaction.record.PaidRequestDto;
-import com.expensetrace.app.dto.response.transaction.TransactionResponseDto;
 import com.expensetrace.app.enums.DebtType;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,8 +22,4 @@ public class DebtRequestDto {
 
     @NotNull(message = "Debt type is required")
     private DebtType type;
-
-    @NotNull(message = "Record is required")
-    @Valid
-    private PaidRequestDto record;
 }

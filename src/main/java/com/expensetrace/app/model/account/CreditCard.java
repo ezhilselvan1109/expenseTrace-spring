@@ -1,6 +1,5 @@
 package com.expensetrace.app.model.account;
 
-import com.expensetrace.app.model.account.Account;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -19,5 +18,6 @@ public class CreditCard extends Account {
     private BigDecimal currentAvailableLimit;
     private BigDecimal totalCreditLimit;
     private LocalDate billingCycleStartDate;
+    private LocalDate billingCycleEndDate;
     private LocalDate paymentDueDate;
 }

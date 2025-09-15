@@ -5,13 +5,10 @@ import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.debt.Debt;
 import com.expensetrace.app.model.transaction.Transaction;
-import com.expensetrace.app.model.transaction.record.PaidRecord;
-import com.expensetrace.app.model.transaction.record.ReceivedRecord;
 import com.expensetrace.app.repository.DebtRepository;
 import com.expensetrace.app.dto.request.DebtRequestDto;
 import com.expensetrace.app.dto.response.DebtResponseDto;
 import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
-import com.expensetrace.app.service.transaction.ITransactionService;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -32,7 +29,6 @@ public class DebtService implements IDebtService {
     private final DebtRepository debtRepo;
     private final SecurityUtil securityUtil;
     private final ModelMapper modelMapper;
-    private final ITransactionService transactionService;
 
     public DebtResponseDto createDebt(DebtRequestDto dto) {
         UUID userId = securityUtil.getAuthenticatedUserId();
@@ -47,7 +43,7 @@ public class DebtService implements IDebtService {
         debt.setAdditionalDetail(dto.getAdditionalDetail());
 
         Debt savedDebt = debtRepo.save(debt);
-        transactionService.createTransaction(savedDebt.getId(), dto.getRecord());
+        //transactionService.createTransaction(savedDebt.getId(), dto.getRecord());
 
         return mapToResponseDto(savedDebt);
     }
@@ -121,7 +117,7 @@ public class DebtService implements IDebtService {
 
     private DebtResponseDto mapToResponseDto(Debt debt) {
         DebtResponseDto dto = modelMapper.map(debt, DebtResponseDto.class);
-        dto.setAmount(calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()));
+       // dto.setAmount(calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()));
         return dto;
     }
 
@@ -144,18 +140,20 @@ public class DebtService implements IDebtService {
         UUID userId = securityUtil.getAuthenticatedUserId();
         List<Debt> borrowingDebts = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, Pageable.unpaged()).getContent();
 
-        return borrowingDebts.stream()
-                .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return null;
+        //return borrowingDebts.stream();
+                //.map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
+                // .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal getTotalReceivableAmount() {
         UUID userId = securityUtil.getAuthenticatedUserId();
         List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
 
-        return lendingDebts.stream()
+        return null;
+        /*return lendingDebts.stream()
                 .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
     }
 
     public DebtSummaryResponseDto getPayableAndReceivableSummary() {
@@ -164,14 +162,15 @@ public class DebtService implements IDebtService {
         List<Debt> borrowingDebts = debtRepo.findByUserIdAndType(userId, DebtType.BORROWING, Pageable.unpaged()).getContent();
         List<Debt> lendingDebts = debtRepo.findByUserIdAndType(userId, DebtType.LENDING, Pageable.unpaged()).getContent();
 
-        BigDecimal totalPayable = borrowingDebts.stream()
+        /*BigDecimal totalPayable = borrowingDebts.stream()
                 .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalReceivable = lendingDebts.stream()
                 .map(debt -> calculateNetAmount(debt.getPaidRecords(), debt.getReceivedRecords()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
 
-        return new DebtSummaryResponseDto(totalPayable, totalReceivable);
+       /* return new DebtSummaryResponseDto(totalPayable, totalReceivable);*/
+        return null;
     }
 }

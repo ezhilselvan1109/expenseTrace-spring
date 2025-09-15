@@ -15,7 +15,5 @@ public class ExpenseTransactionRequestDto extends TransactionRequestDto{
 
     private UUID paymentModeId;
 
-    private List<UUID> tagIds;
-
     private List<String> tags;
 }

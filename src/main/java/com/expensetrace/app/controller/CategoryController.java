@@ -1,11 +1,12 @@
 package com.expensetrace.app.controller;
 
 import com.expensetrace.app.dto.request.category.CategoryRequestDto;
+import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.dto.response.CategoryResponseDto;
-import com.expensetrace.app.service.category.ICategoryService;
+import com.expensetrace.app.service.category.service.ICategoryService;
+import com.expensetrace.app.service.category.strategy.DefaultCategoryStrategy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,124 +26,89 @@ import static org.springframework.http.HttpStatus.*;
 public class CategoryController {
 
     private final ICategoryService categoryService;
+    private final DefaultCategoryStrategy expenseDefaultStrategy;
+    private final DefaultCategoryStrategy incomeDefaultStrategy;
 
-    @GetMapping
-    @Operation(summary = "Get all categories", description = "Retrieves all categories for the authenticated user")
-    public ResponseEntity<ApiResponse> getAllCategories() {
-        try {
-            List<CategoryResponseDto> categories = categoryService.getAllCategories();
-            return ResponseEntity.ok(new ApiResponse("Categories retrieved successfully", categories));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
-        }
+    @GetMapping("/expense")
+    @Operation(summary = "Get all categories")
+    public ResponseEntity<ApiResponse> getAllExpenseCategories() {
+        List<CategoryResponseDto> categories = expenseDefaultStrategy.getAllCategories();
+        return ResponseEntity.ok(new ApiResponse("Expense categories retrieved successfully", categories));
     }
 
     @GetMapping("/income")
-    @Operation(summary = "Get all income categories", description = "Retrieves all income categories for the authenticated user")
-    public ResponseEntity<ApiResponse> getAllIncomeCategories() {
-        try {
-            List<CategoryResponseDto> categories = categoryService.getAllIncomeCategories();
-            return ResponseEntity.ok(new ApiResponse("Income Categories retrieved successfully", categories));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
-        }
+    @Operation(summary = "Get all categories")
+    public ResponseEntity<ApiResponse> getAllCategories() {
+        List<CategoryResponseDto> categories = incomeDefaultStrategy.getAllCategories();
+        return ResponseEntity.ok(new ApiResponse("Income categories retrieved successfully", categories));
     }
 
-    @GetMapping("/expense")
-    @Operation(summary = "Get all expense categories", description = "Retrieves all expense categories for the authenticated user")
-    public ResponseEntity<ApiResponse> getAllExpenseCategories() {
-        try {
-            List<CategoryResponseDto> categories = categoryService.getAllExpenseCategories();
-            return ResponseEntity.ok(new ApiResponse("Expense Categories retrieved successfully", categories));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Internal server error", null));
-        }
-    }
     @PostMapping
-    @Operation(summary = "Add a category", description = "Creates a new category for the authenticated user")
-    public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+    @Operation(summary = "Add a category")
+    public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody CategoryRequestDto dto) {
         try {
-            CategoryResponseDto createdCategory = categoryService.addCategory(categoryRequestDto);
-            return ResponseEntity.status(CREATED).body(new ApiResponse("Category created successfully", createdCategory));
+            CategoryResponseDto created = categoryService.addCategory(dto);
+            return ResponseEntity.status(CREATED).body(new ApiResponse("Category created", created));
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get category by ID", description = "Fetches a specific category owned by the user")
+    @Operation(summary = "Get category by ID")
     public ResponseEntity<ApiResponse> getCategoryById(@PathVariable UUID id) {
         try {
             CategoryResponseDto category = categoryService.getCategoryById(id);
-            return ResponseEntity.ok(new ApiResponse("Category retrieved successfully", category));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete category by ID", description = "Deletes a category owned by the user")
-    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable UUID id) {
-        try {
-            categoryService.deleteCategoryById(id);
-            return ResponseEntity.ok(new ApiResponse("Category deleted successfully", null));
+            return ResponseEntity.ok(new ApiResponse("Category retrieved", category));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update category", description = "Updates an existing category owned by the user")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable UUID id, @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+    @Operation(summary = "Update category")
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable UUID id,
+                                                      @Valid @RequestBody CategoryRequestDto dto) {
         try {
-            CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryRequestDto, id);
-            return ResponseEntity.ok(new ApiResponse("Category updated successfully", updatedCategory));
+            CategoryResponseDto updated = categoryService.updateCategory(dto, id);
+            return ResponseEntity.ok(new ApiResponse("Category updated", updated));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
-    @PutMapping("/{id}/income-default")
-    @Operation(summary = "Set default income category", description = "Update default income category for the authenticated user")
-    public ResponseEntity<ApiResponse> updateDefaultIncomeCategory(@PathVariable UUID id) {
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete category by ID")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable UUID id) {
         try {
-            CategoryResponseDto updated = categoryService.updateDefaultIncomeCategory(id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
-    }
-
-    @GetMapping("/income-default")
-    @Operation(summary = "Get default income category", description = "Retrieve the default income category for the authenticated user")
-    public ResponseEntity<ApiResponse> getDefaultIncomeCategory() {
-        try {
-            CategoryResponseDto defaultAccount = categoryService.getDefaultIncomeCategoryByUserId();
-            return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
+            categoryService.deleteCategoryById(id);
+            return ResponseEntity.ok(new ApiResponse("Category deleted", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
     @PutMapping("/{id}/expense-default")
-    @Operation(summary = "Set default expense category", description = "Update default expense category for the authenticated user")
-    public ResponseEntity<ApiResponse> updateDefaultExpenseCategory(@PathVariable UUID id) {
-        try {
-            CategoryResponseDto updated = categoryService.updateDefaultExpenseCategory(id);
-            return ResponseEntity.ok(new ApiResponse("Update success!", updated));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
+    public ResponseEntity<ApiResponse> setDefaultExpense(@PathVariable UUID id) {
+        CategoryResponseDto updated = expenseDefaultStrategy.setDefault(id);
+        return ResponseEntity.ok(new ApiResponse("Default expense updated", updated));
     }
 
     @GetMapping("/expense-default")
-    @Operation(summary = "Get default expense category", description = "Retrieve the default expense category for the authenticated user")
-    public ResponseEntity<ApiResponse> getDefaultExpenseCategory() {
-        try {
-            CategoryResponseDto defaultAccount = categoryService.getDefaultExpenseCategoryByUserId();
-            return ResponseEntity.ok(new ApiResponse("Found!", defaultAccount));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
+    public ResponseEntity<ApiResponse> getDefaultExpense() {
+        CategoryResponseDto category = expenseDefaultStrategy.getDefault();
+        return ResponseEntity.ok(new ApiResponse("Default expense retrieved", category));
+    }
+
+    @PutMapping("/{id}/income-default")
+    public ResponseEntity<ApiResponse> setDefaultIncome(@PathVariable UUID id) {
+        CategoryResponseDto updated = incomeDefaultStrategy.setDefault(id);
+        return ResponseEntity.ok(new ApiResponse("Default income updated", updated));
+    }
+
+    @GetMapping("/income-default")
+    public ResponseEntity<ApiResponse> getDefaultIncome() {
+        CategoryResponseDto category = incomeDefaultStrategy.getDefault();
+        return ResponseEntity.ok(new ApiResponse("Default income retrieved", category));
     }
 }

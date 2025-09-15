@@ -50,6 +50,4 @@ public interface IAccountService {
     BigDecimal getCreditOutstanding();
 
     BigDecimal getCreditAvailable();
-
-    Account getAccount(UUID acctId);
 }

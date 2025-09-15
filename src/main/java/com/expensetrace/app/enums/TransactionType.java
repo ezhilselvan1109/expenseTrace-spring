@@ -10,8 +10,8 @@ public enum TransactionType {
     INCOME(2),
     TRANSFER(3),
     ADJUSTMENT(4),
-    PAID(5),
-    RECEIVED(6),
+    DEBT_PAID(5),
+    DEBT_RECEIVED(6),
     DEBT_ADJUSTMENT(7);
 
     private final int code;

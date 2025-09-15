@@ -23,23 +23,15 @@ public class User {
     @GeneratedValue
     private UUID id;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     @Email
     private String email;
-
-    private String password;
 
     @Column(nullable = false)
     private boolean enabled = false;
 
     private String verificationToken;
-
-    private String otpCode;
-
-    private LocalDateTime otpExpiry;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final Set<Category> userCategories = new HashSet<>();

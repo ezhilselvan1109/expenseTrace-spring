@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 public class TransactionRequestDto {
@@ -12,16 +14,11 @@ public class TransactionRequestDto {
     @NotNull(message = "Transaction type is required")
     private TransactionType type;
 
-    @Min(value = 1, message = "Date must be between 1 and 31")
-    @Max(value = 31, message = "Date must be between 1 and 31")
-    private int date;
+    @NotNull(message = "Transaction date is required")
+    private LocalDate txnDate;
 
-    @Min(value = 1, message = "Month must be between 1 and 12")
-    @Max(value = 12, message = "Month must be between 1 and 12")
-    private int month;
-
-    @Min(value = 2000, message = "Year must be a valid year")
-    private int year;
+    @NotNull(message = "Transaction time is required")
+    private LocalTime txnTime;
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than zero")

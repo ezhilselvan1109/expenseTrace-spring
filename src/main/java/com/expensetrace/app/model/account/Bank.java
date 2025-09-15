@@ -1,9 +1,6 @@
 package com.expensetrace.app.model.account;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,8 +15,6 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Bank extends Account {
 
-    private BigDecimal currentBalance;
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PaymentMode> paymentModes;
 }

@@ -47,6 +47,13 @@ public class SettingsController {
         return ResponseEntity.ok(new ApiResponse("Number format updated successfully", null));
     }
 
+    @Operation(summary = "Update decimal format", description = "Updates the user's preferred decimal format. Acceptable format codes depend on your predefined mapping.")
+    @PatchMapping("/decimal-format")
+    public ResponseEntity<ApiResponse> updateDecimalFormat(@RequestParam int decimalCode) {
+        settingService.updateDecimalFormat(decimalCode);
+        return ResponseEntity.ok(new ApiResponse("Decimal format updated successfully", null));
+    }
+
     @Operation(summary = "Update daily reminder preference", description = "Enables or disables daily reminders for the user.")
     @PatchMapping("/daily-reminder")
     public ResponseEntity<ApiResponse> updateDailyReminder(@RequestParam boolean dailyReminder) {

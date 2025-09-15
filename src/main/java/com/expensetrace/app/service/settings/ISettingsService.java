@@ -10,5 +10,6 @@ public interface ISettingsService {
     void updateCurrencyCode(String currencyCode);
     void updateNumberFormat(int formatCode);
     void updateDailyReminder(boolean dailyReminder);
+    void updateDecimalFormat(int decimalCode);
 
 }
