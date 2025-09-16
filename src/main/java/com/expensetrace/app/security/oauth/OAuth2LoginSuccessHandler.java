@@ -67,10 +67,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(24 * 60 * 60); // 1 day
         response.addCookie(cookie);
-        response.sendRedirect("https://expensetrace.vercel.app");
+        response.sendRedirect(frontendUrl);
     }
 }
