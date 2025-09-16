@@ -71,6 +71,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         cookie.setPath("/");
         cookie.setMaxAge(24 * 60 * 60); // 1 day
         response.addCookie(cookie);
-        response.sendRedirect(frontendUrl);
+        response.sendRedirect("https://expensetrace.vercel.app");
     }
 }
