@@ -1,29 +1,19 @@
 package com.expensetrace.app.controller;
 
-import com.expensetrace.app.enums.AccountType;
 import com.expensetrace.app.enums.AnalysisType;
-import com.expensetrace.app.enums.CategoryType;
-import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.dto.response.account.AccountResponseDto;
-import com.expensetrace.app.dto.response.CategoryResponseDto;
 import com.expensetrace.app.dto.response.summary.*;
 import com.expensetrace.app.service.AnalysisService;
+import com.expensetrace.app.service.SummaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,6 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class SummaryController {
 
     private final AnalysisService analysisService;
+    private final SummaryService summaryService;
 
     @Operation(summary = "Get summary for the authenticated user", description = "Get summary for the currently authenticated user.")
     @GetMapping("/analysis")
@@ -60,30 +51,8 @@ public class SummaryController {
     }
 
     @Operation(summary = "Get summary by month for the authenticated user", description = "Get summary by month for the currently authenticated user.")
-    @GetMapping("/month")
-    public ResponseEntity<ApiResponse> getMonthSummary(@RequestParam Integer month, @RequestParam Integer year) {
-        List<MonthSummaryResponseDto> monthSummaryResponse = new ArrayList<>();
-        MonthSummaryResponseDto monthSummaryResponseDto = new MonthSummaryResponseDto();
-        monthSummaryResponseDto.setDay(2);
-        monthSummaryResponseDto.setExpense(500);
-        monthSummaryResponseDto.setIncome(600);
-        monthSummaryResponse.add(monthSummaryResponseDto);
-
-        MonthSummaryResponseDto monthSummaryResponseDto2 = new MonthSummaryResponseDto();
-        monthSummaryResponseDto2.setDay(2);
-        monthSummaryResponseDto2.setExpense(500);
-        monthSummaryResponseDto2.setIncome(600);
-        monthSummaryResponse.add(monthSummaryResponseDto2);
-
-        MonthSummaryResponseDto monthSummaryResponseDto3 = new MonthSummaryResponseDto();
-        monthSummaryResponseDto3.setDay(2);
-        monthSummaryResponseDto3.setExpense(500);
-        monthSummaryResponseDto3.setIncome(600);
-        monthSummaryResponse.add(monthSummaryResponseDto3);
-        try {
-            return ResponseEntity.ok(new ApiResponse("Fetch successfully", monthSummaryResponse));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
-        }
+    @GetMapping("/monthly")
+    public ResponseEntity<ApiResponse> getMonthlySummary(@RequestParam int year, @RequestParam int month) {
+        return ResponseEntity.ok(new ApiResponse("Found!", summaryService.getMonthlySummary(year, month)));
     }
 }
