@@ -4,11 +4,14 @@ import com.expensetrace.app.dto.response.transaction.*;
 import com.expensetrace.app.dto.response.transaction.record.DebtAdjustmentResponseDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtPaidResponseDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtReceivedResponseDto;
+import com.expensetrace.app.enums.TransactionType;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.transaction.record.AdjustmentRecord;
 import com.expensetrace.app.repository.transaction.*;
 import com.expensetrace.app.repository.transaction.debt.AdjustmentRecordRepository;
 import com.expensetrace.app.repository.transaction.debt.PaidRecordRepository;
 import com.expensetrace.app.repository.transaction.debt.ReceivedRecordRepository;
+import com.expensetrace.app.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -34,6 +39,7 @@ public class TransactionAggregationService {
     private final AdjustmentRecordRepository debtAdjustmentRepo;
 
     private final ModelMapper mapper;
+    private final UserService userService;
 
     /**
      * Utility to combine txnDate + txnTime into LocalDateTime for sorting
@@ -210,6 +216,71 @@ public class TransactionAggregationService {
                 ).reversed())
                 .toList();
         return toPage(merged, pageable);
+    }
+
+    public List<TransactionResponseDto> getRecentTransactions(int limit) {
+        List<? extends TransactionResponseDto> income = incomeRepo.findAll()
+                .stream().map(e -> mapper.map(e, IncomeTransactionResponseDto.class)).toList();
+
+        List<? extends TransactionResponseDto> expense = expenseRepo.findAll()
+                .stream().map(e -> mapper.map(e, ExpenseTransactionResponseDto.class)).toList();
+
+        List<? extends TransactionResponseDto> transfer = transferRepo.findAll()
+                .stream().map(e -> mapper.map(e, TransferTransactionResponseDto.class)).toList();
+
+        return Stream.of(income, expense, transfer)
+                .flatMap(Collection::stream)
+                .map(TransactionResponseDto.class::cast)
+                .sorted(Comparator.comparing(
+                        this::getTxnDateTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ).reversed())
+                .limit(limit)
+                .toList();
+    }
+
+    public TransactionDateSummaryDto getTransactionsByDate(LocalDate date, Pageable pageable) {
+        User user = userService.getAuthenticatedUser();
+        UUID userId = user.getId();
+
+        // Fetch all types of transactions for the user on that date
+        List<TransactionResponseDto> allTxns = Stream.of(
+                        incomeRepo.findByUserIdAndTxnDate(userId, date)
+                                .stream().map(e -> mapper.map(e, IncomeTransactionResponseDto.class)).toList(),
+                        expenseRepo.findByUserIdAndTxnDate(userId, date)
+                                .stream().map(e -> mapper.map(e, ExpenseTransactionResponseDto.class)).toList(),
+                        transferRepo.findByUserIdAndTxnDate(userId, date)
+                                .stream().map(e -> mapper.map(e, TransferTransactionResponseDto.class)).toList()
+                )
+                .flatMap(List::stream)
+                .map(TransactionResponseDto.class::cast)
+                .sorted(Comparator.comparing(TransactionResponseDto::getTxnDate)
+                        .thenComparing(TransactionResponseDto::getTxnTime)
+                        .reversed())
+                .toList();
+
+        // Calculate totals
+        BigDecimal totalIncome = allTxns.stream()
+                .filter(t -> t.getType() == TransactionType.INCOME || t.getType() == TransactionType.DEBT_RECEIVED)
+                .map(TransactionResponseDto::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalExpense = allTxns.stream()
+                .filter(t -> t.getType() == TransactionType.EXPENSE || t.getType() == TransactionType.DEBT_PAID)
+                .map(TransactionResponseDto::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Paginate transactions
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), allTxns.size());
+        Page<TransactionResponseDto> pagedTxns = new PageImpl<>(start > allTxns.size() ? List.of() : allTxns.subList(start, end), pageable, allTxns.size());
+
+        TransactionDateSummaryDto response = new TransactionDateSummaryDto();
+        response.setTotalIncome(totalIncome);
+        response.setTotalExpense(totalExpense);
+        response.setTransactions(pagedTxns);
+
+        return response;
     }
 
     // Helper to convert List to Page

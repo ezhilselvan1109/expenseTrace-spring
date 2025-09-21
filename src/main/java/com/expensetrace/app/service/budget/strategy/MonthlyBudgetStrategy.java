@@ -2,13 +2,16 @@ package com.expensetrace.app.service.budget.strategy;
 
 import com.expensetrace.app.dto.request.budget.BudgetRequestDto;
 import com.expensetrace.app.dto.request.budget.MonthlyBudgetRequestDto;
+import com.expensetrace.app.dto.response.CategorySpendResponseDto;
 import com.expensetrace.app.dto.response.budget.BudgetListResponseDto;
 import com.expensetrace.app.dto.response.budget.BudgetResponseDto;
+import com.expensetrace.app.dto.response.budget.MonthlyBudgetBreakdownResponseDto;
 import com.expensetrace.app.dto.response.budget.MonthlyBudgetSummaryResponseDto;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.budget.MonthlyBudget;
 import com.expensetrace.app.repository.MonthlyBudgetRepository;
 import com.expensetrace.app.repository.UserRepository;
+import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +25,7 @@ import java.util.*;
 public class MonthlyBudgetStrategy implements BudgetStrategy {
 
     private final MonthlyBudgetRepository repository;
+    private final ExpenseTransactionRepository expenseTransactionRepository;
     private final UserRepository userRepository;
     private final SecurityUtil securityUtil;
     private final ModelMapper mapper;
@@ -42,13 +46,6 @@ public class MonthlyBudgetStrategy implements BudgetStrategy {
     }
 
     @Override
-    public BudgetResponseDto get(UUID budgetId) {
-        MonthlyBudget budget = repository.findById(budgetId)
-                .orElseThrow(() -> new RuntimeException("Monthly budget not found"));
-        return mapper.map(budget, BudgetResponseDto.class);
-    }
-
-    @Override
     public BudgetListResponseDto getAll() {
         List<MonthlyBudget> budgets = repository.findAll();
         int currentYear = LocalDate.now().getYear();
@@ -59,8 +56,13 @@ public class MonthlyBudgetStrategy implements BudgetStrategy {
         List<BudgetResponseDto> upcoming = new ArrayList<>();
 
         for (MonthlyBudget b : budgets) {
+            Double spent = expenseTransactionRepository.getMonthlySpent(
+                    b.getUser().getId(),
+                    b.getYear(),
+                    b.getMonth()
+            );
             MonthlyBudgetSummaryResponseDto dto = mapper.map(b, MonthlyBudgetSummaryResponseDto.class);
-
+            dto.setTotalSpent(spent);
             if (b.getYear() < currentYear ||
                     (b.getYear() == currentYear && b.getMonth() < currentMonth)) {
                 past.add(dto);

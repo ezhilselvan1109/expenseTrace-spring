@@ -2,12 +2,15 @@ package com.expensetrace.app.service.budget.strategy;
 
 import com.expensetrace.app.dto.request.budget.BudgetRequestDto;
 import com.expensetrace.app.dto.request.budget.YearlyBudgetRequestDto;
+import com.expensetrace.app.dto.response.CategorySpendResponseDto;
 import com.expensetrace.app.dto.response.budget.BudgetListResponseDto;
 import com.expensetrace.app.dto.response.budget.BudgetResponseDto;
+import com.expensetrace.app.dto.response.budget.YearlyBudgetBreakdownResponseDto;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.budget.YearlyBudget;
 import com.expensetrace.app.repository.UserRepository;
 import com.expensetrace.app.repository.YearlyBudgetRepository;
+import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +25,7 @@ public class YearlyBudgetStrategy implements BudgetStrategy {
 
     private final YearlyBudgetRepository repository;
     private final UserRepository userRepository;
+    private final ExpenseTransactionRepository expenseTransactionRepository;
     private final ModelMapper mapper;
     private final SecurityUtil securityUtil;
 
@@ -41,13 +45,6 @@ public class YearlyBudgetStrategy implements BudgetStrategy {
     }
 
     @Override
-    public BudgetResponseDto get(UUID budgetId) {
-        YearlyBudget budget = repository.findById(budgetId)
-                .orElseThrow(() -> new RuntimeException("Yearly budget not found"));
-        return mapper.map(budget, BudgetResponseDto.class);
-    }
-
-    @Override
     public BudgetListResponseDto getAll() {
         List<YearlyBudget> budgets = repository.findAll();
         int currentYear = LocalDate.now().getYear();
@@ -57,8 +54,12 @@ public class YearlyBudgetStrategy implements BudgetStrategy {
         List<BudgetResponseDto> upcoming = new ArrayList<>();
 
         for (YearlyBudget b : budgets) {
+            Double spent = expenseTransactionRepository.getYearlySpent(
+                    b.getUser().getId(),
+                    b.getYear()
+            );
             BudgetResponseDto dto = mapper.map(b, BudgetResponseDto.class);
-
+            dto.setTotalSpent(spent);
             if (b.getYear() < currentYear) {
                 past.add(dto);
             } else if (b.getYear() == currentYear) {

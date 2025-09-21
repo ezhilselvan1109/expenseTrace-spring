@@ -8,19 +8,23 @@ import com.expensetrace.app.dto.response.transaction.*;
 import com.expensetrace.app.dto.response.transaction.record.DebtAdjustmentResponseDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtPaidResponseDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtReceivedResponseDto;
+import com.expensetrace.app.enums.TransactionSummaryType;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.service.transaction.CommonTransactionService;
 import com.expensetrace.app.service.transaction.TransactionAggregationService;
 import com.expensetrace.app.service.transaction.TransactionServiceFactory;
+import com.expensetrace.app.service.transaction.TransactionSummaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +36,7 @@ public class TransactionController {
     private final TransactionServiceFactory factory;
     private final CommonTransactionService commonService;
     private final TransactionAggregationService aggregationService;
+    private final TransactionSummaryService summaryService;
 
     // -------- Income --------
     @PostMapping("/income")
@@ -195,6 +200,31 @@ public class TransactionController {
     public ResponseEntity<ApiResponse> getAllAdjustmentByAccount(@PathVariable UUID accountId,
                                                        @PageableDefault(size = 10, sort = "txnAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllAdjustmentTransactionsByAccount(accountId,pageable)));
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ApiResponse> getSummary(
+            @RequestParam(defaultValue = "2") int rangeCode) {
+        TransactionSummaryType rangeType = TransactionSummaryType.fromCode(rangeCode);
+        TransactionSummaryDto dto = summaryService.getSummary(rangeType);
+        return ResponseEntity.ok(new ApiResponse("Found!", dto));
+    }
+
+
+    @GetMapping("/recent")
+    public ResponseEntity<ApiResponse> getRecentTransactions() {
+        return ResponseEntity.ok(
+                new ApiResponse("Found!", aggregationService.getRecentTransactions(6))
+        );
+    }
+
+    @GetMapping("/by-date")
+    public ResponseEntity<ApiResponse> getTransactionsByDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        TransactionDateSummaryDto summary = aggregationService.getTransactionsByDate(date, pageable);
+        return ResponseEntity.ok(new ApiResponse("Found!", summary));
     }
 }
 
