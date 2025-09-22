@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.response;
+package com.expensetrace.app.dto.response.debt;
 
 import com.expensetrace.app.enums.DebtType;
 import lombok.Data;

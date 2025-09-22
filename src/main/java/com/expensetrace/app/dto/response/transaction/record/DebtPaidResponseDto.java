@@ -1,6 +1,6 @@
 package com.expensetrace.app.dto.response.transaction.record;
 
-import com.expensetrace.app.dto.response.DebtResponseDto;
+import com.expensetrace.app.dto.response.debt.DebtResponseDto;
 import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
 import com.expensetrace.app.dto.response.transaction.TransactionResponseDto;

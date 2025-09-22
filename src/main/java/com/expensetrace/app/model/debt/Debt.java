@@ -48,7 +48,6 @@ public class Debt {
     @Column(nullable = false)
     private DebtType type;
 
-    private BigDecimal totalAmount;
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DebtRecord> records = new ArrayList<>();
 }

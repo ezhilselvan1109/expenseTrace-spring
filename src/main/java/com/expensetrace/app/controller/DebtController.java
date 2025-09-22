@@ -2,8 +2,8 @@ package com.expensetrace.app.controller;
 
 import com.expensetrace.app.dto.request.DebtRequestDto;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.dto.response.DebtResponseDto;
-import com.expensetrace.app.dto.response.DebtSummaryResponseDto;
+import com.expensetrace.app.dto.response.debt.DebtResponseDto;
+import com.expensetrace.app.dto.response.debt.DebtSummaryResponseDto;
 import com.expensetrace.app.service.debt.IDebtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,20 +104,6 @@ public class DebtController {
         } catch (Exception e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
-    }
-
-    @GetMapping("/payable")
-    @Operation(summary = "Get total Payable amount", description = "Sum of all borrowing debts")
-    public ResponseEntity<ApiResponse> getPayable() {
-        BigDecimal totalPayable = debtService.getTotalPayableAmount();
-        return ResponseEntity.ok(new ApiResponse("Total Payable fetched", totalPayable));
-    }
-
-    @GetMapping("/receivable")
-    @Operation(summary = "Get total Receivable amount", description = "Sum of all lending debts")
-    public ResponseEntity<ApiResponse> getReceivable() {
-        BigDecimal totalReceivable = debtService.getTotalReceivableAmount();
-        return ResponseEntity.ok(new ApiResponse("Total Receivable fetched", totalReceivable));
     }
 
     @GetMapping("/summary")

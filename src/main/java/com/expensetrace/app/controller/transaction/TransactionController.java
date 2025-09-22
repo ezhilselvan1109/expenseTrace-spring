@@ -10,10 +10,7 @@ import com.expensetrace.app.dto.response.transaction.record.DebtPaidResponseDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtReceivedResponseDto;
 import com.expensetrace.app.enums.TransactionSummaryType;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.service.transaction.CommonTransactionService;
-import com.expensetrace.app.service.transaction.TransactionAggregationService;
-import com.expensetrace.app.service.transaction.TransactionServiceFactory;
-import com.expensetrace.app.service.transaction.TransactionSummaryService;
+import com.expensetrace.app.service.transaction.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +34,7 @@ public class TransactionController {
     private final CommonTransactionService commonService;
     private final TransactionAggregationService aggregationService;
     private final TransactionSummaryService summaryService;
+    private final DebtRecordSummaryService debtRecordSummaryService;
 
     // -------- Income --------
     @PostMapping("/income")
@@ -225,6 +223,13 @@ public class TransactionController {
 
         TransactionDateSummaryDto summary = aggregationService.getTransactionsByDate(date, pageable);
         return ResponseEntity.ok(new ApiResponse("Found!", summary));
+    }
+
+    @GetMapping("/{debtId}/summary")
+    public ResponseEntity<ApiResponse> getDebtRecordSummary(@PathVariable UUID debtId) {
+        return ResponseEntity.ok(
+                new ApiResponse("Found!", debtRecordSummaryService.getSummary(debtId))
+        );
     }
 }
 
