@@ -1,5 +1,6 @@
 package com.expensetrace.app.controller;
 
+import com.expensetrace.app.dto.response.tag.TagUpdateRequest;
 import com.expensetrace.app.response.ApiResponse;
 import com.expensetrace.app.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,14 @@ public class TagController {
             @RequestParam UUID targetTagId) {
         tagService.mergeTags(sourceTagId, targetTagId);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{tagId}")
+    public ResponseEntity<ApiResponse> updateTag(
+            @PathVariable UUID tagId,
+            @RequestBody TagUpdateRequest request) {
+
+        var updatedTag = tagService.updateTag(tagId, request.getName());
+        return ResponseEntity.ok(new ApiResponse("Updated!", updatedTag));
     }
 }

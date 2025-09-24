@@ -13,7 +13,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "expense_transactions")
 @DiscriminatorValue("EXPENSE")
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class ExpenseTransaction extends TaggableTransaction {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

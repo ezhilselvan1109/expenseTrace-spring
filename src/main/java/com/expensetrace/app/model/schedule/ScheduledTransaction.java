@@ -25,12 +25,12 @@ import java.util.UUID;
 @Setter
 public abstract class ScheduledTransaction {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private User user;
-
     @Id
     @GeneratedValue
     private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private ScheduleType type;
@@ -49,27 +49,22 @@ public abstract class ScheduledTransaction {
     @Enumerated(EnumType.STRING)
     private FrequencyType frequencyType;
 
-    @Column(name = "frequency_interval")
     private Integer frequencyInterval;
-
     @Enumerated(EnumType.STRING)
     private EndType endType;
-
     private Integer occurrence;
-
     private Integer reminderDays;
-
     @Enumerated(EnumType.STRING)
     private ExecutionStatus status;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "scheduled_transaction_tags",
-            joinColumns = @JoinColumn(name = "scheduled_transaction_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "scheduled_transaction_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "scheduledTransaction", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScheduledTransactionOccurrence> occurrencesList;
+    private Set<ScheduledTransactionOccurrence> occurrencesList = new HashSet<>();
 }

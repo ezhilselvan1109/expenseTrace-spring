@@ -1,7 +1,6 @@
 package com.expensetrace.app.model.transaction;
 
 import com.expensetrace.app.enums.TransactionType;
-import com.expensetrace.app.model.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +8,11 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "transactions"
-)
+@Table(name = "transactions")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter

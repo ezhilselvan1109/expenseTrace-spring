@@ -12,5 +12,6 @@ public interface TagService {
     void deleteTag(UUID tagId);
 
     void mergeTags(UUID sourceTagId, UUID targetTagId);
+    TagsResponseDto updateTag(UUID tagId, String name);
 }
 

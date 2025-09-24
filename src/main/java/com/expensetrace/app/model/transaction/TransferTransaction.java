@@ -14,20 +14,20 @@ import java.util.Set;
 
 @Entity
 @Table(name = "transfer_transactions")
+@DiscriminatorValue("TRANSFER")
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("TRANSFER")
 public class TransferTransaction extends TaggableTransaction {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_account_id", nullable = false)
     private Account fromAccount;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_account_id", nullable = false)
     private Account toAccount;
 

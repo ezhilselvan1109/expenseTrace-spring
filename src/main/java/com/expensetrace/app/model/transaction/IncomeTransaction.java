@@ -15,10 +15,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "income_transactions")
+@DiscriminatorValue("INCOME")
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("INCOME")
 public class IncomeTransaction extends TaggableTransaction {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -36,5 +36,3 @@ public class IncomeTransaction extends TaggableTransaction {
     @JoinColumn(name = "payment_mode_id")
     private PaymentMode paymentMode;
 }
-
-

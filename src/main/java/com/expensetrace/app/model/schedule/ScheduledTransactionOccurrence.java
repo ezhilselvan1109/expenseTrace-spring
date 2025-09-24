@@ -18,7 +18,7 @@ public class ScheduledTransactionOccurrence {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "scheduled_id", nullable = false)
+    @JoinColumn(name = "scheduled_transaction_id", nullable = false)
     private ScheduledTransaction scheduledTransaction;
 
     @ManyToOne

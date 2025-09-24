@@ -13,5 +13,7 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
     Page<Tag> findAllByUserId(UUID userId, Pageable pageable);
 
     Optional<Tag> findByUserIdAndName(UUID userId, String name);
+
+    boolean existsByUserIdAndName(UUID userId, String name);
 }
 
