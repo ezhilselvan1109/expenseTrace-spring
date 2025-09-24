@@ -57,4 +57,28 @@ public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTrans
     BigDecimal getTotalExpense(@Param("userId") UUID userId,
                                @Param("startDate") LocalDate startDate,
                                @Param("endDate") LocalDate endDate);
+
+    @Query("""
+    SELECT COALESCE(SUM(e.amount), 0) 
+    FROM ExpenseTransaction e 
+    WHERE e.user.id = :userId
+      AND YEAR(e.txnDate) = :year
+      AND MONTH(e.txnDate) = :month
+""")
+    BigDecimal sumSpentByUserAndYearAndMonth(
+            @Param("userId") UUID userId,
+            @Param("year") int year,
+            @Param("month") int month);
+
+
+    @Query("""
+    SELECT COALESCE(SUM(e.amount), 0) 
+    FROM ExpenseTransaction e 
+    WHERE e.user.id = :userId
+      AND YEAR(e.txnDate) = :year
+""")
+    BigDecimal sumSpentByUserAndYear(
+            @Param("userId") UUID userId,
+            @Param("year") int year);
+
 }

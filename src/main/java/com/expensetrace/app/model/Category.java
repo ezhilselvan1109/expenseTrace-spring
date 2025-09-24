@@ -2,10 +2,7 @@ package com.expensetrace.app.model;
 
 import com.expensetrace.app.enums.CategoryType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -14,19 +11,24 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "Category")
+@Table(
+        name = "categories",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"})
+)
 public class Category {
+
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private CategoryType type; // Enum: EXPENSE, INCOME
+    private CategoryType type;
 
     private String color;
 
@@ -34,6 +36,5 @@ public class Category {
 
     private boolean isDefault;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean isDeletable;
+    private boolean isDeletable = false;
 }

@@ -1,5 +1,6 @@
 package com.expensetrace.app.repository;
 
+import com.expensetrace.app.model.budget.MonthlyBudget;
 import com.expensetrace.app.model.budget.YearlyBudget;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,4 +9,5 @@ import java.util.UUID;
 
 public interface YearlyBudgetRepository extends JpaRepository<YearlyBudget, UUID> {
     List<YearlyBudget> findAllByUserId(UUID userId);
+    List<YearlyBudget> findByUserId(UUID userId);
 }

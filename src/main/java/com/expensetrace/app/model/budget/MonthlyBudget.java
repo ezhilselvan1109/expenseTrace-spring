@@ -1,21 +1,20 @@
 package com.expensetrace.app.model.budget;
 
-import com.expensetrace.app.model.budget.Budget;
-import com.expensetrace.app.model.budget.CategoryBudgetLimit;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Entity
-@Table(name = "monthly_budget")
+@Table(
+        name = "monthly_budgets",
+        indexes = {
+                @Index(name = "idx_monthly_user_year", columnList = "id, month")
+        }
+)
 @Getter
 @Setter
 public class MonthlyBudget extends Budget {
 
+    @Column(name = "month", nullable = false)
     private int month;
-
-    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CategoryBudgetLimit> categoryLimits;
 }

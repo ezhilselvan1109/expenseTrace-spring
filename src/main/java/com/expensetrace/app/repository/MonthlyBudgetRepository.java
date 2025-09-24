@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface MonthlyBudgetRepository extends JpaRepository<MonthlyBudget, UUID> {
     List<MonthlyBudget> findAllByUserId(UUID userId);
+    List<MonthlyBudget> findByUserId(UUID userId);
 }

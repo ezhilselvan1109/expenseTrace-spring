@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.response;
+package com.expensetrace.app.dto.response.budget;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

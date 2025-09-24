@@ -8,6 +8,6 @@ import java.util.UUID;
 public class BudgetResponseDto {
     private UUID id;
     private int year;
-    private double budget;
+    private double totalLimit;
     private double totalSpent;
 }
