@@ -1,8 +1,7 @@
 package com.expensetrace.app.model.transaction.record;
 
-import com.expensetrace.app.enums.TransactionType;
-import com.expensetrace.app.model.account.Account;
-import com.expensetrace.app.model.account.PaymentMode;
+import com.expensetrace.app.account.model.Account;
+import com.expensetrace.app.account.model.PaymentMode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

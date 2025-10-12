@@ -1,7 +1,7 @@
 package com.expensetrace.app.dto.response.schedule;
 
-import com.expensetrace.app.dto.response.account.AccountResponseDto;
-import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
+import com.expensetrace.app.account.dto.response.AccountResponseDto;
+import com.expensetrace.app.account.dto.response.PaymentModeResponseDto;
 import lombok.Data;
 
 @Data

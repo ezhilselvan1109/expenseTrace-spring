@@ -2,25 +2,20 @@ package com.expensetrace.app.service.transaction.impl.debt;
 
 import com.expensetrace.app.dto.request.transaction.record.DebtReceivedRequestDto;
 import com.expensetrace.app.dto.response.transaction.record.DebtReceivedResponseDto;
-import com.expensetrace.app.model.account.Account;
-import com.expensetrace.app.model.account.PaymentMode;
+import com.expensetrace.app.account.model.Account;
+import com.expensetrace.app.account.model.PaymentMode;
 import com.expensetrace.app.model.debt.Debt;
 import com.expensetrace.app.model.transaction.record.ReceivedRecord;
 import com.expensetrace.app.repository.DebtRepository;
-import com.expensetrace.app.repository.account.AccountRepository;
-import com.expensetrace.app.repository.account.PaymentModeRepository;
+import com.expensetrace.app.account.repository.AccountRepository;
+import com.expensetrace.app.account.repository.PaymentModeRepository;
 import com.expensetrace.app.repository.transaction.debt.ReceivedRecordRepository;
 import com.expensetrace.app.service.transaction.DebtTransactionService;
-import com.expensetrace.app.service.transaction.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service("receivedRecordService")
 @RequiredArgsConstructor

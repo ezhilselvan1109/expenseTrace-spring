@@ -5,13 +5,13 @@ import com.expensetrace.app.dto.response.transaction.IncomeTransactionResponseDt
 import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.model.account.Account;
-import com.expensetrace.app.model.account.PaymentMode;
+import com.expensetrace.app.account.model.Account;
+import com.expensetrace.app.account.model.PaymentMode;
 import com.expensetrace.app.model.transaction.IncomeTransaction;
 import com.expensetrace.app.category.repository.CategoryRepository;
 import com.expensetrace.app.repository.TagRepository;
-import com.expensetrace.app.repository.account.AccountRepository;
-import com.expensetrace.app.repository.account.PaymentModeRepository;
+import com.expensetrace.app.account.repository.AccountRepository;
+import com.expensetrace.app.account.repository.PaymentModeRepository;
 import com.expensetrace.app.repository.transaction.IncomeTransactionRepository;
 import com.expensetrace.app.service.transaction.TransactionService;
 import com.expensetrace.app.service.user.UserService;

@@ -2,7 +2,7 @@ package com.expensetrace.app.security.oauth;
 
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.repository.UserRepository;
-import com.expensetrace.app.service.account.IAccountService;
+import com.expensetrace.app.account.service.IAccountService;
 import com.expensetrace.app.category.service.service.ICategoryService;
 import com.expensetrace.app.service.settings.ISettingsService;
 import com.expensetrace.app.util.JwtUtil;

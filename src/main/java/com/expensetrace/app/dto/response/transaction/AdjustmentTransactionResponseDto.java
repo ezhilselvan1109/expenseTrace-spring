@@ -1,7 +1,6 @@
 package com.expensetrace.app.dto.response.transaction;
 
-import com.expensetrace.app.dto.response.account.AccountResponseDto;
-import com.expensetrace.app.dto.response.account.PaymentModeResponseDto;
+import com.expensetrace.app.account.dto.response.AccountResponseDto;
 import lombok.Data;
 
 @Data

@@ -1,7 +1,5 @@
 package com.expensetrace.app.model.transaction.record;
 
-import com.expensetrace.app.model.account.Account;
-import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.debt.Debt;
 import com.expensetrace.app.model.transaction.Transaction;
 import jakarta.persistence.*;

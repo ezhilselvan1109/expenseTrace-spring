@@ -3,21 +3,17 @@ package com.expensetrace.app.service.transaction.impl;
 import com.expensetrace.app.dto.request.transaction.AdjustmentTransactionRequestDto;
 import com.expensetrace.app.dto.response.transaction.AdjustmentTransactionResponseDto;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.model.account.Account;
+import com.expensetrace.app.account.model.Account;
 import com.expensetrace.app.model.transaction.AdjustmentTransaction;
-import com.expensetrace.app.repository.account.AccountRepository;
+import com.expensetrace.app.account.repository.AccountRepository;
 import com.expensetrace.app.repository.transaction.AdjustmentTransactionRepository;
 import com.expensetrace.app.service.transaction.TransactionService;
 import com.expensetrace.app.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service("adjustmentTransactionService")
 @RequiredArgsConstructor

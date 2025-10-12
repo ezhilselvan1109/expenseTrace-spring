@@ -1,7 +1,7 @@
 package com.expensetrace.app.service;
 
 import com.expensetrace.app.category.dto.response.CategoryResponseDto;
-import com.expensetrace.app.dto.response.account.AccountResponseDto;
+import com.expensetrace.app.account.dto.response.AccountResponseDto;
 import com.expensetrace.app.dto.response.summary.*;
 import com.expensetrace.app.enums.AnalysisType;
 import com.expensetrace.app.enums.TransactionType;
