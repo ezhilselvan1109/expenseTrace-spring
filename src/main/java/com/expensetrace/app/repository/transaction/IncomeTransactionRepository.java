@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface IncomeTransactionRepository extends JpaRepository<IncomeTransaction, UUID> {
     List<IncomeTransaction> findByAccountId(UUID accountId);
-
+    List<IncomeTransaction> findAllByUserId(UUID userId);
     List<IncomeTransaction> findByUserIdAndTxnDate(UUID userId, LocalDate txnDate);
 
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM IncomeTransaction t " +

@@ -5,6 +5,7 @@ import com.expensetrace.app.dto.response.account.AccountResponseDto;
 import com.expensetrace.app.dto.response.summary.*;
 import com.expensetrace.app.enums.AnalysisType;
 import com.expensetrace.app.enums.TransactionType;
+import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.transaction.*;
 import com.expensetrace.app.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;

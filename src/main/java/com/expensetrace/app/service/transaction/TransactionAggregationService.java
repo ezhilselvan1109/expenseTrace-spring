@@ -55,13 +55,15 @@ public class TransactionAggregationService {
 
     // Standard transactions: Income, Expense, Transfer
     public Page<TransactionResponseDto> getAllStandardTransactions(Pageable pageable) {
-        List<? extends TransactionResponseDto> income = incomeRepo.findAll()
+        User user = userService.getAuthenticatedUser();
+        UUID userId = user.getId();
+        List<? extends TransactionResponseDto> income = incomeRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, IncomeTransactionResponseDto.class)).toList();
 
-        List<? extends TransactionResponseDto> expense = expenseRepo.findAll()
+        List<? extends TransactionResponseDto> expense = expenseRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, ExpenseTransactionResponseDto.class)).toList();
 
-        List<? extends TransactionResponseDto> transfer = transferRepo.findAll()
+        List<? extends TransactionResponseDto> transfer = transferRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, TransferTransactionResponseDto.class)).toList();
 
         List<TransactionResponseDto> merged = Stream.<List<? extends TransactionResponseDto>>of(income, expense, transfer)
@@ -77,14 +79,14 @@ public class TransactionAggregationService {
     }
 
     // Debt transactions: Paid, Received
-    public Page<TransactionResponseDto> getAllDebtTransactions(Pageable pageable) {
-        List<? extends TransactionResponseDto> paid = paidRepo.findAll()
+    public Page<TransactionResponseDto> getAllDebtTransactions(UUID debtId, Pageable pageable) {
+        List<? extends TransactionResponseDto> paid = paidRepo.findAllByDebtId(debtId)
                 .stream().map(e -> mapper.map(e, DebtPaidResponseDto.class)).toList();
 
-        List<? extends TransactionResponseDto> received = receivedRepo.findAll()
+        List<? extends TransactionResponseDto> received = receivedRepo.findAllByDebtId(debtId)
                 .stream().map(e -> mapper.map(e, DebtReceivedResponseDto.class)).toList();
 
-        List<TransactionResponseDto> merged= Stream.<List<? extends TransactionResponseDto>>of(paid, received)
+        List<TransactionResponseDto> merged = Stream.<List<? extends TransactionResponseDto>>of(paid, received)
                 .flatMap(Collection::stream)
                 .map(TransactionResponseDto.class::cast)
                 .sorted(Comparator.comparing(
@@ -96,8 +98,8 @@ public class TransactionAggregationService {
     }
 
     // Debt transactions: Paid, Received
-    public Page<TransactionResponseDto> getAllDebtPaidTransactions(Pageable pageable) {
-        List<? extends TransactionResponseDto> paid = paidRepo.findAll()
+    public Page<TransactionResponseDto> getAllDebtPaidTransactions(UUID debtId,Pageable pageable) {
+        List<? extends TransactionResponseDto> paid = paidRepo.findAllByDebtId(debtId)
                 .stream().map(e -> mapper.map(e, DebtPaidResponseDto.class)).toList();
 
         List<TransactionResponseDto> merged= Stream.<List<? extends TransactionResponseDto>>of(paid)
@@ -111,8 +113,8 @@ public class TransactionAggregationService {
         return toPage(merged, pageable);
     }
 
-    public Page<TransactionResponseDto> getAllDebtReceivedTransactions(Pageable pageable) {
-        List<? extends TransactionResponseDto> received = receivedRepo.findAll()
+    public Page<TransactionResponseDto> getAllDebtReceivedTransactions(UUID debtId,Pageable pageable) {
+        List<? extends TransactionResponseDto> received = receivedRepo.findAllByDebtId(debtId)
                 .stream().map(e -> mapper.map(e, DebtReceivedResponseDto.class)).toList();
 
         List<TransactionResponseDto> merged= Stream.<List<? extends TransactionResponseDto>>of(received)
@@ -126,8 +128,8 @@ public class TransactionAggregationService {
         return toPage(merged, pageable);
     }
 
-    public Page<TransactionResponseDto> getAllDebtAdjustmentTransactions(Pageable pageable) {
-        List<? extends TransactionResponseDto> received = debtAdjustmentRepo.findAll()
+    public Page<TransactionResponseDto> getAllDebtAdjustmentTransactions(UUID debtId,Pageable pageable) {
+        List<? extends TransactionResponseDto> received = debtAdjustmentRepo.findAllByDebtId(debtId)
                 .stream().map(e -> mapper.map(e, DebtAdjustmentResponseDto.class)).toList();
 
         List<TransactionResponseDto> merged= Stream.<List<? extends TransactionResponseDto>>of(received)
@@ -219,13 +221,15 @@ public class TransactionAggregationService {
     }
 
     public List<TransactionResponseDto> getRecentTransactions(int limit) {
-        List<? extends TransactionResponseDto> income = incomeRepo.findAll()
+        User user = userService.getAuthenticatedUser();
+        UUID userId = user.getId();
+        List<? extends TransactionResponseDto> income = incomeRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, IncomeTransactionResponseDto.class)).toList();
 
-        List<? extends TransactionResponseDto> expense = expenseRepo.findAll()
+        List<? extends TransactionResponseDto> expense = expenseRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, ExpenseTransactionResponseDto.class)).toList();
 
-        List<? extends TransactionResponseDto> transfer = transferRepo.findAll()
+        List<? extends TransactionResponseDto> transfer = transferRepo.findAllByUserId(userId)
                 .stream().map(e -> mapper.map(e, TransferTransactionResponseDto.class)).toList();
 
         return Stream.of(income, expense, transfer)

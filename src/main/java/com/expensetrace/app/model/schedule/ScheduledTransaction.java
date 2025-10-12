@@ -50,10 +50,14 @@ public abstract class ScheduledTransaction {
     private FrequencyType frequencyType;
 
     private Integer frequencyInterval;
+
     @Enumerated(EnumType.STRING)
     private EndType endType;
+
     private Integer occurrence;
+
     private Integer reminderDays;
+
     @Enumerated(EnumType.STRING)
     private ExecutionStatus status;
 

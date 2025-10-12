@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface ReceivedRecordRepository extends JpaRepository<ReceivedRecord, UUID> {
     List<ReceivedRecord> findByAccountId(UUID accountId);
+    List<ReceivedRecord> findAllByDebtId(UUID debtId);
     @Query("SELECT COALESCE(SUM(r.amount), 0) FROM ReceivedRecord r WHERE r.debt.id = :debtId")
     BigDecimal getTotalReceivedByDebt(UUID debtId);
 }

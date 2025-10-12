@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface ExpenseTransactionRepository extends JpaRepository<ExpenseTransaction, UUID> {
     List<ExpenseTransaction> findByAccountId(UUID accountId);
 
+    List<ExpenseTransaction> findAllByUserId(UUID userId);
+
     List<ExpenseTransaction> findByUserIdAndTxnDate(UUID userId, LocalDate txnDate);
 
     // ---------- Monthly ----------

@@ -10,7 +10,10 @@ import java.util.UUID;
 public interface TransferTransactionRepository extends JpaRepository<TransferTransaction, UUID> {
     List<TransferTransaction> findByFromAccountIdOrToAccountId(UUID fromId, UUID toId);
     List<TransferTransaction> findByFromAccountId(UUID fromId);
+
     List<TransferTransaction> findByToAccountId(UUID toId);
 
     List<TransferTransaction> findByUserIdAndTxnDate(UUID userId, LocalDate txnDate);
+
+    List<TransferTransaction> findAllByUserId(UUID userId);
 }

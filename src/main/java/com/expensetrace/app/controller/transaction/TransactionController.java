@@ -151,28 +151,28 @@ public class TransactionController {
     }
 
     // 2. All debt transactions (Paid, Received, Adjustment)
-    @GetMapping("/debt/all")
-    public ResponseEntity<ApiResponse> getAllDebtTransactions(
+    @GetMapping("/debt/{debtId}/all")
+    public ResponseEntity<ApiResponse> getAllDebtTransactions(@PathVariable UUID debtId,
             @PageableDefault(size = 10, sort = "txnAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtTransactions(pageable)));
+        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtTransactions(debtId,pageable)));
     }
 
-    @GetMapping("/debt/paid")
-    public ResponseEntity<ApiResponse> getAllDebtPaidTransactions(
+    @GetMapping("/debt/{debtId}/paid")
+    public ResponseEntity<ApiResponse> getAllDebtPaidTransactions(@PathVariable UUID debtId,
             @PageableDefault(size = 10, sort = "txnAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtPaidTransactions(pageable)));
+        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtPaidTransactions(debtId,pageable)));
     }
 
-    @GetMapping("/debt/received")
-    public ResponseEntity<ApiResponse> getAllDebtReceivedTransactions(
+    @GetMapping("/debt/{debtId}/received")
+    public ResponseEntity<ApiResponse> getAllDebtReceivedTransactions(@PathVariable UUID debtId,
             @PageableDefault(size = 10, sort = "txnAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtReceivedTransactions(pageable)));
+        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtReceivedTransactions(debtId,pageable)));
     }
 
-    @GetMapping("/debt/adjustment")
-    public ResponseEntity<ApiResponse> getAllDebtAdjustmentTransactions(
+    @GetMapping("/debt/{debtId}/adjustment")
+    public ResponseEntity<ApiResponse> getAllDebtAdjustmentTransactions(@PathVariable UUID debtId,
             @PageableDefault(size = 10, sort = "txnAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtAdjustmentTransactions(pageable)));
+        return ResponseEntity.ok(new ApiResponse("Found!",aggregationService.getAllDebtAdjustmentTransactions(debtId,pageable)));
     }
 
     // 3. All transactions by account (Income, Expense, Transfer, Adjustment, DebtPaid, DebtReceived)
