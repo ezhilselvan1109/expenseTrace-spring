@@ -2,7 +2,7 @@ package com.expensetrace.app.category.service.strategy;
 
 import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 import com.expensetrace.app.category.service.mapper.CategoryMapper;
-import com.expensetrace.app.enums.CategoryType;
+import com.expensetrace.app.category.enums.CategoryType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.category.repository.CategoryRepository;

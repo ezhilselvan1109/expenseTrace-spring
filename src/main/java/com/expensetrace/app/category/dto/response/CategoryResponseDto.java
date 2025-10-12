@@ -1,6 +1,6 @@
 package com.expensetrace.app.category.dto.response;
 
-import com.expensetrace.app.enums.CategoryType;
+import com.expensetrace.app.category.enums.CategoryType;
 import lombok.Data;
 
 import java.util.UUID;

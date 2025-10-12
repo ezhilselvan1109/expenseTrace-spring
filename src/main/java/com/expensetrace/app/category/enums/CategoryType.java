@@ -1,4 +1,4 @@
-package com.expensetrace.app.enums;
+package com.expensetrace.app.category.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

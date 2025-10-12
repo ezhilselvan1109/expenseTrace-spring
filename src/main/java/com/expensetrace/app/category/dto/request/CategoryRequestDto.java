@@ -1,6 +1,6 @@
 package com.expensetrace.app.category.dto.request;
 
-import com.expensetrace.app.enums.CategoryType;
+import com.expensetrace.app.category.enums.CategoryType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

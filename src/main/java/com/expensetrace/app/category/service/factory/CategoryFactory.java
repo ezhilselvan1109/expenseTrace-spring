@@ -1,10 +1,9 @@
 package com.expensetrace.app.category.service.factory;
 
-import com.expensetrace.app.enums.CategoryType;
+import com.expensetrace.app.category.enums.CategoryType;
 import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.User;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
