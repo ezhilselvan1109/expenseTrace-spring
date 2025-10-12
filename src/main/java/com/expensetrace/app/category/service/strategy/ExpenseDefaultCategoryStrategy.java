@@ -1,11 +1,11 @@
-package com.expensetrace.app.service.category.strategy;
+package com.expensetrace.app.category.service.strategy;
 
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.service.mapper.CategoryMapper;
 import com.expensetrace.app.enums.CategoryType;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.service.category.mapper.CategoryMapper;
-import com.expensetrace.app.model.Category;
-import com.expensetrace.app.repository.CategoryRepository;
+import com.expensetrace.app.category.model.Category;
+import com.expensetrace.app.category.repository.CategoryRepository;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

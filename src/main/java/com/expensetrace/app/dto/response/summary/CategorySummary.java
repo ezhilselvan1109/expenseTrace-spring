@@ -1,6 +1,6 @@
 package com.expensetrace.app.dto.response.summary;
 
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 import lombok.Data;
 
 @Data

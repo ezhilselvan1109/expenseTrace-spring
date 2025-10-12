@@ -1,6 +1,6 @@
 package com.expensetrace.app.model.budget;
 
-import com.expensetrace.app.model.Category;
+import com.expensetrace.app.category.model.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;

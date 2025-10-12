@@ -1,7 +1,6 @@
 package com.expensetrace.app.model.transaction;
 
-import com.expensetrace.app.model.Category;
-import com.expensetrace.app.model.Tag;
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;

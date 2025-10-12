@@ -1,12 +1,13 @@
 package com.expensetrace.app.service.budget;
 
+import com.expensetrace.app.category.repository.CategoryRepository;
 import com.expensetrace.app.dto.request.budget.MonthlyBudgetRequestDto;
 import com.expensetrace.app.dto.request.budget.YearlyBudgetRequestDto;
 import com.expensetrace.app.dto.response.budget.CategorySpendResponseDto;
 import com.expensetrace.app.dto.response.budget.*;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.budget.*;
-import com.expensetrace.app.model.Category;
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.repository.*;
 import com.expensetrace.app.repository.transaction.ExpenseTransactionRepository;
 import com.expensetrace.app.service.user.UserService;

@@ -1,4 +1,4 @@
-package com.expensetrace.app.dto.response;
+package com.expensetrace.app.category.dto.response;
 
 import com.expensetrace.app.enums.CategoryType;
 import lombok.Data;

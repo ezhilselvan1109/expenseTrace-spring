@@ -1,12 +1,12 @@
-package com.expensetrace.app.controller;
+package com.expensetrace.app.category.controller;
 
-import com.expensetrace.app.dto.request.category.CategoryRequestDto;
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.request.CategoryRequestDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
 import com.expensetrace.app.response.ApiResponse;
-import com.expensetrace.app.service.category.service.ICategoryService;
-import com.expensetrace.app.service.category.strategy.DefaultCategoryStrategy;
+import com.expensetrace.app.category.service.service.ICategoryService;
+import com.expensetrace.app.category.service.strategy.DefaultCategoryStrategy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

@@ -1,6 +1,6 @@
 package com.expensetrace.app.dto.request.budget;
 
-import com.expensetrace.app.dto.request.category.CategoryLimitDto;
+import com.expensetrace.app.category.dto.request.CategoryLimitDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

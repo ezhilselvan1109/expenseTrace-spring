@@ -1,5 +1,6 @@
 package com.expensetrace.app.model;
 
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.budget.Budget;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

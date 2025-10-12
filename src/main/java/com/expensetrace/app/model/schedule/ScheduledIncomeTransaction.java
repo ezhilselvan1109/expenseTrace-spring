@@ -1,6 +1,6 @@
 package com.expensetrace.app.model.schedule;
 
-import com.expensetrace.app.model.Category;
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;
 import jakarta.persistence.*;

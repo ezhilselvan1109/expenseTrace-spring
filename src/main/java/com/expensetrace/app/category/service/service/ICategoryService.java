@@ -1,7 +1,7 @@
-package com.expensetrace.app.service.category.service;
+package com.expensetrace.app.category.service.service;
 
-import com.expensetrace.app.dto.request.category.CategoryRequestDto;
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.request.CategoryRequestDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 import com.expensetrace.app.model.User;
 
 import java.util.UUID;

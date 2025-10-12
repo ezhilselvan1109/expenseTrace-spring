@@ -1,14 +1,14 @@
-package com.expensetrace.app.service.category.service;
+package com.expensetrace.app.category.service.service;
 
-import com.expensetrace.app.dto.request.category.CategoryRequestDto;
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.request.CategoryRequestDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 import com.expensetrace.app.exception.AlreadyExistsException;
 import com.expensetrace.app.exception.ResourceNotFoundException;
-import com.expensetrace.app.model.Category;
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.User;
-import com.expensetrace.app.repository.CategoryRepository;
-import com.expensetrace.app.service.category.factory.CategoryFactory;
-import com.expensetrace.app.service.category.mapper.CategoryMapper;
+import com.expensetrace.app.category.repository.CategoryRepository;
+import com.expensetrace.app.category.service.factory.CategoryFactory;
+import com.expensetrace.app.category.service.mapper.CategoryMapper;
 import com.expensetrace.app.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,7 +69,6 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public void createDefaultCategoriesForUser(User user) {
-        categoryRepository.saveAll(categoryFactory.createDefaultExpenseCategories(user));
-        categoryRepository.saveAll(categoryFactory.createDefaultIncomeCategories(user));
+        categoryRepository.saveAll(categoryFactory.createDefaultCategories(user));
     }
 }

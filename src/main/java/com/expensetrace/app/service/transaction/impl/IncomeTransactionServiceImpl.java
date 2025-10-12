@@ -2,14 +2,13 @@ package com.expensetrace.app.service.transaction.impl;
 
 import com.expensetrace.app.dto.request.transaction.IncomeTransactionRequestDto;
 import com.expensetrace.app.dto.response.transaction.IncomeTransactionResponseDto;
-import com.expensetrace.app.dto.response.transaction.TransferTransactionResponseDto;
-import com.expensetrace.app.model.Category;
+import com.expensetrace.app.category.model.Category;
 import com.expensetrace.app.model.Tag;
 import com.expensetrace.app.model.User;
 import com.expensetrace.app.model.account.Account;
 import com.expensetrace.app.model.account.PaymentMode;
 import com.expensetrace.app.model.transaction.IncomeTransaction;
-import com.expensetrace.app.repository.CategoryRepository;
+import com.expensetrace.app.category.repository.CategoryRepository;
 import com.expensetrace.app.repository.TagRepository;
 import com.expensetrace.app.repository.account.AccountRepository;
 import com.expensetrace.app.repository.account.PaymentModeRepository;
@@ -18,11 +17,8 @@ import com.expensetrace.app.service.transaction.TransactionService;
 import com.expensetrace.app.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;

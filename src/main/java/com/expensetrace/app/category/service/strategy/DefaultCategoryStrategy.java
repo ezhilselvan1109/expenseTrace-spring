@@ -1,6 +1,6 @@
-package com.expensetrace.app.service.category.strategy;
+package com.expensetrace.app.category.service.strategy;
 
-import com.expensetrace.app.dto.response.CategoryResponseDto;
+import com.expensetrace.app.category.dto.response.CategoryResponseDto;
 
 import java.util.List;
 import java.util.UUID;
